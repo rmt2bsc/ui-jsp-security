@@ -28,9 +28,13 @@
   </head>
   
   <body>
+     <%
+     out.println("App Code " + request.getServletContext().getServletContextName());
+     out.println("User Id" + request.getParameter(AuthenticationConst.AUTH_PROP_USERID));
+     %>
      <auth:UserResourceRouter success="/home.jsp" 
                               failure="/login.jsp" 
-                              appName="<%=AppPropertyPool.getProperty(ConfigConstants.PROPNAME_APP_NAME)%>"
+                              appName="<%=request.getServletContext().getServletContextName()%>"
                               userName="<%=request.getParameter(AuthenticationConst.AUTH_PROP_USERID)%>"/>
   </body>
 </html>
