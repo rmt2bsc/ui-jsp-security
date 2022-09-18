@@ -50,7 +50,7 @@
 		                ID:</font></b></font></div>
 		            </td>
 		            <td width="61%"> <font color="#0000FF">
-		              <input type="text" name="<%=AuthenticationConst.AUTH_PROP_USERID %>" size="20" maxlength="10">
+		              <input type="text" name="<%=AuthenticationConst.AUTH_PROP_USERID %>" size="20" maxlength="50">
 		              </font></td>
 		          </tr>
 		          <tr>
