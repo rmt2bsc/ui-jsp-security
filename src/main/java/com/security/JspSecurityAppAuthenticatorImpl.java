@@ -92,6 +92,7 @@ public class JspSecurityAppAuthenticatorImpl implements ClientUserAuthenticator 
         JaxbUtil jaxb = SystemConfigurator.getJaxb(ConfigConstants.JAXB_CONTEXNAME_DEFAULT);
         String payload = jaxb.marshalJsonMessage(req);
         
+        // Authenticate user via SOAP request.
         SoapClientWrapper client = new SoapClientWrapper();
         try {
             SOAPMessage resp = client.callSoap(payload);
@@ -116,6 +117,8 @@ public class JspSecurityAppAuthenticatorImpl implements ClientUserAuthenticator 
                 throw new AuthenticationException(errMsg);
             }
 
+            // If we reached this point, user was authenticated successfully.
+            // Begin setting up user's session bean and security token.
             UserType ut = (UserType) response.getProfile().getUserInfo().get(0);
             session.setLoginId(ut.getUserName());
             session.setOrigAppId(appCode);
