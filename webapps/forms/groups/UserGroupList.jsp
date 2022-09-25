@@ -70,7 +70,7 @@
 				    </a>
 				</td>
 	      <td width="30%" valign="top" align="center"> 
-          <a href="/authentication/index.jsp"> 
+          <a href="<%=APP_ROOT%>/index.jsp"> 
             <img name="m_back" src="<%=APP_ROOT%>/images/cm-back.gif" width="48px" height="70px" style="border: none" alt="Security Main Menu">
           </a>
       </td>	        				

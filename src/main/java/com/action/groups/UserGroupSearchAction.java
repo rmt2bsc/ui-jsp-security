@@ -1,6 +1,7 @@
 package com.action.groups;
 
 import java.util.Date;
+import java.util.List;
 
 import javax.xml.soap.SOAPMessage;
 
@@ -15,6 +16,7 @@ import org.rmt2.jaxb.HeaderType;
 import org.rmt2.jaxb.ObjectFactory;
 import org.rmt2.jaxb.ReplyStatusType;
 import org.rmt2.jaxb.UserCriteriaType;
+import org.rmt2.jaxb.UserGroupType;
 import org.rmt2.util.HeaderTypeBuilder;
 
 import com.AuthConstants;
@@ -192,30 +194,74 @@ public class UserGroupSearchAction extends AbstractActionHandler implements ICom
      * @throws ActionCommandException
      */
     public void edit() throws ActionCommandException {
-        // DatabaseTransApi tx = DatabaseTransFactory.create();
-        // UserApi api = UserFactory.createApi((DatabaseConnectionBean)
-        // tx.getConnector(), this.request);
-        // try {
-        // // Retrieve user group from the database using unique id.
-        // this.data = api.getGroup(this.selectedGrpId);
-        // return;
-        // }
-        // catch (Exception e) {
-        // logger.log(Level.ERROR, e.getMessage());
-        // throw new ActionHandlerException(e.getMessage());
-        // }
-        // finally {
-        // api.close();
-        // tx.close();
-        // api = null;
-        // tx = null;
-        // }
+        try {
+            // Retrieve user group from the database using unique id.
+            ObjectFactory fact = new ObjectFactory();
+            AuthenticationRequest req = fact.createAuthenticationRequest();
+
+            HeaderType head = HeaderTypeBuilder.Builder.create()
+                    .withApplication(ApiHeaderNames.APP_NAME_AUTHENTICATION)
+                    .withModule(AuthConstants.MODULE_ADMIN)
+                    .withTransaction(ApiTransactionCodes.AUTH_USER_GROUP_GET)
+                    .withMessageMode(ApiHeaderNames.MESSAGE_MODE_REQUEST)
+                    .withDeliveryDate(new Date())
+                    .withRouting(ApiTransactionCodes.ROUTE_AUTHENTICATION)
+                    .withDeliveryMode(ApiHeaderNames.DELIVERY_MODE_SYNC)
+                    .build();
+
+            AuthCriteriaGroupType apgt = fact.createAuthCriteriaGroupType();
+            UserCriteriaType criteria = fact.createUserCriteriaType();
+            criteria.setGroupId(this.selectedGrpId);
+            apgt.setUserCriteria(criteria);
+            req.setCriteria(apgt);
+            req.setHeader(head);
+
+            // Marshall a data object using some JAXB object
+            JaxbUtil jaxb = SystemConfigurator.getJaxb(ConfigConstants.JAXB_CONTEXNAME_DEFAULT);
+            String payload = jaxb.marshalJsonMessage(req);
+
+            // Authenticate user via SOAP request.
+            SoapClientWrapper client = new SoapClientWrapper();
+            try {
+                SOAPMessage resp = client.callSoap(payload);
+                if (client.isSoapError(resp)) {
+                    String errMsg = client.getSoapErrorMessage(resp);
+                    logger.error(errMsg);
+                    throw new AuthenticationException(errMsg);
+                }
+                String result = client.getSoapResponsePayloadString();
+                logger.info(result);
+
+                AuthenticationResponse response = (AuthenticationResponse) jaxb.unMarshalMessage(result);
+                ReplyStatusType rst = response.getReplyStatus();
+                if (rst.getReturnCode().intValue() == -1) {
+                    String errMsg = rst.getMessage();
+                    logger.error(errMsg);
+                    throw new AuthenticationException(errMsg);
+                }
+
+                this.data = null;
+                List<UserGroupType> results = UserGroupFactory.getUserGroupList(response.getProfile().getUserGroupInfo());
+                if (results != null && results.size() == 1) {
+                    this.data = results.get(0);
+                }
+
+            } catch (MessageException e) {
+                String msg = "Accounting Authentication Error regarding server-side messaging";
+                throw new AuthenticationException(msg, e);
+            }
+            return;
+        } catch (Exception e) {
+            logger.log(Level.ERROR, e.getMessage());
+            throw new ActionCommandException(e);
+        } finally {
+        }
     }
 
     /**
      * Obtains the user group's unique id data from the request which was
      * selected by the user. The unique id is used to obtain the user group
-     * record from the database and to map the data to its assoicated object.
+     * record from the database and to map the data to its associated object.
      * 
      * @throws ActionHandlerException
      *             When a required selection was not made or an error occurrence

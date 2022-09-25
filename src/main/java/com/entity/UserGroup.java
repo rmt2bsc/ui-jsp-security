@@ -1,5 +1,6 @@
 package com.entity;
 
+import com.RMT2Base;
 
 
 
@@ -8,18 +9,18 @@ package com.entity;
  *
  * @author auto generated.
  */
-public class UserGroup {
+public class UserGroup extends RMT2Base {
 
 /** The property name constant equivalent to property, GrpId, of respective DataSource view. */
-  public static final String PROP_GRPID = "GrpId";
+    public static final String PROP_GRPID = "grpId";
 /** The property name constant equivalent to property, Description, of respective DataSource view. */
-  public static final String PROP_DESCRIPTION = "Description";
+    public static final String PROP_DESCRIPTION = "description";
 /** The property name constant equivalent to property, DateCreated, of respective DataSource view. */
-  public static final String PROP_DATECREATED = "DateCreated";
+    public static final String PROP_DATECREATED = "dateCreated";
 /** The property name constant equivalent to property, DateUpdated, of respective DataSource view. */
-  public static final String PROP_DATEUPDATED = "DateUpdated";
+    public static final String PROP_DATEUPDATED = "dateUpdated";
 /** The property name constant equivalent to property, UserId, of respective DataSource view. */
-  public static final String PROP_USERID = "UserId";
+    public static final String PROP_USERID = "userId";
 
 
 
