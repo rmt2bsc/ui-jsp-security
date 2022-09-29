@@ -1,40 +1,21 @@
 package com.action.groups;
 
-import java.util.Date;
 import java.util.List;
-
-import javax.xml.soap.SOAPMessage;
 
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
-import org.rmt2.constants.ApiHeaderNames;
-import org.rmt2.constants.ApiTransactionCodes;
-import org.rmt2.jaxb.AuthCriteriaGroupType;
-import org.rmt2.jaxb.AuthenticationRequest;
 import org.rmt2.jaxb.AuthenticationResponse;
-import org.rmt2.jaxb.HeaderType;
-import org.rmt2.jaxb.ObjectFactory;
-import org.rmt2.jaxb.ReplyStatusType;
-import org.rmt2.jaxb.UserCriteriaType;
 import org.rmt2.jaxb.UserGroupType;
-import org.rmt2.util.HeaderTypeBuilder;
 
-import com.AuthConstants;
 import com.SystemException;
-import com.api.config.ConfigConstants;
-import com.api.config.SystemConfigurator;
 import com.api.constants.GeneralConst;
 import com.api.constants.RMT2SystemExceptionConst;
 import com.api.jsp.action.AbstractActionHandler;
-import com.api.messaging.MessageException;
-import com.api.messaging.webservice.soap.client.SoapClientWrapper;
-import com.api.security.authentication.web.AuthenticationException;
 import com.api.web.ActionCommandException;
 import com.api.web.Context;
 import com.api.web.ICommand;
 import com.api.web.Request;
 import com.api.web.Response;
-import com.api.xml.jaxb.JaxbUtil;
 import com.entity.UserGroupFactory;
 
 /**
@@ -117,54 +98,11 @@ public class UserGroupSearchAction extends AbstractActionHandler implements ICom
     protected void search() throws ActionCommandException {
         try {
             // Retrieve all user group records from the database
-            ObjectFactory fact = new ObjectFactory();
-            AuthenticationRequest req = fact.createAuthenticationRequest();
+            AuthenticationResponse response = UserGroupSoapRequests.callSearchAllUserGroups();
 
-            HeaderType head = HeaderTypeBuilder.Builder.create()
-                    .withApplication(ApiHeaderNames.APP_NAME_AUTHENTICATION)
-                    .withModule(AuthConstants.MODULE_ADMIN)
-                    .withTransaction(ApiTransactionCodes.AUTH_USER_GROUP_GET)
-                    .withMessageMode(ApiHeaderNames.MESSAGE_MODE_REQUEST)
-                    .withDeliveryDate(new Date())
-                    .withRouting(ApiTransactionCodes.ROUTE_AUTHENTICATION)
-                    .withDeliveryMode(ApiHeaderNames.DELIVERY_MODE_SYNC)
-                    .build();
-
-            AuthCriteriaGroupType apgt = fact.createAuthCriteriaGroupType();
-            UserCriteriaType criteria = fact.createUserCriteriaType();
-            apgt.setUserCriteria(criteria);
-            req.setCriteria(apgt);
-            req.setHeader(head);
-
-            // Marshall a data object using some JAXB object
-            JaxbUtil jaxb = SystemConfigurator.getJaxb(ConfigConstants.JAXB_CONTEXNAME_DEFAULT);
-            String payload = jaxb.marshalJsonMessage(req);
-
-            // Authenticate user via SOAP request.
-            SoapClientWrapper client = new SoapClientWrapper();
-            try {
-                SOAPMessage resp = client.callSoap(payload);
-                if (client.isSoapError(resp)) {
-                    String errMsg = client.getSoapErrorMessage(resp);
-                    logger.error(errMsg);
-                    throw new AuthenticationException(errMsg);
-                }
-                String result = client.getSoapResponsePayloadString();
-                logger.info(result);
-
-                AuthenticationResponse response = (AuthenticationResponse) jaxb.unMarshalMessage(result);
-                ReplyStatusType rst = response.getReplyStatus();
-                if (rst.getReturnCode().intValue() == -1) {
-                    String errMsg = rst.getMessage();
-                    logger.error(errMsg);
-                    throw new AuthenticationException(errMsg);
-                }
-
-                this.data = UserGroupFactory.getUserGroupList(response.getProfile().getUserGroupInfo());
-            } catch (MessageException e) {
-                String msg = "Accounting Authentication Error regarding server-side messaging";
-                throw new AuthenticationException(msg, e);
-            }
+            // Setup user group list on the Request object in order to pass back
+            // to JSP client.
+            this.data = UserGroupFactory.getUserGroupList(response.getProfile().getUserGroupInfo());
             this.sendClientData();
         } catch (Exception e) {
             logger.log(Level.ERROR, e.getMessage());
@@ -196,59 +134,13 @@ public class UserGroupSearchAction extends AbstractActionHandler implements ICom
     public void edit() throws ActionCommandException {
         try {
             // Retrieve user group from the database using unique id.
-            ObjectFactory fact = new ObjectFactory();
-            AuthenticationRequest req = fact.createAuthenticationRequest();
+            AuthenticationResponse response = UserGroupSoapRequests.callSearchUserGroup(this.selectedGrpId);
 
-            HeaderType head = HeaderTypeBuilder.Builder.create()
-                    .withApplication(ApiHeaderNames.APP_NAME_AUTHENTICATION)
-                    .withModule(AuthConstants.MODULE_ADMIN)
-                    .withTransaction(ApiTransactionCodes.AUTH_USER_GROUP_GET)
-                    .withMessageMode(ApiHeaderNames.MESSAGE_MODE_REQUEST)
-                    .withDeliveryDate(new Date())
-                    .withRouting(ApiTransactionCodes.ROUTE_AUTHENTICATION)
-                    .withDeliveryMode(ApiHeaderNames.DELIVERY_MODE_SYNC)
-                    .build();
-
-            AuthCriteriaGroupType apgt = fact.createAuthCriteriaGroupType();
-            UserCriteriaType criteria = fact.createUserCriteriaType();
-            criteria.setGroupId(this.selectedGrpId);
-            apgt.setUserCriteria(criteria);
-            req.setCriteria(apgt);
-            req.setHeader(head);
-
-            // Marshall a data object using some JAXB object
-            JaxbUtil jaxb = SystemConfigurator.getJaxb(ConfigConstants.JAXB_CONTEXNAME_DEFAULT);
-            String payload = jaxb.marshalJsonMessage(req);
-
-            // Authenticate user via SOAP request.
-            SoapClientWrapper client = new SoapClientWrapper();
-            try {
-                SOAPMessage resp = client.callSoap(payload);
-                if (client.isSoapError(resp)) {
-                    String errMsg = client.getSoapErrorMessage(resp);
-                    logger.error(errMsg);
-                    throw new AuthenticationException(errMsg);
-                }
-                String result = client.getSoapResponsePayloadString();
-                logger.info(result);
-
-                AuthenticationResponse response = (AuthenticationResponse) jaxb.unMarshalMessage(result);
-                ReplyStatusType rst = response.getReplyStatus();
-                if (rst.getReturnCode().intValue() == -1) {
-                    String errMsg = rst.getMessage();
-                    logger.error(errMsg);
-                    throw new AuthenticationException(errMsg);
-                }
-
-                this.data = null;
-                List<UserGroupType> results = UserGroupFactory.getUserGroupList(response.getProfile().getUserGroupInfo());
-                if (results != null && results.size() == 1) {
-                    this.data = results.get(0);
-                }
-
-            } catch (MessageException e) {
-                String msg = "Accounting Authentication Error regarding server-side messaging";
-                throw new AuthenticationException(msg, e);
+            // Setup fetched user group object to be passed to caller
+            this.data = null;
+            List<UserGroupType> results = UserGroupFactory.getUserGroupList(response.getProfile().getUserGroupInfo());
+            if (results != null && results.size() == 1) {
+                this.data = results.get(0);
             }
             return;
         } catch (Exception e) {

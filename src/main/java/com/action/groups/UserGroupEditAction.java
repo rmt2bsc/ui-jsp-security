@@ -2,6 +2,8 @@ package com.action.groups;
 
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
+import org.rmt2.jaxb.AuthenticationResponse;
+import org.rmt2.jaxb.ReplyStatusType;
 
 import com.SystemException;
 import com.api.constants.GeneralConst;
@@ -13,6 +15,7 @@ import com.api.web.ICommand;
 import com.api.web.Request;
 import com.api.web.Response;
 import com.api.web.util.RMT2WebUtility;
+import com.entity.UserGroup;
 import com.entity.UserGroupFactory;
 
 /**
@@ -43,7 +46,7 @@ public class UserGroupEditAction extends AbstractActionHandler implements IComma
      */
     public UserGroupEditAction() throws SystemException {
 	super();
-	logger = Logger.getLogger("UserGroupEditAction");
+	logger = Logger.getLogger(UserGroupEditAction.class);
     }
 
     /**
@@ -89,30 +92,43 @@ public class UserGroupEditAction extends AbstractActionHandler implements IComma
      * @throws ActionHandlerException
      */
     public void save() throws ActionCommandException {
-        // DatabaseTransApi tx = DatabaseTransFactory.create();
-        // UserApi api = UserFactory.createApi((DatabaseConnectionBean)
-        // tx.getConnector(), this.request);
-        // UserGroup grp = (UserGroup) this.data;
-        // try {
-        // // Update application profile.
-        // int key = api.maintainGroup(grp);
-        // // Commit Changes to the database
-        // tx.commitUOW();
-        // this.msg = "User Group configuration saved successfully";
-        // }
-        // catch (UserAuthenticationException e) {
-        // this.msg = e.getMessage();
-        // tx.rollbackUOW();
-        // throw new ActionHandlerException(this.msg);
-        // }
-        // finally {
-        // api.close();
-        // tx.close();
-        // api = null;
-        // tx = null;
-        // }
+        try {
+            // Get request data
+            UserGroup grp = (UserGroup) this.data;
+
+            // Update user group record
+            AuthenticationResponse response = UserGroupSoapRequests.callUpdateUserGroup(grp);
+            // Get message text from reply status
+            ReplyStatusType rst = response.getReplyStatus();
+            this.msg = rst.getMessage();
+            this.sendClientData();
+        } catch (Exception e) {
+            logger.log(Level.ERROR, e.getMessage());
+            throw new ActionCommandException(e);
+        } finally {
+
+        }
     }
 
+    /**
+     * Delete an user group from the database using the id of the user group.
+     * 
+     * @param appId
+     *            The id of the user group
+     * @return Total number of rows deleted.
+     * @throws ActionHandlerException
+     */
+    public void delete() throws ActionCommandException {
+        // Get request data
+        UserGroup grp = (UserGroup) this.data;
+
+        // Delete user group record
+        AuthenticationResponse response = UserGroupSoapRequests.callDeleteUserGroup(grp.getGrpId());
+        // Get message text from reply status
+        ReplyStatusType rst = response.getReplyStatus();
+        this.msg = rst.getMessage();
+        this.sendClientData();
+    }
 
     /**
      * Navigates the user to the User Group List page.
@@ -120,26 +136,20 @@ public class UserGroupEditAction extends AbstractActionHandler implements IComma
      * @throws ActionHandlerException
      */
     protected void doBack() throws ActionCommandException {
-        // DatabaseTransApi tx = DatabaseTransFactory.create();
-        // UserApi api = UserFactory.createApi((DatabaseConnectionBean)
-        // tx.getConnector(), this.request);
-        // try {
-        // // Retrieve all application records from the database using unique
-        // id.
-        // this.data = api.getAllGroups();
-        // this.sendClientData();
-        // this.request.removeAttribute(RMT2ServletConst.REQUEST_MSG_INFO);
-        // }
-        // catch (Exception e) {
-        // logger.log(Level.ERROR, e.getMessage());
-        // throw new ActionHandlerException(e.getMessage());
-        // }
-        // finally {
-        // api.close();
-        // tx.close();
-        // api = null;
-        // tx = null;
-        // }
+        try {
+            // Retrieve all user group records from the database
+            AuthenticationResponse response = UserGroupSoapRequests.callSearchAllUserGroups();
+
+            // Setup user group list on the Request object in order to pass back
+            // to JSP client.
+            this.data = UserGroupFactory.getUserGroupList(response.getProfile().getUserGroupInfo());
+            this.sendClientData();
+        } catch (Exception e) {
+            logger.log(Level.ERROR, e.getMessage());
+            throw new ActionCommandException(e);
+        } finally {
+
+        }
     }
 
     /**
@@ -153,46 +163,12 @@ public class UserGroupEditAction extends AbstractActionHandler implements IComma
         try {
             // Update user group object with user input.
             RMT2WebUtility.packageBean(this.request, this.data);
-            // UserFactory.packageBean(this.request, this.data);
         } catch (Exception e) {
             logger.log(Level.ERROR, e.getMessage());
             throw new ActionCommandException(e);
         }
     }
     
-    
-    /**
-     * Delete an user group from the database using the id of the user group.
-     * 
-     * @param appId  The id of the user group
-     * @return Total number of rows deleted.
-     * @throws ActionHandlerException
-     */
-    public void delete() throws ActionCommandException {
-        // DatabaseTransApi tx = DatabaseTransFactory.create();
-        // UserApi api = UserFactory.createApi((DatabaseConnectionBean)
-        // tx.getConnector(), this.request);
-        // int rc;
-        // UserGroup grp = (UserGroup) this.data;
-        // try {
-        // // Update user group profile.
-        // rc = api.deleteGroup(grp.getGrpId());
-        // // Commit Changes to the database
-        // tx.commitUOW();
-        // this.msg = rc + " application configuration(s) deleted successfully";
-        // }
-        // catch (UserAuthenticationException e) {
-        // this.msg = e.getMessage();
-        // tx.rollbackUOW();
-        // throw new ActionHandlerException(this.msg);
-        // }
-        // finally {
-        // api.close();
-        // tx.close();
-        // api = null;
-        // tx = null;
-        // }
-    }
 
     /**
      * Sends an {@link com.bean.UserGroup UserGroup} data object and any server messages 
