@@ -2,8 +2,6 @@ package com.action.groups;
 
 import java.util.Date;
 
-import javax.xml.soap.SOAPMessage;
-
 import org.apache.log4j.Logger;
 import org.rmt2.constants.ApiHeaderNames;
 import org.rmt2.constants.ApiTransactionCodes;
@@ -20,12 +18,8 @@ import org.rmt2.util.HeaderTypeBuilder;
 import org.rmt2.util.authentication.UserGroupTypeBuilder;
 
 import com.AuthConstants;
-import com.api.config.ConfigConstants;
-import com.api.config.SystemConfigurator;
-import com.api.messaging.MessageException;
-import com.api.messaging.webservice.soap.client.SoapClientWrapper;
+import com.api.messaging.webservice.soap.client.SoapJaxbClientWrapper;
 import com.api.security.authentication.web.AuthenticationException;
-import com.api.xml.jaxb.JaxbUtil;
 import com.entity.UserGroup;
 
 /**
@@ -66,23 +60,9 @@ public class UserGroupSoapRequests {
         req.setCriteria(apgt);
         req.setHeader(head);
 
-        // Marshall a data object using some JAXB object
-        JaxbUtil jaxb = SystemConfigurator.getJaxb(ConfigConstants.JAXB_CONTEXNAME_DEFAULT);
-        String payload = jaxb.marshalJsonMessage(req);
-
-        // Prepare to make SOAP request.
-        SoapClientWrapper client = new SoapClientWrapper();
+        AuthenticationResponse response = null;
         try {
-            SOAPMessage resp = client.callSoap(payload);
-            if (client.isSoapError(resp)) {
-                String errMsg = client.getSoapErrorMessage(resp);
-                logger.error(errMsg);
-                throw new AuthenticationException(errMsg);
-            }
-            String result = client.getSoapResponsePayloadString();
-            logger.info(result);
-
-            AuthenticationResponse response = (AuthenticationResponse) jaxb.unMarshalMessage(result);
+            response = SoapJaxbClientWrapper.callSoapRequest(req);
             ReplyStatusType rst = response.getReplyStatus();
             if (rst.getReturnCode().intValue() == -1) {
                 String errMsg = rst.getMessage();
@@ -90,7 +70,7 @@ public class UserGroupSoapRequests {
                 throw new AuthenticationException(errMsg);
             }
             return response;
-        } catch (MessageException e) {
+        } catch (Exception e) {
             throw new AuthenticationException(UserGroupSoapRequests.MSG, e);
         }
     }
@@ -125,33 +105,17 @@ public class UserGroupSoapRequests {
         req.setCriteria(apgt);
         req.setHeader(head);
 
-        // Marshall a data object using some JAXB object
-        JaxbUtil jaxb = SystemConfigurator.getJaxb(ConfigConstants.JAXB_CONTEXNAME_DEFAULT);
-        String payload = jaxb.marshalJsonMessage(req);
-
-        // Prepare to make SOAP request.
-        SoapClientWrapper client = new SoapClientWrapper();
+        AuthenticationResponse response = null;
         try {
-            SOAPMessage resp = client.callSoap(payload);
-            if (client.isSoapError(resp)) {
-                String errMsg = client.getSoapErrorMessage(resp);
-                logger.error(errMsg);
-                throw new AuthenticationException(errMsg);
-            }
-            String result = client.getSoapResponsePayloadString();
-            logger.info(result);
-
-            AuthenticationResponse response = (AuthenticationResponse) jaxb.unMarshalMessage(result);
+            response = SoapJaxbClientWrapper.callSoapRequest(req);
             ReplyStatusType rst = response.getReplyStatus();
             if (rst.getReturnCode().intValue() == -1) {
                 String errMsg = rst.getMessage();
                 logger.error(errMsg);
                 throw new AuthenticationException(errMsg);
             }
-
             return response;
-
-        } catch (MessageException e) {
+        } catch (Exception e) {
             throw new AuthenticationException(UserGroupSoapRequests.MSG, e);
         }
     }
@@ -190,23 +154,9 @@ public class UserGroupSoapRequests {
         req.setProfile(apgt);
         req.setHeader(head);
 
-        // Marshall a data object using some JAXB object
-        JaxbUtil jaxb = SystemConfigurator.getJaxb(ConfigConstants.JAXB_CONTEXNAME_DEFAULT);
-        String payload = jaxb.marshalJsonMessage(req);
-
-        // Prepare to make SOAP request.
-        SoapClientWrapper client = new SoapClientWrapper();
+        AuthenticationResponse response = null;
         try {
-            SOAPMessage resp = client.callSoap(payload);
-            if (client.isSoapError(resp)) {
-                String errMsg = client.getSoapErrorMessage(resp);
-                logger.error(errMsg);
-                throw new AuthenticationException(errMsg);
-            }
-            String result = client.getSoapResponsePayloadString();
-            logger.info(result);
-
-            AuthenticationResponse response = (AuthenticationResponse) jaxb.unMarshalMessage(result);
+            response = SoapJaxbClientWrapper.callSoapRequest(req);
             ReplyStatusType rst = response.getReplyStatus();
             if (rst.getReturnCode().intValue() == -1) {
                 String errMsg = rst.getMessage();
@@ -214,7 +164,7 @@ public class UserGroupSoapRequests {
                 throw new AuthenticationException(errMsg);
             }
             return response;
-        } catch (MessageException e) {
+        } catch (Exception e) {
             throw new AuthenticationException(UserGroupSoapRequests.MSG, e);
         }
     }
@@ -244,23 +194,9 @@ public class UserGroupSoapRequests {
         req.setProfile(apgt);
         req.setHeader(head);
 
-        // Marshall a data object using some JAXB object
-        JaxbUtil jaxb = SystemConfigurator.getJaxb(ConfigConstants.JAXB_CONTEXNAME_DEFAULT);
-        String payload = jaxb.marshalJsonMessage(req);
-
-        // Prepare to make SOAP request.
-        SoapClientWrapper client = new SoapClientWrapper();
+        AuthenticationResponse response = null;
         try {
-            SOAPMessage resp = client.callSoap(payload);
-            if (client.isSoapError(resp)) {
-                String errMsg = client.getSoapErrorMessage(resp);
-                logger.error(errMsg);
-                throw new AuthenticationException(errMsg);
-            }
-            String result = client.getSoapResponsePayloadString();
-            logger.info(result);
-
-            AuthenticationResponse response = (AuthenticationResponse) jaxb.unMarshalMessage(result);
+            response = SoapJaxbClientWrapper.callSoapRequest(req);
             ReplyStatusType rst = response.getReplyStatus();
             if (rst.getReturnCode().intValue() == -1) {
                 String errMsg = rst.getMessage();
@@ -268,9 +204,8 @@ public class UserGroupSoapRequests {
                 throw new AuthenticationException(errMsg);
             }
             return response;
-        } catch (MessageException e) {
+        } catch (Exception e) {
             throw new AuthenticationException(UserGroupSoapRequests.MSG, e);
         }
-
     }
 }
