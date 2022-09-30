@@ -6,7 +6,7 @@ import java.util.List;
 import org.rmt2.jaxb.UserGroupType;
 
 /**
- * A factory that creates new instances of UserApi and UserLogin.
+ * A factory that creates new instances of UserGroup.
  * 
  * @author roy.terrell
  * 
@@ -16,7 +16,7 @@ public class UserGroupFactory {
     /**
      * Create a new instance of a UserGroup class.
      * 
-     * @return {@link UserLogin}
+     * @return {@link UserGroup}
      */
     public static UserGroup createUserGroup() {
         try {

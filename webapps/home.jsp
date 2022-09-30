@@ -35,7 +35,7 @@
       <table width="100%" border="0">
          <tr>
 			      <td width="12%" valign="top" align="center"> 
-			          <a href="/authentication/unsecureRequestProcessor/User.Search?clientAction=newsearch&<%=SESSION_BEAN.getAuthUrlParms()%>"> 
+			          <a href="/ui-jsp-security/unsecureRequestProcessor/User.Search?clientAction=newsearch&<%=SESSION_BEAN.getAuthUrlParms()%>"> 
 			            <img name="m_users" src="<%=APP_ROOT%>/images/mi-users.gif"  width="48px" height="70px" style="border: none" alt="User Maintenance">
 			          </a>
 			      </td>
