@@ -14,8 +14,10 @@ import org.rmt2.jaxb.ObjectFactory;
 import org.rmt2.jaxb.ReplyStatusType;
 import org.rmt2.jaxb.UserCriteriaType;
 import org.rmt2.jaxb.UserGroupType;
+import org.rmt2.jaxb.UserType;
 import org.rmt2.util.HeaderTypeBuilder;
 import org.rmt2.util.authentication.UserGroupTypeBuilder;
+import org.rmt2.util.authentication.UserTypeBuilder;
 
 import com.AuthConstants;
 import com.api.messaging.webservice.soap.client.SoapJaxbClientWrapper;
@@ -24,7 +26,7 @@ import com.api.util.RMT2Date;
 import com.api.util.RMT2Money;
 import com.api.util.assistants.Verifier;
 import com.api.util.assistants.VerifyException;
-import com.entity.UserGroup;
+import com.entity.UserLogin;
 
 /**
  * Help class for constructing and invoking SOAP calls pertaining to the User
@@ -217,14 +219,14 @@ public class UserSoapRequests {
     }
 
     /**
-     * SOAP call to add or modify a user group instance.
+     * SOAP call to add or modify a user login instance.
      * 
      * @param grp
-     *            {@link UserGroup}
+     *            {@link UserLogin}
      * @return {@link AuthenticationResponse}
      * @throws AuthenticationException
      */
-    public static final AuthenticationResponse callUpdateUserGroup(UserGroup grp) throws AuthenticationException {
+    public static final AuthenticationResponse callUpdateUser(UserLogin usr) throws AuthenticationException {
 
         // Update user group record
         ObjectFactory fact = new ObjectFactory();
@@ -241,12 +243,29 @@ public class UserSoapRequests {
                 .build();
 
         AuthProfileGroupType apgt = fact.createAuthProfileGroupType();
-        UserGroupType ug = UserGroupTypeBuilder.Builder.create()
-                .withGroupId(grp.getGrpId())
-                .withDescription(grp.getDescription())
+
+        UserGroupType ugt = UserGroupTypeBuilder.Builder.create()
+                .withGroupId(usr.getGrpId())
                 .build();
 
-        apgt.getUserGroupInfo().add(ug);
+        UserType ut = UserTypeBuilder.Builder.create()
+                .withLoginId(usr.getLoginId())
+                .withGroupInfo(ugt)
+                .withUsername(usr.getUsername())
+                .withFirstname(usr.getFirstname())
+                .withLastname(usr.getLastname())
+                .withBirthDate(usr.getBirthDate())
+                .withSsn(usr.getSsn())
+                .withStartDate(usr.getStartDate())
+                .withTermDate(usr.getTerminationDate())
+                .withDescription(usr.getDescription())
+                .withTotalLogins(usr.getTotalLogons())
+                .withEmail(usr.getEmail())
+                .withActiveFlag(usr.getActive() == 1 ? true : false)
+                .build();
+
+        apgt.getUserInfo().add(ut);
+
         req.setProfile(apgt);
         req.setHeader(head);
 

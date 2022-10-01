@@ -1,6 +1,7 @@
 package com.action.user;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
@@ -20,6 +21,7 @@ import com.api.web.ICommand;
 import com.api.web.Request;
 import com.api.web.Response;
 import com.api.web.util.RMT2WebUtility;
+import com.entity.UserLogin;
 import com.entity.UserLoginFactory;
 
 /**
@@ -162,25 +164,22 @@ public class UserSearchAction extends AbstractActionHandler implements ICommand 
      * @throws ActionHandlerException
      */
     public void edit() throws ActionCommandException {
-        // DatabaseTransApi tx = DatabaseTransFactory.create();
-        // UserApi userApi = UserFactory.createApi((DatabaseConnectionBean)
-        // tx.getConnector(), this.request);
-        // try {
-        // // Get all data pertaining to user from the database.
-        // this.user = (UserLogin)
-        // userApi.findUserByUserName(this.user.getUsername());
-        // // Reset password for security purposes
-        // this.user.setPassword(UserConst.PASSWORD_GARBAGE);
-        // return;
-        // } catch (Exception e) {
-        // logger.log(Level.ERROR, e.getMessage());
-        // throw new ActionHandlerException(e.getMessage());
-        // } finally {
-        // userApi.close();
-        // tx.close();
-        // userApi = null;
-        // tx = null;
-        // }
+        UserLogin user = (UserLogin) this.data;
+        String userName = user.getUsername();
+        UserCriteria criteria = UserCriteria.getInstance();
+        criteria.setQry_Username(userName);
+
+        // Fetch all users for display
+        AuthenticationResponse response = UserSoapRequests.callSearchUsers(criteria);
+        List list = UserLoginFactory.getUserList(response.getProfile().getUserInfo());
+        this.data = list.get(0);
+
+        // Get message text from reply status
+        ReplyStatusType rst = response.getReplyStatus();
+        this.msg = rst.getMessage();
+
+        // Send data to client
+        this.sendClientData();
     }
 
     /**

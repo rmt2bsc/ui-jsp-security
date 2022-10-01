@@ -42,7 +42,7 @@
 			  <tr>
 					<td colspan="2">
 					  <input name="<%=GeneralConst.REQ_SEARCH%>" type="button" value="Search" style="width:90" onClick="handleAction('_self', document.SearchForm, this.name)">
-						  <input type="reset" name="clear" value="Clear" style="width:90">
+					  <input type="reset" name="clear" value="Clear" style="width:90">
 			 		</td>
 				  </tr>		
 		  </table>        

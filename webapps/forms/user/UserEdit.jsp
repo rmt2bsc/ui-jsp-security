@@ -1,19 +1,12 @@
 <%@ taglib uri="/rmt2-beantaglib" prefix="beanlib" %>
 <%@ taglib uri="/rmt2-taglib" prefix="db" %>
 <%@ taglib uri="/rmt2-generaltaglib" prefix="gen" %>
-<%@ page import="com.constants.GeneralConst" %>
-<%@ page import="com.constants.RMT2ServletConst" %>
+<%@ page import="com.api.constants.GeneralConst" %>
+<%@ page import="com.api.constants.RMT2ServletConst" %>
 
 <gen:InitAppRoot id="APP_ROOT"/>
 
-<jsp:useBean id="user" scope="request" class="com.bean.UserLogin"/>
-
-<db:connection id="con" classId="com.bean.db.DatabaseConnectionBean"/>
-<db:datasource id="dsoUserGroup" 
-               classId="com.api.DataSourceApi" 
-               connection="con"
-			         query="UserGroupView"
-			         order="description"/>
+<jsp:useBean id="user" scope="request" class="com.entity.UserLogin"/>
 
 <html>
   <title>User Maintenance</title>
@@ -94,14 +87,7 @@
 				 </td>
 				 <th class="clsTableFormHeader">Group:</th>
 				 <td> 
-						 <db:Lookup dataSource="" 
-												masterCodeName=""
-												masterCodeValue="#user.GrpId"
-												name="GrpId"
-												type="3"
-												lookupSource="dsoUserGroup"
-												lookupCodeName="GrpId"
-												lookupDisplayName="Description"/>					 
+					<beanlib:InputControl value="#user.GrpName"/>				 
 				 </td>				 
 			 </tr>			 
 		 </table>
