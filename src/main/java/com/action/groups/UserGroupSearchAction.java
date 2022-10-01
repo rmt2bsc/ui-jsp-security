@@ -28,19 +28,11 @@ import com.entity.UserGroupFactory;
  */
 public class UserGroupSearchAction extends AbstractActionHandler implements ICommand {
     private static final String COMMAND_LIST = "Group.Search.list";
-
     private static final String COMMAND_EDIT = "Group.Search.edit";
-
     private static final String COMMAND_ADD = "Group.Search.add";
-
     private Logger logger;
-
-    // private UserApi api;
-
     private Object data;
-
     private int selectedGrpId;
-
     private boolean selectionRequired;
 
     /**
@@ -50,7 +42,7 @@ public class UserGroupSearchAction extends AbstractActionHandler implements ICom
      */
     public UserGroupSearchAction() throws SystemException {
         super();
-        logger = Logger.getLogger("UserGroupSearchAction");
+        logger = Logger.getLogger(UserGroupSearchAction.class);
     }
 
     /**
@@ -60,7 +52,6 @@ public class UserGroupSearchAction extends AbstractActionHandler implements ICom
      */
     protected void init(Context _context, Request _request) throws SystemException {
         super.init(_context, _request);
-        // this.api = UserFactory.createApi(this.dbConn);
     }
 
     /**

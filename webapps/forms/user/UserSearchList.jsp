@@ -8,10 +8,10 @@
 		     <th align="left" width="8%">Login</th>
 		     <th align="left" width="20%">Last Name</th>
 		     <th align="left" width="20%">First Name</th>
-		     <th align="center" width="15%">Group</th>
-		     <th align="left" width="10%">SSN</th>
-		     <th align="left" width="10%">Start Date</th>
-		     <th align="left" width="10%">Term Date</th>
+		     <th align="left" width="16%">Group</th>
+		     <th align="left" width="12%">SSN</th>
+		     <th align="left" width="11%">Start Date</th>
+		     <th align="left" width="11%">Term Date</th>
 		   </tr>
 	
 	     <beanlib:LoopRows bean="item" list="<%=UserConst.CLIENT_DATA_USER%>">
@@ -30,7 +30,7 @@
 		         <td>
 		             <beanlib:InputControl value="#item.Firstname"/>
 		         </td>
-		         <td align="center">
+		         <td>
 					<beanlib:InputControl value="#item.GrpName"/>			 		         
 		         </td>
 		         <td>

@@ -31,17 +31,11 @@ import com.entity.UserLoginFactory;
  */
 public class UserSearchAction extends AbstractActionHandler implements ICommand {
     private static final String COMMAND_NEWSEARCH = "User.Search.newsearch";
-
     private static final String COMMAND_SEARCH = "User.Search.search";
-
     private static final String COMMAND_LIST = "User.Search.list";
-
     private static final String COMMAND_EDIT = "User.Search.edit";
-
     private static final String COMMAND_ADD = "User.Search.add";
-
-    private Logger logger;
-
+    private static final Logger logger = Logger.getLogger(UserSearchAction.class);;
     private Object data;
 
     /**
@@ -51,7 +45,6 @@ public class UserSearchAction extends AbstractActionHandler implements ICommand 
      */
     public UserSearchAction() throws SystemException {
         super();
-        logger = Logger.getLogger(UserSearchAction.class);
     }
 
     /**
@@ -97,18 +90,6 @@ public class UserSearchAction extends AbstractActionHandler implements ICommand 
         }
     }
 
-    // /**
-    // * Returns selection criteria that is sure to return an empty result set
-    // * once applied to the sql that pertains to the data source of the
-    // customer
-    // * search page.
-    // */
-    // protected String doInitialCriteria(RMT2TagQueryBean _query) throws
-    // ActionCommandException {
-    // _query.setQuerySource("UserLoginView");
-    // return "username = '!@#$%^&*()_+'";
-    // }
-
     /**
      * Creates an instance of UserCriteria so that it may be assigned as
      * RMT2TagQueryBean's custom object property.
@@ -120,20 +101,6 @@ public class UserSearchAction extends AbstractActionHandler implements ICommand 
     protected Object doCustomInitialization() throws ActionCommandException {
         UserCriteria criteriaObj = UserCriteria.getInstance();
         return criteriaObj;
-
-        // if (!this.isFirstTime()) {
-        // try {
-        // DataSourceAdapter.packageBean(this.request, criteriaObj);
-        // this.setBaseView("UserLoginView");
-        // this.setBaseClass("com.bean.UserLoginView");
-        // } catch (SystemException e) {
-        // this.msg = "Problem gathering User Search request parameters: " +
-        // e.getMessage();
-        // logger.log(Level.ERROR, this.msg);
-        // throw new ActionHandlerException(this.msg);
-        // }
-        // }
-
     }
 
     /**
@@ -159,16 +126,14 @@ public class UserSearchAction extends AbstractActionHandler implements ICommand 
     protected void doSearch() throws ActionCommandException {
         this.setFirstTime(false);
 
-        // TODO: Get search parameters from request and add search parameter
+        // Get search parameters from request and add search parameter
         // object to session
-        UserCriteria criteria = null;
-        if (this.query != null && this.query.getCustomObj() != null && this.query.getCustomObj() instanceof UserCriteria) {
-
-        }
-        this.getSession().setAttribute(RMT2ServletConst.QUERY_BEAN, this.query);
+        RMT2TagQueryBean query = (RMT2TagQueryBean) this.getSession().getAttribute(RMT2ServletConst.QUERY_BEAN);
+        UserCriteria criteria = (UserCriteria) query.getCustomObj();
+        RMT2WebUtility.packageBean(this.request, criteria);
 
         // Fetch all users for display
-        AuthenticationResponse response = UserSoapRequests.callSearchAllUsers();
+        AuthenticationResponse response = UserSoapRequests.callSearchUsers(criteria);
         this.data = UserLoginFactory.getUserList(response.getProfile().getUserInfo());
 
         // Get message text from reply status
@@ -177,12 +142,6 @@ public class UserSearchAction extends AbstractActionHandler implements ICommand 
 
         // Send data to client
         this.sendClientData();
-
-        // this.buildSearchCriteria();
-        // this.query = (RMT2TagQueryBean)
-        // this.getSession().getAttribute(RMT2ServletConst.QUERY_BEAN);
-        // this.getSession().setAttribute(RMT2ServletConst.QUERY_BEAN,
-        // this.query);
     }
 
     /**

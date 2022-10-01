@@ -20,7 +20,10 @@ import org.rmt2.util.authentication.UserGroupTypeBuilder;
 import com.AuthConstants;
 import com.api.messaging.webservice.soap.client.SoapJaxbClientWrapper;
 import com.api.security.authentication.web.AuthenticationException;
+import com.api.util.RMT2Date;
 import com.api.util.RMT2Money;
+import com.api.util.assistants.Verifier;
+import com.api.util.assistants.VerifyException;
 import com.entity.UserGroup;
 
 /**
@@ -84,7 +87,7 @@ public class UserSoapRequests {
      * @return {@link AuthenticationResponse}
      * @throws AuthenticationException
      */
-    public static final AuthenticationResponse callSearchUser(UserCriteria userCriteria) throws AuthenticationException {
+    public static final AuthenticationResponse callSearchUsers(UserCriteria userCriteria) throws AuthenticationException {
         // Retrieve user group from the database using unique id.
         ObjectFactory fact = new ObjectFactory();
         AuthenticationRequest req = fact.createAuthenticationRequest();
@@ -92,7 +95,7 @@ public class UserSoapRequests {
         HeaderType head = HeaderTypeBuilder.Builder.create()
                 .withApplication(ApiHeaderNames.APP_NAME_AUTHENTICATION)
                 .withModule(AuthConstants.MODULE_ADMIN)
-                .withTransaction(ApiTransactionCodes.AUTH_USER_GROUP_GET)
+                .withTransaction(ApiTransactionCodes.AUTH_USER_GET)
                 .withMessageMode(ApiHeaderNames.MESSAGE_MODE_REQUEST)
                 .withDeliveryDate(new Date())
                 .withRouting(ApiTransactionCodes.ROUTE_AUTHENTICATION)
@@ -122,21 +125,94 @@ public class UserSoapRequests {
         }
     }
 
-    private static final UserCriteriaType buildPaylodCriteriaSearchCriteria(UserCriteria r) {
+    private static final UserCriteriaType buildPaylodCriteriaSearchCriteria(UserCriteria reqCriteria) {
         ObjectFactory fact = new ObjectFactory();
-        UserCriteriaType c = fact.createUserCriteriaType();
+        UserCriteriaType jaxbCriteria = fact.createUserCriteriaType();
 
-        if (r.getQry_Id() != null && RMT2Money.isNumeric(r.getQry_Id())) {
-            c.setLoginId(Integer.valueOf(r.getQry_Id()));
-        }
-        if (r.getQry_Username() != null) {
-            c.setUserName(r.getQry_Username());
-        }
-        if (r.getQry_GrpId() != null && RMT2Money.isNumeric(r.getQry_GrpId())) {
-            c.setGroupId(Integer.valueOf(r.getQry_GrpId()));
+        // Get Login ID
+        try {
+            Verifier.verifyNotEmpty(reqCriteria.getQry_Id());
+            if (RMT2Money.isNumeric(reqCriteria.getQry_Id())) {
+                jaxbCriteria.setLoginId(Integer.valueOf(reqCriteria.getQry_Id()));
+            }
+        } catch (VerifyException e) {
+
         }
 
-        return c;
+        // Get User Name
+        try {
+            Verifier.verifyNotEmpty(reqCriteria.getQry_Username());
+            jaxbCriteria.setUserName(reqCriteria.getQry_Username());
+        } catch (VerifyException e) {
+
+        }
+
+        // Get Group ID
+        try {
+            Verifier.verifyNotEmpty(reqCriteria.getQry_GrpId());
+            if (RMT2Money.isNumeric(reqCriteria.getQry_GrpId())) {
+                jaxbCriteria.setGroupId(Integer.valueOf(reqCriteria.getQry_GrpId()));
+            }
+        } catch (VerifyException e) {
+
+        }
+
+        // Get Last Name
+        try {
+            Verifier.verifyNotEmpty(reqCriteria.getQry_Lastname());
+            jaxbCriteria.setLastName(reqCriteria.getQry_Lastname());
+        } catch (VerifyException e) {
+
+        }
+
+        // Get First Name
+        try {
+            Verifier.verifyNotEmpty(reqCriteria.getQry_Firstname());
+            jaxbCriteria.setFirstName(reqCriteria.getQry_Firstname());
+        } catch (VerifyException e) {
+
+        }
+
+        // Get Email
+        try {
+            Verifier.verifyNotEmpty(reqCriteria.getQry_Email());
+            jaxbCriteria.setEmail(reqCriteria.getQry_Email());
+        } catch (VerifyException e) {
+
+        }
+
+        // Get SSN
+        try {
+            Verifier.verifyNotEmpty(reqCriteria.getQry_Ssn());
+            jaxbCriteria.setSsn(reqCriteria.getQry_Ssn());
+        } catch (VerifyException e) {
+
+        }
+
+        // Get Date of Birth
+        try {
+            Verifier.verifyNotEmpty(reqCriteria.getQry_BirthDate());
+            jaxbCriteria.setDob(RMT2Date.toXmlDate(reqCriteria.getQry_BirthDate()));
+        } catch (VerifyException e) {
+
+        }
+
+        // Get Start Date
+        try {
+            Verifier.verifyNotEmpty(reqCriteria.getQry_StartDate());
+            jaxbCriteria.setStartDate(RMT2Date.toXmlDate(reqCriteria.getQry_StartDate()));
+        } catch (VerifyException e) {
+
+        }
+        
+        // Get Termination Date
+        try {
+            Verifier.verifyNotEmpty(reqCriteria.getQry_TerminationDate());
+            jaxbCriteria.setTermDate(RMT2Date.toXmlDate(reqCriteria.getQry_TerminationDate()));
+        } catch (VerifyException e) {
+
+        }
+        return jaxbCriteria;
 
     }
 
@@ -157,7 +233,7 @@ public class UserSoapRequests {
         HeaderType head = HeaderTypeBuilder.Builder.create()
                 .withApplication(ApiHeaderNames.APP_NAME_AUTHENTICATION)
                 .withModule(AuthConstants.MODULE_ADMIN)
-                .withTransaction(ApiTransactionCodes.AUTH_USER_GROUP_UPDATE)
+                .withTransaction(ApiTransactionCodes.AUTH_USER_UPDATE)
                 .withMessageMode(ApiHeaderNames.MESSAGE_MODE_REQUEST)
                 .withDeliveryDate(new Date())
                 .withRouting(ApiTransactionCodes.ROUTE_AUTHENTICATION)
@@ -189,16 +265,22 @@ public class UserSoapRequests {
         }
     }
 
-    public static final AuthenticationResponse callDeleteUserGroup(int grpId) throws AuthenticationException {
+    /**
+     * 
+     * @param userLoginId
+     * @return
+     * @throws AuthenticationException
+     */
+    public static final AuthenticationResponse callDeleteUser(int userLoginId) throws AuthenticationException {
 
-        // Update user group record
+        // Delete user group record
         ObjectFactory fact = new ObjectFactory();
         AuthenticationRequest req = fact.createAuthenticationRequest();
 
         HeaderType head = HeaderTypeBuilder.Builder.create()
                 .withApplication(ApiHeaderNames.APP_NAME_AUTHENTICATION)
                 .withModule(AuthConstants.MODULE_ADMIN)
-                .withTransaction(ApiTransactionCodes.AUTH_USER_GROUP_DELETE)
+                .withTransaction(ApiTransactionCodes.AUTH_USER_DELETE)
                 .withMessageMode(ApiHeaderNames.MESSAGE_MODE_REQUEST)
                 .withDeliveryDate(new Date())
                 .withRouting(ApiTransactionCodes.ROUTE_AUTHENTICATION)
@@ -206,11 +288,6 @@ public class UserSoapRequests {
                 .build();
 
         AuthProfileGroupType apgt = fact.createAuthProfileGroupType();
-        UserGroupType ug = UserGroupTypeBuilder.Builder.create()
-                .withGroupId(grpId)
-                .build();
-
-        apgt.getUserGroupInfo().add(ug);
         req.setProfile(apgt);
         req.setHeader(head);
 
