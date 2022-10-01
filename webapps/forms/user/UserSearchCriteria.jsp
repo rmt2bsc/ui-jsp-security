@@ -1,9 +1,9 @@
- <jsp:useBean id="QUERY_BEAN" scope="session" class="com.bean.RMT2TagQueryBean"/>
- <%@ page import="com.bean.criteria.UserCriteria" %>
+ <jsp:useBean id="QUERY_BEAN" scope="session" class="com.api.security.RMT2TagQueryBean"/>
+ <%@ page import="com.action.user.UserCriteria" %>
 
    <form name="SearchForm" method="POST" action="<%=APP_ROOT%>/unsecureRequestProcessor/User.Search">
      <font size="4" style="color:blue">Selection Criteria</font>  
-     <div style="border-style:groove;border-color:#999999; background-color:buttonface; width:60%; height:55px">
+     <div style="border-style:groove;border-color:#999999; background-color:buttonface; width:60%; height:105px">
 		     <br>
 		     <input type="hidden" name="UserLocationId" value="0">
 				 <table  width="100%" border="0">

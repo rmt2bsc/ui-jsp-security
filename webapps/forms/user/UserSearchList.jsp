@@ -1,17 +1,3 @@
-<%@include file="/includes/SessionQuerySetup.jsp"%>
-
-<%
-  String criteria = baseQueryObj.getWhereClause();
-%>
-
-<db:connection id="con" classId="com.bean.db.DatabaseConnectionBean"/>
-<db:datasource id="dso" 
-               classId="com.api.DataSourceApi" 
-               connection="con"
-			         query="UserLoginView"
-			         where="<%=criteria%>"
-			         order="lastname"/>
-
 
 <form name="DataForm" method="POST" action="<%=APP_ROOT%>/unsecureRequestProcessor/User.Search"> 
    <font size="4" style="color:blue">Search Results</font>
@@ -28,47 +14,36 @@
 		     <th align="left" width="10%">Term Date</th>
 		   </tr>
 	
-	     <db:LoopRows dataSource="dso">
+	     <beanlib:LoopRows bean="item" list="<%=UserConst.CLIENT_DATA_USER%>">
 		       <tr>
 		         <td bgcolor="#FFCC00">
-		             <db:InputControl	type="radio" name="selCbx" value="rowid"/>
-		             <db:InputControl	type="hidden"	name="LoginId" value="#dso.LoginId"	uniqueName="yes"/>
+		             <beanlib:InputControl	type="radio" name="selCbx" value="rowid"/>
+		             <beanlib:InputControl	type="hidden" name="LoginId" value="#item.LoginId"	uniqueName="yes"/>
 		         </td>
 		         <td>
-		             <db:InputControl value="#dso.LoginId"/>
-		             <db:InputControl	type="hidden"	name="Username" value="#dso.Username"	uniqueName="yes"/>
+		             <beanlib:InputControl value="#item.LoginId"/>
+		             <beanlib:InputControl	type="hidden"	name="Username" value="#item.Username"	uniqueName="yes"/>
 		         </td>		         
 		         <td>
-		             <db:InputControl value="#dso.Lastname"/>
+		             <beanlib:InputControl value="#item.Lastname"/>
 		         </td>
 		         <td>
-		             <db:InputControl value="#dso.Firstname"/>
+		             <beanlib:InputControl value="#item.Firstname"/>
 		         </td>
 		         <td align="center">
-								<db:datasource id="dsoUserGroup" 
-               								 classId="com.api.DataSourceApi" 
-               								 connection="con"
-			         		             query="UserGroupView"
-			         		             order="description"/>			         		         
-							 <db:Lookup dataSource="" 
-													masterCodeName=""
-													masterCodeValue="#dso.GrpId"
-													type="1"
-													lookupSource="dsoUserGroup"
-													lookupCodeName="GrpId"
-													lookupDisplayName="Description"/>					 		         
+					<beanlib:InputControl value="#item.GrpName"/>			 		         
 		         </td>
 		         <td>
-		              <db:InputControl value="#dso.Ssn"/>
+		              <beanlib:InputControl value="#item.Ssn"/>
 		         </td>
 		         <td>
-		             <db:InputControl value="#dso.StartDate" format="MM-dd-yyyy"/>
+		             <beanlib:InputControl value="#item.StartDate" format="MM-dd-yyyy"/>
 		         </td>
 		         <td>
-		             <db:InputControl  value="#dso.TerminationDate" format="MM-dd-yyyy"/>
+		             <beanlib:InputControl  value="#item.TerminationDate" format="MM-dd-yyyy"/>
 		         </td>
 		       </tr>
-		     </db:LoopRows>
+		     </beanlib:LoopRows>
 		
 		     <% if (pageContext.getAttribute("ROW") == null) {
 		          out.println("<tr><td colspan=11 align=center>Data Not Found</td></tr>");

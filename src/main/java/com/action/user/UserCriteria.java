@@ -16,6 +16,8 @@ public class UserCriteria extends AncestorQueryCriteria {
     private String qry_Username;
 	private String qry_Description;
 	private String qry_Password;
+    private String qry_GrpId;
+    private String qry_GrpName;
 	private int qry_TotalLogons;
 	private String qry_Active;
 	private String qry_LoggedIn;
@@ -51,6 +53,27 @@ public class UserCriteria extends AncestorQueryCriteria {
 			return null;
 		}
 	}
+
+    /**
+     * Initializes all criteria values.
+     */
+    public void initBean() throws SystemException {
+        super.initBean();
+        this.qry_Username = null;
+        this.qry_Description = null;
+        this.qry_Password = null;
+        this.qry_Firstname = null;
+        this.qry_Midname = null;
+        this.qry_Lastname = null;
+        this.qry_Ssn = null;
+        this.qry_Email = null;
+        this.qry_StartDate = null;
+        this.qry_TerminationDate = null;
+        this.qry_BirthDate = null;
+        this.qry_GrpId = null;
+        this.qry_GrpName = null;
+    }
+
 	/**
 	 * @param value
 	 */
@@ -274,25 +297,21 @@ public class UserCriteria extends AncestorQueryCriteria {
 	     this.qry_LoggedIn = qry_LoggedIn;
 	 }
 	    
+    public String getQry_GrpId() {
+        return qry_GrpId;
+    }
 
-	/**
-	 * Initializes all non-numeric values.
-	 */
-	public void initBean() throws SystemException {
-		super.initBean();
-		this.qry_Username = "";
-		this.qry_Description = "";
-		this.qry_Password = "";
-		this.qry_Firstname = "";
-		this.qry_Midname = "";
-		this.qry_Lastname = "";
-		this.qry_Ssn = "";
-		this.qry_Email = "";
-		this.qry_StartDate = "";
-		this.qry_TerminationDate = "";
-		this.qry_BirthDate = "";
-	}
+    public void setQry_GrpId(String qry_GrpId) {
+        this.qry_GrpId = qry_GrpId;
+    }
 
+    public String getQry_GrpName() {
+        return qry_GrpName;
+    }
+
+    public void setQry_GrpName(String qry_GrpName) {
+        this.qry_GrpName = qry_GrpName;
+    }
    
 
 }

@@ -3,6 +3,7 @@
 <%@ taglib uri="/rmt2-generaltaglib" prefix="gen" %>
 <%@ page import="com.api.constants.GeneralConst" %>
 <%@ page import="com.api.util.RMT2Utility" %>
+<%@ page import="com.action.user.UserConst" %>
 
 <gen:InitAppRoot id="APP_ROOT"/>
 

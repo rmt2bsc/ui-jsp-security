@@ -1,7 +1,11 @@
 package com.action.user;
 
+import java.util.ArrayList;
+
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
+import org.rmt2.jaxb.AuthenticationResponse;
+import org.rmt2.jaxb.ReplyStatusType;
 
 import com.SystemException;
 import com.api.constants.GeneralConst;
@@ -16,7 +20,6 @@ import com.api.web.ICommand;
 import com.api.web.Request;
 import com.api.web.Response;
 import com.api.web.util.RMT2WebUtility;
-import com.entity.UserLogin;
 import com.entity.UserLoginFactory;
 
 /**
@@ -39,7 +42,7 @@ public class UserSearchAction extends AbstractActionHandler implements ICommand 
 
     private Logger logger;
 
-    private UserLogin user;
+    private Object data;
 
     /**
      * Default class constructor responsible for initializing the logger.
@@ -48,7 +51,7 @@ public class UserSearchAction extends AbstractActionHandler implements ICommand 
      */
     public UserSearchAction() throws SystemException {
         super();
-        logger = Logger.getLogger("UserSearchAction");
+        logger = Logger.getLogger(UserSearchAction.class);
     }
 
     /**
@@ -94,26 +97,30 @@ public class UserSearchAction extends AbstractActionHandler implements ICommand 
         }
     }
 
-    /**
-     * Returns selection criteria that is sure to return an empty result set
-     * once applied to the sql that pertains to the data source of the customer
-     * search page.
-     */
-    protected String doInitialCriteria(RMT2TagQueryBean _query) throws ActionCommandException {
-        _query.setQuerySource("UserLoginView");
-        return "username = '!@#$%^&*()_+'";
-    }
+    // /**
+    // * Returns selection criteria that is sure to return an empty result set
+    // * once applied to the sql that pertains to the data source of the
+    // customer
+    // * search page.
+    // */
+    // protected String doInitialCriteria(RMT2TagQueryBean _query) throws
+    // ActionCommandException {
+    // _query.setQuerySource("UserLoginView");
+    // return "username = '!@#$%^&*()_+'";
+    // }
 
     /**
-     * Creates an instance of UserCriteria and associates it with the names of
-     * the DataSource view and class.
-     * 
+     * Creates an instance of UserCriteria so that it may be assigned as
+     * RMT2TagQueryBean's custom object property.
+     *
      * @return {@link UserCriteria}
      * @throws ActionHandlerException
      *             problem occurs creating the criteria object.
      */
     protected Object doCustomInitialization() throws ActionCommandException {
         UserCriteria criteriaObj = UserCriteria.getInstance();
+        return criteriaObj;
+
         // if (!this.isFirstTime()) {
         // try {
         // DataSourceAdapter.packageBean(this.request, criteriaObj);
@@ -126,18 +133,21 @@ public class UserSearchAction extends AbstractActionHandler implements ICommand 
         // throw new ActionHandlerException(this.msg);
         // }
         // }
-        return criteriaObj;
+
     }
 
     /**
      * Handler method that responds to the client's request to display a new
      * User Search page.
      * 
-     * @throws ActionHandlerException
+     * @throws ActionCommandException
      */
     protected void doNewSearch() throws ActionCommandException {
         this.setFirstTime(true);
         this.startSearchConsole();
+        this.data = new ArrayList<>();
+        // Send empty data list to client
+        this.sendClientData();
     }
 
     /**
@@ -148,9 +158,31 @@ public class UserSearchAction extends AbstractActionHandler implements ICommand 
      */
     protected void doSearch() throws ActionCommandException {
         this.setFirstTime(false);
-        this.buildSearchCriteria();
-        this.query = (RMT2TagQueryBean) this.getSession().getAttribute(RMT2ServletConst.QUERY_BEAN);
+
+        // TODO: Get search parameters from request and add search parameter
+        // object to session
+        UserCriteria criteria = null;
+        if (this.query != null && this.query.getCustomObj() != null && this.query.getCustomObj() instanceof UserCriteria) {
+
+        }
         this.getSession().setAttribute(RMT2ServletConst.QUERY_BEAN, this.query);
+
+        // Fetch all users for display
+        AuthenticationResponse response = UserSoapRequests.callSearchAllUsers();
+        this.data = UserLoginFactory.getUserList(response.getProfile().getUserInfo());
+
+        // Get message text from reply status
+        ReplyStatusType rst = response.getReplyStatus();
+        this.msg = rst.getMessage();
+
+        // Send data to client
+        this.sendClientData();
+
+        // this.buildSearchCriteria();
+        // this.query = (RMT2TagQueryBean)
+        // this.getSession().getAttribute(RMT2ServletConst.QUERY_BEAN);
+        // this.getSession().setAttribute(RMT2ServletConst.QUERY_BEAN,
+        // this.query);
     }
 
     /**
@@ -160,7 +192,7 @@ public class UserSearchAction extends AbstractActionHandler implements ICommand 
      * @throws ActionHandlerException
      */
     public void add() throws ActionCommandException {
-        this.user = UserLoginFactory.create();
+        this.data = UserLoginFactory.create();
         return;
     }
 
@@ -217,8 +249,8 @@ public class UserSearchAction extends AbstractActionHandler implements ICommand 
             rowNdx = RMT2Money.stringToNumber(rowStr).intValue();
 
             // Retrieve values from the request object into the User object.
-            this.user = UserLoginFactory.create();
-            RMT2WebUtility.packageBean(this.request, this.user, rowNdx);
+            this.data = UserLoginFactory.create();
+            RMT2WebUtility.packageBean(this.request, this.data, rowNdx);
         } catch (Exception e) {
             logger.log(Level.ERROR, e.getMessage());
             throw new ActionCommandException(e.getMessage());
@@ -231,7 +263,7 @@ public class UserSearchAction extends AbstractActionHandler implements ICommand 
      * @throws ActionHandlerException
      */
     protected void sendClientData() throws ActionCommandException {
-        this.request.setAttribute(UserConst.CLIENT_DATA_USER, this.user);
+        this.request.setAttribute(UserConst.CLIENT_DATA_USER, this.data);
     }
 
     /**
