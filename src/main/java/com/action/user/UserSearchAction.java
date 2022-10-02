@@ -156,7 +156,11 @@ public class UserSearchAction extends AbstractActionHandler implements ICommand 
      * @throws ActionHandlerException
      */
     public void add() throws ActionCommandException {
+        // Retrieve User data
         this.data = UserLoginFactory.create();
+
+        // Retrieve all user group records
+        this.grpData = this.getUserGroupList();
         return;
     }
 
@@ -181,16 +185,17 @@ public class UserSearchAction extends AbstractActionHandler implements ICommand 
         ReplyStatusType rst = response.getReplyStatus();
         this.msg = rst.getMessage();
 
+        // Retrieve all user group records
+        this.grpData = this.getUserGroupList();
+    }
+
+    private List getUserGroupList() {
         // Get User Group list
-        // Retrieve all user group records from the database
         AuthenticationResponse response2 = UserGroupSoapRequests.callSearchAllUserGroups();
 
         // Setup user group list on the Request object in order to pass back
         // to JSP client.
-        this.grpData = UserGroupFactory.getUserGroupList(response2.getProfile().getUserGroupInfo());
-
-        // // Send data to client
-        // this.sendClientData();
+        return UserGroupFactory.getUserGroupList(response2.getProfile().getUserGroupInfo());
     }
 
     /**
