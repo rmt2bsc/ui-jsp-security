@@ -1,12 +1,11 @@
+<%@page import="com.action.user.UserConst"%>
+<%@page import="com.entity.UserLogin"%>
 <%@ taglib uri="/rmt2-beantaglib" prefix="beanlib" %>
-<%@ taglib uri="/rmt2-taglib" prefix="db" %>
 <%@ taglib uri="/rmt2-generaltaglib" prefix="gen" %>
 <%@ page import="com.api.constants.GeneralConst" %>
 <%@ page import="com.api.constants.RMT2ServletConst" %>
 
 <gen:InitAppRoot id="APP_ROOT"/>
-
-<jsp:useBean id="user" scope="request" class="com.entity.UserLogin"/>
 
 <html>
   <title>User Maintenance</title>
@@ -30,7 +29,7 @@
 				 <td width="30%">
 				     <gen:Evaluate expression="#user.LoginId">
 				        <gen:When expression="0">
-							     <beanlib:InputControl type="text" name="Username" value="#user.Username"/>				        
+							 <beanlib:InputControl type="text" name="Username" value="#user.Username"/>				        
 				        </gen:When>
 				        <gen:WhenElse>
 						     <beanlib:InputControl value="#user.Username"/>
@@ -59,8 +58,8 @@
 			 <tr>
 				 <th class="clsTableFormHeader">Birth Date:</th>
 				 <td>
-				     <beanlib:InputControl type="text" name="BirthDate" value="#user.BirthDate" format="MM-dd-yyyy" size="15"/>
-				     <a href="javascript:NewCal('BirthDate','mmddyyyy')"><img src="<%=APP_ROOT%>/images/cal.gif" width="16" height="16" border="0" alt="Pick a date"></a>	
+				     <beanlib:InputControl id="birthDate" type="text" name="BirthDate" value="#user.BirthDate" format="MM-dd-yyyy" size="15"/>
+				     <a href="javascript:NewCal('birthDate','mmddyyyy')"><img src="<%=APP_ROOT%>/images/cal.gif" width="16" height="16" border="0" alt="Pick a date"></a>	
 				 </td>
 				 <th class="clsTableFormHeader">SSN:</th>
 				 <td>
@@ -71,13 +70,13 @@
 			 <tr>
 				 <th class="clsTableFormHeader">Start Date:</th>
 				 <td>
-				     <beanlib:InputControl type="text" name="StartDate" value="#user.StartDate" format="MM-dd-yyyy" size="15"/>
-				     <a href="javascript:NewCal('StartDate','mmddyyyy')"><img src="<%=APP_ROOT%>/images/cal.gif" width="16" height="16" border="0" alt="Pick a date"></a>						     
+				     <beanlib:InputControl id="startDate" type="text" name="StartDate" value="#user.StartDate" format="MM-dd-yyyy" size="15"/>
+				     <a href="javascript:NewCal('startDate','mmddyyyy')"><img src="<%=APP_ROOT%>/images/cal.gif" width="16" height="16" border="0" alt="Pick a date"></a>						     
 				 </td>
 				 <th class="clsTableFormHeader" width="15%">Termination Date:</th>
 				 <td>
-				     <beanlib:InputControl type="text" name="TerminationDate" value="#user.TerminationDate" format="MM-dd-yyyy" size="15"/>
-				     <a href="javascript:NewCal('TerminationDate','mmddyyyy')"><img src="<%=APP_ROOT%>/images/cal.gif" width="16" height="16" border="0" alt="Pick a date"></a>						     					     
+				     <beanlib:InputControl id="termDate" type="text" name="TerminationDate" value="#user.TerminationDate" format="MM-dd-yyyy" size="15"/>
+				     <a href="javascript:NewCal('termDate','mmddyyyy')"><img src="<%=APP_ROOT%>/images/cal.gif" width="16" height="16" border="0" alt="Pick a date"></a>						     					     
 				 </td>
 			 </tr>
 			 <tr>
@@ -87,13 +86,19 @@
 				 </td>
 				 <th class="clsTableFormHeader">Group:</th>
 				 <td> 
-					<beanlib:InputControl value="#user.GrpName"/>				 
+					 <beanlib:InputControl
+					     dataSource="<%=UserConst.CLIENT_DATA_GROUPS %>"
+					     name="GrpId"
+					     type="select"
+					     displayProperty="description"
+					     codeProperty="grpId"
+					     selectedValue="#user.GrpId"/>
 				 </td>				 
 			 </tr>			 
 		 </table>
 		 
 		 <br>
-		 <!-- Display any messgaes -->
+		 <!-- Display any messages -->
 		 <table>
 			 <tr>
 	  		   <td>

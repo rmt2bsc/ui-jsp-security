@@ -9,6 +9,7 @@ import org.rmt2.jaxb.AuthenticationResponse;
 import org.rmt2.jaxb.ReplyStatusType;
 
 import com.SystemException;
+import com.action.groups.UserGroupSoapRequests;
 import com.api.constants.GeneralConst;
 import com.api.constants.RMT2ServletConst;
 import com.api.constants.RMT2SystemExceptionConst;
@@ -21,6 +22,7 @@ import com.api.web.ICommand;
 import com.api.web.Request;
 import com.api.web.Response;
 import com.api.web.util.RMT2WebUtility;
+import com.entity.UserGroupFactory;
 import com.entity.UserLogin;
 import com.entity.UserLoginFactory;
 
@@ -39,6 +41,7 @@ public class UserSearchAction extends AbstractActionHandler implements ICommand 
     private static final String COMMAND_ADD = "User.Search.add";
     private static final Logger logger = Logger.getLogger(UserSearchAction.class);;
     private Object data;
+    private Object grpData;
 
     /**
      * Default class constructor responsible for initializing the logger.
@@ -178,8 +181,16 @@ public class UserSearchAction extends AbstractActionHandler implements ICommand 
         ReplyStatusType rst = response.getReplyStatus();
         this.msg = rst.getMessage();
 
-        // Send data to client
-        this.sendClientData();
+        // Get User Group list
+        // Retrieve all user group records from the database
+        AuthenticationResponse response2 = UserGroupSoapRequests.callSearchAllUserGroups();
+
+        // Setup user group list on the Request object in order to pass back
+        // to JSP client.
+        this.grpData = UserGroupFactory.getUserGroupList(response2.getProfile().getUserGroupInfo());
+
+        // // Send data to client
+        // this.sendClientData();
     }
 
     /**
@@ -222,6 +233,7 @@ public class UserSearchAction extends AbstractActionHandler implements ICommand 
      */
     protected void sendClientData() throws ActionCommandException {
         this.request.setAttribute(UserConst.CLIENT_DATA_USER, this.data);
+        this.request.setAttribute(UserConst.CLIENT_DATA_GROUPS, this.grpData);
     }
 
     /**
