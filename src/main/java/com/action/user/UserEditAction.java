@@ -37,6 +37,7 @@ public class UserEditAction extends AbstractActionHandler implements ICommand {
     private static final String COMMAND_RESOURCE = "User.Edit.resources";
     private static final Logger logger = Logger.getLogger(UserEditAction.class);
     
+    private Object searchData;
     private UserLogin user;
     private Object grpData;
     private Object apps;
@@ -197,12 +198,24 @@ public class UserEditAction extends AbstractActionHandler implements ICommand {
     }
 
     /**
-     * Navigates the user to the previous page.
+     * Restore the search results section of the User Search JSP page to its
+     * previous state by using the previous search criteria to render the User
+     * Search JSP page.
      * 
      * @throws ActionCommandException
      */
     protected void doBack() throws ActionCommandException {
-	return;
+        // Get search parameters from request and add search parameter
+        // object to session
+        RMT2TagQueryBean query = (RMT2TagQueryBean) this.getSession().getAttribute(RMT2ServletConst.QUERY_BEAN);
+        UserCriteria criteria = (UserCriteria) query.getCustomObj();
+
+        // Fetch all users for display
+        AuthenticationResponse response = UserSoapRequests.callSearchUsers(criteria);
+        this.searchData = UserLoginFactory.getUserList(response.getProfile().getUserInfo());
+
+        // Send User search results data to client
+        this.sendClientSearchData();
     }
 
     /**
@@ -295,6 +308,10 @@ public class UserEditAction extends AbstractActionHandler implements ICommand {
 	this.request.setAttribute("assignedRoles", this.assignedRoles);
 	this.request.setAttribute("revokedRoles", this.revokedRoles);
 	this.request.setAttribute(RMT2ServletConst.REQUEST_MSG_INFO, this.msg);
+    }
+
+    private void sendClientSearchData() throws ActionCommandException {
+        this.request.setAttribute(UserConst.CLIENT_DATA_USER, this.searchData);
     }
 
     // /**
