@@ -25,7 +25,7 @@
 			      <h2>User Maintenance Edit</h2>
 			 </caption>
 			 <tr>
-				 <th class="clsTableFormHeader" width="20%">Login ID:</th>
+				 <th class="clsTableFormHeader" width="20%">User Name:</th>
 				 <td width="30%">
 				     <gen:Evaluate expression="#user.LoginId">
 				        <gen:When expression="0">
@@ -41,8 +41,16 @@
 				 
 				 <th class="clsTableFormHeader" width="20%">Password:</th>
 				 <td width="30%">
-				     <beanlib:InputControl type="password" name="Password" value="#user.Password" size="30"/>
-				 </td>							 
+				     <gen:Evaluate expression="#user.LoginId">
+				        <gen:When expression="0">
+							 <beanlib:InputControl type="password" name="Password" value="#user.Password"/>				        
+				        </gen:When>
+				        <gen:WhenElse>
+						     <beanlib:InputControl value="************"/>
+						     <beanlib:InputControl type="hidden" name="Password" value="#user.Password"/>				        
+				        </gen:WhenElse>
+				     </gen:Evaluate>
+				 </td>
 			 </tr>
 			 <tr>
 				 <th class="clsTableFormHeader">First Name:</th>

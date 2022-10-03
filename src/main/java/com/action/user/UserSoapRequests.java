@@ -73,7 +73,6 @@ public class UserSoapRequests {
             if (rst.getReturnCode().intValue() == -1) {
                 String errMsg = rst.getMessage();
                 logger.error(errMsg);
-                throw new AuthenticationException(errMsg);
             }
             return response;
         } catch (Exception e) {
@@ -119,7 +118,6 @@ public class UserSoapRequests {
             if (rst.getReturnCode().intValue() == -1) {
                 String errMsg = rst.getMessage();
                 logger.error(errMsg);
-                throw new AuthenticationException(errMsg);
             }
             return response;
         } catch (Exception e) {
@@ -261,6 +259,7 @@ public class UserSoapRequests {
                 .withDescription(usr.getDescription())
                 .withTotalLogins(usr.getTotalLogons())
                 .withEmail(usr.getEmail())
+                .withPassword(usr.getPassword())
                 .withActiveFlag(usr.getActive() == 1 ? true : false)
                 .build();
 
@@ -276,7 +275,6 @@ public class UserSoapRequests {
             if (rst.getReturnCode().intValue() == -1) {
                 String errMsg = rst.getMessage();
                 logger.error(errMsg);
-                throw new AuthenticationException(errMsg);
             }
             return response;
         } catch (Exception e) {
