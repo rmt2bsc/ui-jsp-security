@@ -4,14 +4,16 @@
    <div style="border-style:groove; border-color:#999999; background-color:buttonface; width:90%; height:350px; overflow:auto">   
       <table  width="100%" border="0" bgcolor="white" bordercolor="#999999" cellpadding="0" cellspacing="0">
 		   <tr bgcolor="#FFCC00">
-		     <th align="center" width="2%">&nbsp;</th>
-		     <th align="left" width="8%">Login</th>
-		     <th align="left" width="20%">Last Name</th>
-		     <th align="left" width="20%">First Name</th>
-		     <th align="left" width="16%">Group</th>
-		     <th align="left" width="12%">SSN</th>
-		     <th align="left" width="11%">Start Date</th>
-		     <th align="left" width="11%">Term Date</th>
+		     <th align="left" width="2%">&nbsp;</th>
+		     <th align="left" width="6%">Login</th>
+		     <th align="left" width="15%">Last Name</th>
+		     <th align="left" width="15%">First Name</th>
+		     <th align="left" width="7%">Status</th>
+		     <th align="left" width="10%">Group</th>
+		     <th align="left" width="15%">SSN</th>
+		     <th align="left" width="10%">Start Date</th>
+		     <th align="left" width="10%">Term Date</th>
+		     <th align="center" width="10%">Login Total</th>
 		   </tr>
 	
 	     <beanlib:LoopRows bean="item" list="<%=UserConst.CLIENT_DATA_USER%>">
@@ -31,6 +33,16 @@
 		             <beanlib:InputControl value="#item.Firstname"/>
 		         </td>
 		         <td>
+		            <gen:Evaluate expression="#item.Active">
+				        <gen:When expression="1">
+							 <beanlib:InputControl value="Active"/>				        
+				        </gen:When>
+				        <gen:WhenElse>
+						     <beanlib:InputControl value="Inactive"/>
+				        </gen:WhenElse>
+				     </gen:Evaluate>
+		         </td>
+		         <td>
 					<beanlib:InputControl value="#item.GrpName"/>			 		         
 		         </td>
 		         <td>
@@ -41,6 +53,9 @@
 		         </td>
 		         <td>
 		             <beanlib:InputControl  value="#item.TerminationDate" format="MM-dd-yyyy"/>
+		         </td>
+		         <td align="center">
+		             <beanlib:InputControl  value="#item.TotalLogons"/>
 		         </td>
 		       </tr>
 		     </beanlib:LoopRows>
