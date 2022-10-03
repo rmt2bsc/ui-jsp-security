@@ -102,7 +102,20 @@
 					     codeProperty="grpId"
 					     selectedValue="#user.GrpId"/>
 				 </td>				 
-			 </tr>			 
+			 </tr>
+			 <tr>
+				 <th class="clsTableFormHeader">Active:</th>
+				 <td>
+				    <beanlib:InputControl
+					     name="Active"
+					     type="checkbox"
+					     value="#user.Active"
+					     checkedValue="1"
+					     onChange="{this.value = (this.checked ? 1 : 0)}"/>
+				 </td>
+				 <th class="clsTableFormHeader"></th>
+				 <td></td>				 
+			 </tr>						 
 		 </table>
 		 
 		 <br>
