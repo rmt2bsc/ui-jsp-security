@@ -40,6 +40,7 @@ public class UserLogin extends RMT2Base {
   public static final String PROP_DESCRIPTION = "Description";
 /** The property name constant equivalent to property, Password, of respective DataSource view. */
   public static final String PROP_PASSWORD = "Password";
+    public static final String PROP_OLDPASSWORD = "OldPassword";
 /** The property name constant equivalent to property, TotalLogons, of respective DataSource view. */
   public static final String PROP_TOTALLOGONS = "TotalLogons";
 /** The property name constant equivalent to property, Email, of respective DataSource view. */
@@ -80,6 +81,7 @@ public class UserLogin extends RMT2Base {
   private String description;
 /** The javabean property equivalent of database column user_login.password */
   private String password;
+    private String oldPassword;
 /** The javabean property equivalent of database column user_login.total_logons */
   private int totalLogons;
 /** The javabean property equivalent of database column user_login.email */
@@ -402,6 +404,14 @@ public class UserLogin extends RMT2Base {
 
     public void setGrpName(String grpName) {
         this.grpName = grpName;
+    }
+
+    public String getOldPassword() {
+        return oldPassword;
+    }
+
+    public void setOldPassword(String oldPassword) {
+        this.oldPassword = oldPassword;
     }
 
 }

@@ -33,6 +33,7 @@ public class UserEditAction extends AbstractActionHandler implements ICommand {
     private static final String COMMAND_SAVE = "User.Edit.save";
     private static final String COMMAND_BACK = "User.Edit.back";
     private static final String COMMAND_DELETE = "User.Edit.delete";
+    private static final String COMMAND_CHANGEPASSWORD = "User.Edit.changepassword";
     private static final String COMMAND_APPROLE = "User.Edit.approle";
     private static final String COMMAND_RESOURCE = "User.Edit.resources";
     private static final Logger logger = Logger.getLogger(UserEditAction.class);
@@ -86,6 +87,9 @@ public class UserEditAction extends AbstractActionHandler implements ICommand {
 	if (command.equalsIgnoreCase(UserEditAction.COMMAND_DELETE)) {
 	    this.deleteData();
 	}
+        if (command.equalsIgnoreCase(UserEditAction.COMMAND_CHANGEPASSWORD)) {
+            this.deleteData();
+        }
 	if (command.equalsIgnoreCase(UserEditAction.COMMAND_BACK)) {
 	    this.doBack();
 	}
@@ -195,6 +199,21 @@ public class UserEditAction extends AbstractActionHandler implements ICommand {
         // tx = null;
         // }
 	return;
+    }
+
+    /**
+     * Invokes the user change password JSP page for selected employee
+     * 
+     * @throws ActionCommandException
+     */
+    protected void doChangePassword() throws ActionCommandException {
+        // Get search parameters from request and add search parameter
+        // object to session
+        this.user = UserLoginFactory.create();
+        RMT2WebUtility.packageBean(this.request, this.user);
+
+        // Send User search results data to client
+        this.sendClientSearchData();
     }
 
     /**
