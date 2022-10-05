@@ -43,6 +43,13 @@ a:visited {
     font-weight:normal;
 }
 
+.clsFootnoteText {
+    color:#2980b9 ;
+    text-align:left;
+    font-size:12px;
+    font-weight:normal;
+}
+
 .loadSplash {
   visibility:visible;
   position:absolute; 

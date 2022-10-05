@@ -92,6 +92,9 @@
 				                           onChange="enableSaveButton()"/>	
 				 </td>
 			 </tr>			 
+			 <tr>
+				 <th width="30%" colspan="2" class="clsFootnoteText">*** Changes can only be submitted when password inputs are equivalent ***</th>
+			 </tr>			 
 		 </table>
 		 
 		 <br>
