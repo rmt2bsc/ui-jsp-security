@@ -39,7 +39,8 @@ public class UserSearchAction extends AbstractActionHandler implements ICommand 
     private static final String COMMAND_LIST = "User.Search.list";
     private static final String COMMAND_EDIT = "User.Search.edit";
     private static final String COMMAND_ADD = "User.Search.add";
-    private static final Logger logger = Logger.getLogger(UserSearchAction.class);;
+    private static final Logger logger = Logger.getLogger(UserSearchAction.class);
+    private Object search;
     private Object data;
     private Object grpData;
 
@@ -117,7 +118,7 @@ public class UserSearchAction extends AbstractActionHandler implements ICommand 
     protected void doNewSearch() throws ActionCommandException {
         this.setFirstTime(true);
         this.startSearchConsole();
-        this.data = new ArrayList<>();
+        this.search = new ArrayList<>();
         // Send empty data list to client
         this.sendClientData();
     }
@@ -139,7 +140,7 @@ public class UserSearchAction extends AbstractActionHandler implements ICommand 
 
         // Fetch all users for display
         AuthenticationResponse response = UserSoapRequests.callSearchUsers(criteria);
-        this.data = UserLoginFactory.getUserList(response.getProfile().getUserInfo());
+        this.search = UserLoginFactory.getUserList(response.getProfile().getUserInfo());
 
         // Get message text from reply status
         ReplyStatusType rst = response.getReplyStatus();
@@ -237,6 +238,7 @@ public class UserSearchAction extends AbstractActionHandler implements ICommand 
      * @throws ActionHandlerException
      */
     protected void sendClientData() throws ActionCommandException {
+        this.request.setAttribute(UserConst.CLIENT_DATA_SEARCH, this.search);
         this.request.setAttribute(UserConst.CLIENT_DATA_USER, this.data);
         this.request.setAttribute(UserConst.CLIENT_DATA_GROUPS, this.grpData);
     }

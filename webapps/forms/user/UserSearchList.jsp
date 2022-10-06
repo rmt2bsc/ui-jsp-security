@@ -16,7 +16,7 @@
 		     <th align="center" width="10%">Login Total</th>
 		   </tr>
 	
-	     <beanlib:LoopRows bean="item" list="<%=UserConst.CLIENT_DATA_USER%>">
+	     <beanlib:LoopRows bean="item" list="<%=UserConst.CLIENT_DATA_SEARCH%>">
 		       <tr>
 		         <td bgcolor="#FFCC00">
 		             <beanlib:InputControl	type="radio" name="selCbx" value="rowid"/>

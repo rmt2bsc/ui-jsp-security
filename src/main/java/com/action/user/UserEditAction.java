@@ -121,9 +121,6 @@ public class UserEditAction extends AbstractActionHandler implements ICommand {
      * @throws ActionCommandException
      */
     public void save() throws ActionCommandException {
-        this.user = UserLoginFactory.create();
-        RMT2WebUtility.packageBean(this.request, this.user);
-
         // Apply user updates
         AuthenticationResponse response = UserSoapRequests.callUpdateUser(this.user);
 
@@ -209,11 +206,10 @@ public class UserEditAction extends AbstractActionHandler implements ICommand {
     protected void doChangePassword() throws ActionCommandException {
         // Get search parameters from request and add search parameter
         // object to session
-        this.user = UserLoginFactory.create();
-        RMT2WebUtility.packageBean(this.request, this.user);
+        this.receiveClientData();
 
         // Send User search results data to client
-        this.sendClientSearchData();
+        this.sendClientData();
     }
 
     /**
@@ -234,7 +230,7 @@ public class UserEditAction extends AbstractActionHandler implements ICommand {
         this.searchData = UserLoginFactory.getUserList(response.getProfile().getUserInfo());
 
         // Send User search results data to client
-        this.sendClientSearchData();
+        this.sendClientData();
     }
 
     /**
@@ -320,6 +316,7 @@ public class UserEditAction extends AbstractActionHandler implements ICommand {
      * @throws ActionCommandException
      */
     protected void sendClientData() throws ActionCommandException {
+        this.request.setAttribute(UserConst.CLIENT_DATA_SEARCH, this.searchData);
 	this.request.setAttribute(UserConst.CLIENT_DATA_USER, this.user);
 	this.request.setAttribute(UserConst.CLIENT_DATA_GROUPS, this.grpData);
 	this.request.setAttribute("apps", this.apps);
@@ -327,10 +324,6 @@ public class UserEditAction extends AbstractActionHandler implements ICommand {
 	this.request.setAttribute("assignedRoles", this.assignedRoles);
 	this.request.setAttribute("revokedRoles", this.revokedRoles);
 	this.request.setAttribute(RMT2ServletConst.REQUEST_MSG_INFO, this.msg);
-    }
-
-    private void sendClientSearchData() throws ActionCommandException {
-        this.request.setAttribute(UserConst.CLIENT_DATA_USER, this.searchData);
     }
 
     // /**

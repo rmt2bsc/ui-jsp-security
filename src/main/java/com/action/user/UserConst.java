@@ -11,6 +11,7 @@ package com.action.user;
  */
 public class UserConst {
 	/** User object constant key */
+    public static final String CLIENT_DATA_SEARCH = "search";
 	public static final String CLIENT_DATA_USER = "user";
     public static final String CLIENT_DATA_GROUPS = "groups";
 	/** Used to assign user's password with random garbage */
