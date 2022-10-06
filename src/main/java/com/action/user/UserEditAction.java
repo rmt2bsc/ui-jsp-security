@@ -1,5 +1,7 @@
 package com.action.user;
 
+import java.util.ArrayList;
+
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.rmt2.jaxb.AuthenticationResponse;
@@ -136,26 +138,20 @@ public class UserEditAction extends AbstractActionHandler implements ICommand {
      * @throws ActionCommandException
      */
     public void delete() throws ActionCommandException {
-        // DatabaseTransApi tx = DatabaseTransFactory.create();
-        // UserApi userApi = UserFactory.createApi((DatabaseConnectionBean)
-        // tx.getConnector(), this.request);
-        // try {
-        // userApi.inActivateUser(this.user);
-        // tx.commitUOW();
-        // this.msg = "User active status is cancelled";
-        // }
-        // catch (UserAuthenticationException e) {
-        // this.msg = "UserAuthenticationException: " + e.getMessage();
-        // logger.log(Level.ERROR, this.msg);
-        // tx.rollbackUOW();
-        // throw new ActionCommandException(this.msg);
-        // }
-        // finally {
-        // userApi.close();
-        // tx.close();
-        // userApi = null;
-        // tx = null;
-        // }
+        // Call SOAP web service to delete user from the system
+        AuthenticationResponse response = UserSoapRequests.callDeleteUser(this.user.getLoginId());
+        ReplyStatusType rst = response.getReplyStatus();
+        this.msg = rst.getMessage();
+        if (rst.getReturnCode().intValue() == GeneralConst.RC_SUCCESS) {
+            this.msg = rst.getMessage();
+        }
+        else {
+            this.msg = rst.getExtMessage() + ".   Details [" + this.user.getFirstname() + " " + this.user.getLastname() + " "
+                    + this.user.getUsername() + "]";
+        }
+
+        // Initialize empty user group list to satisfy JSP data requirements
+        this.grpData = new ArrayList();
         return;
     }
 
