@@ -1,7 +1,5 @@
 package com.action.user;
 
-import java.util.List;
-
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.rmt2.jaxb.AuthenticationResponse;
@@ -19,12 +17,12 @@ import com.api.web.ICommand;
 import com.api.web.Request;
 import com.api.web.Response;
 import com.api.web.util.RMT2WebUtility;
-import com.entity.UserGroupFactory;
 import com.entity.UserLogin;
 import com.entity.UserLoginFactory;
 
 /**
- * This class provides action handlers to respond to User add and edit requests.
+ * This class provides action handlers to respond to User maintenance related
+ * requests.
  * 
  * @author Roy Terrell
  * 
@@ -65,9 +63,12 @@ public class UserEditAction extends AbstractActionHandler implements ICommand {
     }
 
     /**
-     * Processes the client's requests to save the changes made to a user's
-     * profile, delete a user's profile, and to navigate back to the User Search
-     * page.
+     * Processes various client requests targeted to modify the UserLogin
+     * profile.
+     * <p>
+     * Requests includes saving changes made to a user's profile, delete a
+     * user's profile, password change, user roles, user resources, and to
+     * navigate back to the User Search page.
      * 
      * @param request
      *            The HttpRequest object
@@ -102,21 +103,9 @@ public class UserEditAction extends AbstractActionHandler implements ICommand {
     }
 
     /**
-     * Updates the user's profile by persisting changes to the database. This
-     * method is used for adding users as well as modifying users.
-     * <p>
-     * Pseudo edit logic to replace existing code.
-     * <ol>
-     * <li>Get Key values from the http request object for each entity to be
-     * used with its respective API.</li>
-     * <li>Retrieve data from the database into each entity object based on the
-     * key value(s) representing each entity.</li>
-     * <li>Set the properties of each object to the corresponding values from
-     * the http request object.</li>
-     * <li>Apply changes to the database for each object using its own API.</li>
-     * <li>Package any data needed to be returned to the client.</li>
-     * <li>Return control back to the Servlet.</li>
-     * </ol>
+     * Applies data changes to the user's profile by persisting changes to the
+     * database. This method is used for adding users as well as modifying
+     * users.
      * 
      * @throws ActionCommandException
      */
@@ -131,43 +120,15 @@ public class UserEditAction extends AbstractActionHandler implements ICommand {
         this.msg = rst.getMessage();
         if (rst.getReturnCode().intValue() == GeneralConst.RC_SUCCESS) {
             // Retrieve updated user
-            this.user = this.getUser(this.user.getUsername());
+            this.user = UserSoapRequests.getUser(this.user.getUsername());
         }
         else {
             this.msg = rst.getExtMessage();
         }
         // Retrieve all user group records
-        this.grpData = this.getUserGroupList();
+        this.grpData = UserGroupSoapRequests.getUserGroupList();
     }
 
-    private UserLogin getUser(String userName) {
-        UserCriteria criteria = UserCriteria.getInstance();
-        criteria.setQry_Username(userName);
-
-        // Fetch user's recent updates to display as confirmation of
-        // successful update
-        AuthenticationResponse response = UserSoapRequests.callSearchUsers(criteria);
-        List list = UserLoginFactory.getUserList(response.getProfile().getUserInfo());
-        UserLogin user = (UserLogin) list.get(0);
-
-        // Get message text from reply status
-        ReplyStatusType rst = response.getReplyStatus();
-        if (rst.getReturnCode().intValue() == GeneralConst.RC_SUCCESS && rst.getRecordCount().intValue() == 1) {
-            return user;
-        }
-        else {
-            return null;
-        }
-    }
-
-    private List getUserGroupList() {
-        // Get User Group list
-        AuthenticationResponse response2 = UserGroupSoapRequests.callSearchAllUserGroups();
-
-        // Setup user group list on the Request object in order to pass back
-        // to JSP client.
-        return UserGroupFactory.getUserGroupList(response2.getProfile().getUserGroupInfo());
-    }
 
     /**
      * Deletes a user from the database.
@@ -213,9 +174,8 @@ public class UserEditAction extends AbstractActionHandler implements ICommand {
     }
 
     /**
-     * Restore the search results section of the User Search JSP page to its
-     * previous state by using the previous search criteria to render the User
-     * Search JSP page.
+     * Return to the User Search JSP and provide the list of UserLogin data to
+     * render the search results section of the target JSP page
      * 
      * @throws ActionCommandException
      */
@@ -308,8 +268,7 @@ public class UserEditAction extends AbstractActionHandler implements ICommand {
     }
 
     /**
-     * Sends a UserLogin data object and any server messages to the user via the
-     * request object.
+     * Sends data needed for target client JSP to render the page
      * 
      * @throws ActionCommandException
      */
@@ -324,55 +283,6 @@ public class UserEditAction extends AbstractActionHandler implements ICommand {
         this.request.setAttribute(RMT2ServletConst.REQUEST_MSG_INFO, this.msg);
     }
 
-    // /**
-    // * This method is responsible for validating a user's profile. The login
-    // id,
-    // * first name, last name, birth date, start date, and social security
-    // number
-    // * are required to have values. Also, the user's login Id is only
-    // validated
-    // * when the user is new.
-    // *
-    // * @param user
-    // * {@link User} - user's credentials
-    // * @throws UserMaintException
-    // */
-    // protected void validateUser(UserLogin user) throws UserMaintException {
-    // // User's login code only needs to be validated if user is new
-    // if (user.getLoginId() == 0) {
-    // this.msg = "User Maintenance: Login cannot be blank";
-    // if (user.getUsername() == null || user.getUsername().length() <= 0) {
-    // throw new UserMaintException(this.msg);
-    // }
-    // }
-    // // Validate First Name
-    // if (user.getFirstname() == null || user.getFirstname().length() <= 0) {
-    // this.msg = "User Maintenance: First Name cannot be blank";
-    // throw new UserMaintException(this.msg);
-    // }
-    //
-    // // Validate Last Name
-    // if (user.getLastname() == null || user.getLastname().length() <= 0) {
-    // this.msg = "User Maintenance: Last Name cannot be blank";
-    // throw new UserMaintException(this.msg);
-    // }
-    //
-    // // Validate Title
-    // if (user.getSsn() == null || user.getSsn().length() <= 0) {
-    // this.msg = "User Maintenance: Social Security Number cannot be blank";
-    // throw new UserMaintException(this.msg);
-    // }
-    //
-    // if (user.getBirthDate() == null) {
-    // this.msg = "User Maintenance: Birth date cannot be blank";
-    // throw new UserMaintException(this.msg);
-    // }
-    //
-    // if (user.getStartDate() == null) {
-    // this.msg = "User Maintenance: Start date cannot be blank";
-    // throw new UserMaintException(this.msg);
-    // }
-    // }
 
     /**
      * No Action

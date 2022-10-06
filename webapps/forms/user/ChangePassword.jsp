@@ -26,23 +26,17 @@
 
 					if (pw2) {
 						if (pw1 == pw2) {
-							//alert("passwords equal: " + pw1 + " - " + pw2);
 							document.getElementById('SaveButton').disabled = false;
 						}
 						else {
-							//alert("passwords equal: " + pw1 + " - " + pw2);
 							document.getElementById('SaveButton').disabled = true;
 						}	
 					}
-					//else {
-						//alert("Confirm password invalid");
-					//}
-					
 				}
 	</script> 
   </head>
   <body>
-       <form name="DataForm" method="POST" action="<%=APP_ROOT%>/unsecureRequestProcessor/User.Edit">
+       <form name="DataForm" method="POST" action="<%=APP_ROOT%>/unsecureRequestProcessor/User.ChangePassword">
 		 <table width="50%" border="0">
 			 <caption>
 			      <h2>Change User Password</h2>
@@ -59,13 +53,15 @@
 			 <tr>
 				 <th class="clsTableFormHeader">First Name:</th>
 				 <td>
-				     <beanlib:InputControl name="Firstname" value="#user.Firstname"/>
+				     <beanlib:InputControl value="#user.Firstname"/>
+				     <beanlib:InputControl type="hidden" name="Firstname" value="#user.Firstname"/>
 				 </td>
 			 </tr>
 			  <tr>
 				 <th class="clsTableFormHeader">Last Name:</th>
 				 <td>
-				     <beanlib:InputControl name="Lastname" value="#user.Lastname"/>
+				     <beanlib:InputControl value="#user.Lastname"/>
+				     <beanlib:InputControl type="hidden" name="Lastname" value="#user.Lastname"/>
 				 </td>
 			 </tr>
 			 <tr>

@@ -1,6 +1,7 @@
 package com.action.groups;
 
 import java.util.Date;
+import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.rmt2.constants.ApiHeaderNames;
@@ -21,6 +22,7 @@ import com.AuthConstants;
 import com.api.messaging.webservice.soap.client.SoapJaxbClientWrapper;
 import com.api.security.authentication.web.AuthenticationException;
 import com.entity.UserGroup;
+import com.entity.UserGroupFactory;
 
 /**
  * Help class for constructing and invoking SOAP calls pertaining to the User
@@ -208,4 +210,18 @@ public class UserGroupSoapRequests {
             throw new AuthenticationException(UserGroupSoapRequests.MSG, e);
         }
     }
+
+    /**
+     * 
+     * @return
+     */
+    public static final List getUserGroupList() {
+        // Get User Group list
+        AuthenticationResponse response2 = UserGroupSoapRequests.callSearchAllUserGroups();
+
+        // Setup user group list on the Request object in order to pass back
+        // to JSP client.
+        return UserGroupFactory.getUserGroupList(response2.getProfile().getUserGroupInfo());
+    }
+
 }

@@ -1,6 +1,7 @@
 package com.action.user;
 
 import java.util.Date;
+import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.rmt2.constants.ApiHeaderNames;
@@ -20,6 +21,7 @@ import org.rmt2.util.authentication.UserGroupTypeBuilder;
 import org.rmt2.util.authentication.UserTypeBuilder;
 
 import com.AuthConstants;
+import com.api.constants.GeneralConst;
 import com.api.messaging.webservice.soap.client.SoapJaxbClientWrapper;
 import com.api.security.authentication.web.AuthenticationException;
 import com.api.util.RMT2Date;
@@ -27,6 +29,7 @@ import com.api.util.RMT2Money;
 import com.api.util.assistants.Verifier;
 import com.api.util.assistants.VerifyException;
 import com.entity.UserLogin;
+import com.entity.UserLoginFactory;
 
 /**
  * Help class for constructing and invoking SOAP calls pertaining to the User
@@ -283,6 +286,56 @@ public class UserSoapRequests {
     }
 
     /**
+     * SOAP call to changed the user's password.
+     * 
+     * @param grp
+     *            {@link UserLogin}
+     * @return {@link AuthenticationResponse}
+     * @throws AuthenticationException
+     */
+    public static final AuthenticationResponse callChangePassword(UserLogin usr) throws AuthenticationException {
+
+        // Update user group record
+        ObjectFactory fact = new ObjectFactory();
+        AuthenticationRequest req = fact.createAuthenticationRequest();
+
+        HeaderType head = HeaderTypeBuilder.Builder.create()
+                .withApplication(ApiHeaderNames.APP_NAME_AUTHENTICATION)
+                .withModule(AuthConstants.MODULE_ADMIN)
+                .withTransaction(ApiTransactionCodes.AUTH_CHANGE_PASSWORD)
+                .withMessageMode(ApiHeaderNames.MESSAGE_MODE_REQUEST)
+                .withDeliveryDate(new Date())
+                .withRouting(ApiTransactionCodes.ROUTE_AUTHENTICATION)
+                .withDeliveryMode(ApiHeaderNames.DELIVERY_MODE_SYNC)
+                .build();
+
+        AuthProfileGroupType apgt = fact.createAuthProfileGroupType();
+
+        UserType ut = UserTypeBuilder.Builder.create()
+                .withUsername(usr.getUsername())
+                .withPassword(usr.getPassword())
+                .build();
+
+        apgt.getUserInfo().add(ut);
+
+        req.setProfile(apgt);
+        req.setHeader(head);
+
+        AuthenticationResponse response = null;
+        try {
+            response = SoapJaxbClientWrapper.callSoapRequest(req);
+            ReplyStatusType rst = response.getReplyStatus();
+            if (rst.getReturnCode().intValue() == -1) {
+                String errMsg = rst.getMessage();
+                logger.error(errMsg);
+            }
+            return response;
+        } catch (Exception e) {
+            throw new AuthenticationException(UserSoapRequests.MSG, e);
+        }
+    }
+
+    /**
      * 
      * @param userLoginId
      * @return
@@ -322,4 +375,30 @@ public class UserSoapRequests {
             throw new AuthenticationException(UserSoapRequests.MSG, e);
         }
     }
+
+    /**
+     * 
+     * @param userName
+     * @return
+     */
+    public static final UserLogin getUser(String userName) {
+        UserCriteria criteria = UserCriteria.getInstance();
+        criteria.setQry_Username(userName);
+
+        // Fetch user's recent updates to display as confirmation of
+        // successful update
+        AuthenticationResponse response = UserSoapRequests.callSearchUsers(criteria);
+        List list = UserLoginFactory.getUserList(response.getProfile().getUserInfo());
+        UserLogin user = (UserLogin) list.get(0);
+
+        // Get message text from reply status
+        ReplyStatusType rst = response.getReplyStatus();
+        if (rst.getReturnCode().intValue() == GeneralConst.RC_SUCCESS && rst.getRecordCount().intValue() == 1) {
+            return user;
+        }
+        else {
+            return null;
+        }
+    }
+
 }
