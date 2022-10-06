@@ -91,7 +91,7 @@ public class UserEditAction extends AbstractActionHandler implements ICommand {
             this.deleteData();
         }
         if (command.equalsIgnoreCase(UserEditAction.COMMAND_CHANGEPASSWORD)) {
-            this.deleteData();
+            this.doChangePassword();
         }
         if (command.equalsIgnoreCase(UserEditAction.COMMAND_BACK)) {
             this.doBack();
