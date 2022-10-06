@@ -37,7 +37,7 @@ public class UserEditAction extends AbstractActionHandler implements ICommand {
     private static final String COMMAND_APPROLE = "User.Edit.approle";
     private static final String COMMAND_RESOURCE = "User.Edit.resources";
     private static final Logger logger = Logger.getLogger(UserEditAction.class);
-    
+
     private Object searchData;
     private UserLogin user;
     private Object grpData;
@@ -52,7 +52,7 @@ public class UserEditAction extends AbstractActionHandler implements ICommand {
      * @throws SystemException
      */
     public UserEditAction() throws SystemException {
-	super();
+        super();
     }
 
     /**
@@ -61,7 +61,7 @@ public class UserEditAction extends AbstractActionHandler implements ICommand {
      * @throws SystemException
      */
     protected void init(Context _context, Request _request) throws SystemException {
-	super.init(_context, _request);
+        super.init(_context, _request);
     }
 
     /**
@@ -78,27 +78,27 @@ public class UserEditAction extends AbstractActionHandler implements ICommand {
      * @Throws SystemException when an error needs to be reported.
      */
     public void processRequest(Request request, Response response, String command) throws ActionCommandException {
-	super.processRequest(request, response, command);
-	this.query = (RMT2TagQueryBean) this.request.getSession().getAttribute(RMT2ServletConst.QUERY_BEAN);
+        super.processRequest(request, response, command);
+        this.query = (RMT2TagQueryBean) this.request.getSession().getAttribute(RMT2ServletConst.QUERY_BEAN);
 
-	if (command.equalsIgnoreCase(UserEditAction.COMMAND_SAVE)) {
-	    this.saveData();
-	}
-	if (command.equalsIgnoreCase(UserEditAction.COMMAND_DELETE)) {
-	    this.deleteData();
-	}
+        if (command.equalsIgnoreCase(UserEditAction.COMMAND_SAVE)) {
+            this.saveData();
+        }
+        if (command.equalsIgnoreCase(UserEditAction.COMMAND_DELETE)) {
+            this.deleteData();
+        }
         if (command.equalsIgnoreCase(UserEditAction.COMMAND_CHANGEPASSWORD)) {
             this.deleteData();
         }
-	if (command.equalsIgnoreCase(UserEditAction.COMMAND_BACK)) {
-	    this.doBack();
-	}
-	if (command.equalsIgnoreCase(UserEditAction.COMMAND_APPROLE)) {
-	    this.doAppRole();
-	}
-	if (command.equalsIgnoreCase(UserEditAction.COMMAND_RESOURCE)) {
-	    this.doResources();
-	}
+        if (command.equalsIgnoreCase(UserEditAction.COMMAND_BACK)) {
+            this.doBack();
+        }
+        if (command.equalsIgnoreCase(UserEditAction.COMMAND_APPROLE)) {
+            this.doAppRole();
+        }
+        if (command.equalsIgnoreCase(UserEditAction.COMMAND_RESOURCE)) {
+            this.doResources();
+        }
     }
 
     /**
@@ -195,7 +195,7 @@ public class UserEditAction extends AbstractActionHandler implements ICommand {
         // userApi = null;
         // tx = null;
         // }
-	return;
+        return;
     }
 
     /**
@@ -239,7 +239,7 @@ public class UserEditAction extends AbstractActionHandler implements ICommand {
      * @throws ActionCommandException
      */
     protected void doAppRole() throws ActionCommandException {
-	this.receiveClientData();
+        this.receiveClientData();
         // DatabaseTransApi tx = DatabaseTransFactory.create();
         // ApplicationApi appApi =
         // UserFactory.createAppApi((DatabaseConnectionBean) tx.getConnector(),
@@ -273,10 +273,9 @@ public class UserEditAction extends AbstractActionHandler implements ICommand {
         // appApi = null;
         // tx = null;
         // }
-	return;
+        return;
     }
-    
-    
+
     protected void doResources() throws ActionCommandException {
         // try {
         // UserResourceAccessEditAction delegate = new
@@ -288,7 +287,7 @@ public class UserEditAction extends AbstractActionHandler implements ICommand {
         // this.logger.log(Level.ERROR, e.getMessage());
         // throw new ActionCommandException(e);
         // }
-	
+
     }
 
     /**
@@ -298,15 +297,14 @@ public class UserEditAction extends AbstractActionHandler implements ICommand {
      * @throws ActionCommandException
      */
     protected void receiveClientData() throws ActionCommandException {
-	try {
-	    // Retrieve values from the request object into the User object.
+        try {
+            // Retrieve values from the request object into the User object.
             this.user = UserLoginFactory.create();
             RMT2WebUtility.packageBean(this.request, this.user);
-	}
-	catch (SystemException e) {
-	    logger.log(Level.ERROR, e.getMessage());
+        } catch (SystemException e) {
+            logger.log(Level.ERROR, e.getMessage());
             throw new ActionCommandException(e.getMessage());
-	}
+        }
     }
 
     /**
@@ -317,13 +315,13 @@ public class UserEditAction extends AbstractActionHandler implements ICommand {
      */
     protected void sendClientData() throws ActionCommandException {
         this.request.setAttribute(UserConst.CLIENT_DATA_SEARCH, this.searchData);
-	this.request.setAttribute(UserConst.CLIENT_DATA_USER, this.user);
-	this.request.setAttribute(UserConst.CLIENT_DATA_GROUPS, this.grpData);
-	this.request.setAttribute("apps", this.apps);
-	this.request.setAttribute("selectedApp", this.selectedApp);
-	this.request.setAttribute("assignedRoles", this.assignedRoles);
-	this.request.setAttribute("revokedRoles", this.revokedRoles);
-	this.request.setAttribute(RMT2ServletConst.REQUEST_MSG_INFO, this.msg);
+        this.request.setAttribute(UserConst.CLIENT_DATA_USER, this.user);
+        this.request.setAttribute(UserConst.CLIENT_DATA_GROUPS, this.grpData);
+        this.request.setAttribute("apps", this.apps);
+        this.request.setAttribute("selectedApp", this.selectedApp);
+        this.request.setAttribute("assignedRoles", this.assignedRoles);
+        this.request.setAttribute("revokedRoles", this.revokedRoles);
+        this.request.setAttribute(RMT2ServletConst.REQUEST_MSG_INFO, this.msg);
     }
 
     // /**
@@ -380,14 +378,14 @@ public class UserEditAction extends AbstractActionHandler implements ICommand {
      * No Action
      */
     public void add() throws ActionCommandException {
-	return;
+        return;
     }
 
     /**
      * No Action
      */
     public void edit() throws ActionCommandException {
-	return;
+        return;
     }
 
 }
