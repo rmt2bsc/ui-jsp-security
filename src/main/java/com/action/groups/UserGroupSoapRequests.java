@@ -12,7 +12,6 @@ import org.rmt2.jaxb.AuthenticationRequest;
 import org.rmt2.jaxb.AuthenticationResponse;
 import org.rmt2.jaxb.HeaderType;
 import org.rmt2.jaxb.ObjectFactory;
-import org.rmt2.jaxb.ReplyStatusType;
 import org.rmt2.jaxb.UserCriteriaType;
 import org.rmt2.jaxb.UserGroupType;
 import org.rmt2.util.HeaderTypeBuilder;
@@ -65,12 +64,6 @@ public class UserGroupSoapRequests {
         AuthenticationResponse response = null;
         try {
             response = SoapJaxbClientWrapper.callSoapRequest(req);
-            ReplyStatusType rst = response.getReplyStatus();
-            if (rst.getReturnCode().intValue() == -1) {
-                String errMsg = rst.getMessage();
-                logger.error(errMsg);
-                throw new AuthenticationException(errMsg);
-            }
             return response;
         } catch (Exception e) {
             throw new AuthenticationException(UserGroupSoapRequests.MSG, e);
@@ -110,12 +103,6 @@ public class UserGroupSoapRequests {
         AuthenticationResponse response = null;
         try {
             response = SoapJaxbClientWrapper.callSoapRequest(req);
-            ReplyStatusType rst = response.getReplyStatus();
-            if (rst.getReturnCode().intValue() == -1) {
-                String errMsg = rst.getMessage();
-                logger.error(errMsg);
-                throw new AuthenticationException(errMsg);
-            }
             return response;
         } catch (Exception e) {
             throw new AuthenticationException(UserGroupSoapRequests.MSG, e);
@@ -159,12 +146,6 @@ public class UserGroupSoapRequests {
         AuthenticationResponse response = null;
         try {
             response = SoapJaxbClientWrapper.callSoapRequest(req);
-            ReplyStatusType rst = response.getReplyStatus();
-            if (rst.getReturnCode().intValue() == -1) {
-                String errMsg = rst.getMessage();
-                logger.error(errMsg);
-                throw new AuthenticationException(errMsg);
-            }
             return response;
         } catch (Exception e) {
             throw new AuthenticationException(UserGroupSoapRequests.MSG, e);
@@ -199,12 +180,6 @@ public class UserGroupSoapRequests {
         AuthenticationResponse response = null;
         try {
             response = SoapJaxbClientWrapper.callSoapRequest(req);
-            ReplyStatusType rst = response.getReplyStatus();
-            if (rst.getReturnCode().intValue() == -1) {
-                String errMsg = rst.getMessage();
-                logger.error(errMsg);
-                throw new AuthenticationException(errMsg);
-            }
             return response;
         } catch (Exception e) {
             throw new AuthenticationException(UserGroupSoapRequests.MSG, e);
