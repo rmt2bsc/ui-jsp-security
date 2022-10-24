@@ -13,6 +13,7 @@ import org.rmt2.jaxb.AuthenticationResponse;
 import org.rmt2.jaxb.HeaderType;
 import org.rmt2.jaxb.ObjectFactory;
 import org.rmt2.jaxb.ReplyStatusType;
+import org.rmt2.jaxb.UserAppRolesCriteriaType;
 import org.rmt2.jaxb.UserCriteriaType;
 import org.rmt2.jaxb.UserGroupType;
 import org.rmt2.jaxb.UserType;
@@ -79,7 +80,7 @@ public class UserSoapRequests {
     }
 
     /**
-     * SOAP call to fetch a single user group.
+     * SOAP call to fetch one or more users.
      * 
      * @param userCriteria
      *            instance of {@link UserCriteria}
@@ -207,6 +208,50 @@ public class UserSoapRequests {
         }
         return jaxbCriteria;
 
+    }
+
+    /**
+     * SOAP call to fetch a single user with granted and revoked permissions
+     * 
+     * @param userName
+     *            the user's username
+     * @return {@link AuthenticationResponse}
+     * @throws AuthenticationException
+     */
+    public static final AuthenticationResponse callGetUserAppPermissions(String userName, Integer appId)
+            throws AuthenticationException {
+        // Retrieve user group from the database using unique id.
+        ObjectFactory fact = new ObjectFactory();
+        AuthenticationRequest req = fact.createAuthenticationRequest();
+
+        HeaderType head = HeaderTypeBuilder.Builder.create()
+                .withApplication(ApiHeaderNames.APP_NAME_AUTHENTICATION)
+                .withModule(AuthConstants.MODULE_ADMIN)
+                .withTransaction(ApiTransactionCodes.AUTH_USER_PERMISSIONS_GET)
+                .withMessageMode(ApiHeaderNames.MESSAGE_MODE_REQUEST)
+                .withDeliveryDate(new Date())
+                .withRouting(ApiTransactionCodes.ROUTE_AUTHENTICATION)
+                .withDeliveryMode(ApiHeaderNames.DELIVERY_MODE_SYNC)
+                .build();
+
+        AuthCriteriaGroupType apgt = fact.createAuthCriteriaGroupType();
+        UserAppRolesCriteriaType criteria = fact.createUserAppRolesCriteriaType();
+        criteria.setUserName(userName);
+        if (appId != null) {
+            criteria.setAppId(appId);
+        }
+
+        apgt.setUserAppRolesCriteria(criteria);
+        req.setCriteria(apgt);
+        req.setHeader(head);
+
+        AuthenticationResponse response = null;
+        try {
+            response = SoapJaxbClientWrapper.callSoapRequest(req);
+            return response;
+        } catch (Exception e) {
+            throw new AuthenticationException(UserSoapRequests.MSG, e);
+        }
     }
 
     /**

@@ -1,6 +1,7 @@
 package com.action.user;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
@@ -8,6 +9,7 @@ import org.rmt2.jaxb.AuthenticationResponse;
 import org.rmt2.jaxb.ReplyStatusType;
 
 import com.SystemException;
+import com.action.application.ApplicationSoapRequests;
 import com.action.groups.UserGroupSoapRequests;
 import com.api.constants.GeneralConst;
 import com.api.constants.RMT2ServletConst;
@@ -19,6 +21,9 @@ import com.api.web.ICommand;
 import com.api.web.Request;
 import com.api.web.Response;
 import com.api.web.util.RMT2WebUtility;
+import com.entity.AppRoleFactory;
+import com.entity.Application;
+import com.entity.ApplicationFactory;
 import com.entity.UserLogin;
 import com.entity.UserLoginFactory;
 
@@ -196,6 +201,9 @@ public class UserEditAction extends AbstractActionHandler implements ICommand {
      */
     protected void doAppRole() throws ActionCommandException {
         this.receiveClientData();
+        this.getAppRoleData();
+        this.sendClientData();
+
         // DatabaseTransApi tx = DatabaseTransFactory.create();
         // ApplicationApi appApi =
         // UserFactory.createAppApi((DatabaseConnectionBean) tx.getConnector(),
@@ -230,6 +238,46 @@ public class UserEditAction extends AbstractActionHandler implements ICommand {
         // tx = null;
         // }
         return;
+    }
+
+    private void getAppRoleData() {
+        // Call SOAP web service to get complete list of applications
+        AuthenticationResponse appResponse = ApplicationSoapRequests.callApplications();
+        ReplyStatusType rst = appResponse.getReplyStatus();
+        this.msg = rst.getMessage();
+        if (rst.getReturnCode().intValue() == GeneralConst.RC_FAILURE) {
+            this.msg = rst.getMessage();
+            return;
+        }
+        List<Application> applications = ApplicationFactory.create(appResponse.getProfile().getApplicationInfo());
+        this.apps = applications;
+        this.selectedApp = String.valueOf(applications.get(0).getAppId());
+
+        // Call SOAP web service to get user and permissions for selected
+        // application
+        AuthenticationResponse response = UserSoapRequests.callGetUserAppPermissions(this.user.getUsername(),
+                applications.get(0).getAppId());
+        rst = response.getReplyStatus();
+        this.msg = rst.getMessage();
+        if (rst.getReturnCode().intValue() == GeneralConst.RC_FAILURE) {
+            this.msg = rst.getMessage();
+            return;
+        }
+
+        // Sync UserLogin Object
+        this.user = UserLoginFactory.getUser(response.getProfile().getUserInfo().get(0));
+
+        // Extract user's permissions
+        this.assignedRoles = new ArrayList();
+        this.revokedRoles = new ArrayList();
+        if (response.getProfile().getUserInfo().get(0).getGrantedAppRoles() != null) {
+            this.assignedRoles = AppRoleFactory.create(response.getProfile().getUserInfo().get(0).getGrantedAppRoles()
+                    .getUserAppRole());
+        }
+        if (response.getProfile().getUserInfo().get(0).getRevokedAppRoles() != null) {
+            this.revokedRoles = AppRoleFactory.create(response.getProfile().getUserInfo().get(0).getRevokedAppRoles()
+                    .getUserAppRole());
+        }
     }
 
     protected void doResources() throws ActionCommandException {

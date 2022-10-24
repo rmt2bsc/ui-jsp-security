@@ -1,16 +1,12 @@
 <%@ taglib uri="/rmt2-taglib" prefix="db" %>
-<%@ page import="com.bean.UserLogin" %>
+<%@ taglib uri="/rmt2-beantaglib" prefix="beanlib" %>
+<%@page import="com.entity.UserLogin"%>
+<%@ page import="com.api.constants.GeneralConst" %>
+<%@ page import="com.action.user.UserConst" %>
 
 <%
   UserLogin user = request.getAttribute("user") == null ? new UserLogin() : (UserLogin) request.getAttribute("user");
 %>
-
-<db:connection id="con" classId="com.bean.db.DatabaseConnectionBean"/>
-<db:datasource id="dsoUserGroup" 
-               classId="com.api.DataSourceApi" 
-               connection="con"
-						   query="UserGroupView"
-						   order="description"/>
 					 
 <table width="50%" border="0">
 	 <caption align="left"><strong>User</strong></caption>
@@ -31,14 +27,7 @@
 			 </font>
 		 </th>
 		 <td width="35%"> 
-				 <db:Lookup dataSource="" 
-										masterCodeName=""
-										masterCodeValue="#user.GrpId"
-										name="GroupId"
-										type="1"
-										lookupSource="dsoUserGroup"
-										lookupCodeName="GrpId"
-										lookupDisplayName="Description"/>					 
+		       <beanlib:InputControl value="#user.GrpName"/>
 		 </td>				 				 
 	 </tr>
 	 <tr>

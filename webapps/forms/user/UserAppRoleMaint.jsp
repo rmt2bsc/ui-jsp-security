@@ -1,8 +1,7 @@
 <%@ taglib uri="/rmt2-generaltaglib" prefix="gen" %>
-<%@ taglib uri="/rmt2-beantaglib" prefix="beanlib" %>
-<%@ page import="com.constants.GeneralConst" %>
-<%@ page import="com.api.security.authentication.AuthenticationConst" %>
-<%@ page import="com.util.RMT2Utility" %>
+<%@ page import="com.api.security.authentication.web.AuthenticationConst" %>
+<%@ page import="com.api.util.RMT2Utility" %>
+
 
 <gen:InitAppRoot id="APP_ROOT"/>
 
@@ -67,14 +66,14 @@
 			<tr> 
 				<td align="right" bgcolor="#FFCC00"> 
    				   <beanlib:InputControl dataSource="apps"
-																	 type="radiolookup"
-																	 name="ApplicationId"
-																	 codeProperty="AppId"
-																	 displayProperty="Name"
-																	 selectedValue="#selectedApp"
-																	 cols="3"
-																	 border="yes"
-																	 onClick="changeRoles()"/>
+										 type="radiolookup"
+										 name="ApplicationId"
+										 codeProperty="AppId"
+										 displayProperty="Name"
+										 selectedValue="#selectedApp"
+										 cols="3"
+										 border="yes"
+										 onClick="changeRoles()"/>
 				</td>
 			</tr>    
 		</table>
@@ -92,13 +91,13 @@
 			<tr> 
 				<td> 
 					 <beanlib:InputControl dataSource="revokedRoles"
-																	type="select"
-																	name="RevokedRoleId"
-																	codeProperty="AppRoleId"
-																	displayProperty="AppRoleName"
-																	multiSelect="Yes"
-																	size="25"
-																	style="width:400"/>
+											type="select"
+											name="RevokedRoleId"
+											codeProperty="AppRoleId"
+											displayProperty="Name"
+											multiSelect="Yes"
+											size="25"
+											style="width:400"/>
 				</td>
 				<td width="20%" align="center" valign="middle">
 				   <table width="50%" align="center" border="0">
@@ -117,13 +116,13 @@
 				</td>
 				<td> 
 					 <beanlib:InputControl dataSource="assignedRoles"
-																type="select"
-																name="AssignedRoleId"
-																codeProperty="AppRoleId"
-																displayProperty="AppRoleName"
-																multiSelect="Yes"
-																size="25"
-																style="width:400"/>				
+											type="select"
+											name="AssignedRoleId"
+											codeProperty="AppRoleId"
+											displayProperty="Name"
+											multiSelect="Yes"
+											size="25"
+											style="width:400"/>				
 				</td>
 			</tr>			
 		</table>

@@ -32,6 +32,9 @@ public class UserLoginFactory {
      * @return
      */
     public static final List getUserList(List<UserType> list) {
+        if (list == null) {
+            return null;
+        }
         List<UserLogin> results = new ArrayList<>();
         for (UserType item : list) {
             results.add(UserLoginFactory.getUser(item));
@@ -45,6 +48,10 @@ public class UserLoginFactory {
      * @return
      */
     public static final UserLogin getUser(UserType obj) {
+        if (obj == null) {
+            return null;
+        }
+
         UserLogin u = UserLoginFactory.create();
         u.setLoginId(obj.getLoginId());
         if (obj.getGroupInfo() != null) {
