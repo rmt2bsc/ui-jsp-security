@@ -44,7 +44,8 @@
 		</dependency>
 	</dependencies>
 	<build>
-		<sourceDirectory>src</sourceDirectory>
+<!--        Removed sourceDirectory entry to prevent "cannot nest src/main/java with src/main/java" error -->
+<!-- 		<sourceDirectory>src</sourceDirectory> -->
 		<plugins>
 			<plugin>
 				<artifactId>maven-war-plugin</artifactId>
