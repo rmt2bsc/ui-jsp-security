@@ -33,6 +33,10 @@
 	    <servlet-name>unsecureRequestProcessor</servlet-name>
 	    <servlet-class>com.api.jsp.controller.JspResponseController</servlet-class>
   </servlet>
+  <servlet>
+	    <servlet-name>dataStreamProcessor</servlet-name>
+	    <servlet-class>com.api.jsp.controller.XmlResponseController</servlet-class>
+  </servlet>      
   
    <servlet-mapping>
     <servlet-name>sysconfig</servlet-name>
@@ -42,4 +46,10 @@
     <servlet-name>unsecureRequestProcessor</servlet-name>
     <url-pattern>/unsecureRequestProcessor/*</url-pattern>
   </servlet-mapping>
+  <servlet-mapping>
+	    <servlet-name>dataStreamProcessor</servlet-name>
+	    <url-pattern>/dataStreamProcessor/*</url-pattern>
+  </servlet-mapping> 
+  
+  
 </web-app>
