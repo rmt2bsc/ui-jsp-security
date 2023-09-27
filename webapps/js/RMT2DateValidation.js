@@ -1,7 +1,7 @@
 /**
- * DHTML date validation script conatining a group of functions that accepts a date 
- * string seperated into month, day and year integers and validates each date component 
- * seperately.  This library is only capable of validating dates in the American format 
+ * DHTML date validation script containing a group of functions that accepts a date 
+ * string separated into month, day and year integers and validates each date component 
+ * separately.  This library is only capable of validating dates in the American format 
  * (mm/dd/yyyy). 
  */
  
@@ -342,5 +342,17 @@ function getOneDay() {
 	return Math.ceil((1000 * 60 * 60 * 24));
 }
 
+function getCurrentDateTime() {
+	var currentdate = new Date(); 
+	var datetime = currentdate.getFullYear() + "-" + (currentdate.getMonth()+1)  + "-" 
+	                + currentdate.getDate() + " "  
+	                + currentdate.getHours() + ":"  
+	                + currentdate.getMinutes() + ":" 
+	                + currentdate.getSeconds();	
+}
 
-
+function getCurrentDate() {
+	var currentdate = new Date(); 
+	var date = currentdate.getFullYear() + "-" + (currentdate.getMonth()+1)  + "-" 
+	                + currentdate.getDate();	
+}
