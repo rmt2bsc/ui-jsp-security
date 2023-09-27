@@ -33,7 +33,9 @@ function RequestConfig() {
 	 // The id of the XML element containing the code value for a key/value pair.
 	 // This is usually used for select, radio buttons or checkbox input controls
 	this.codeValueId;
-	 // The id of the XML element containt the code value for a key/value pair.
+	 // The id of the XML element contains the code value for a key/value pair.
 	 // This is usually used for select, radio buttons or checkbox input controls
 	this.displayValueId;
+	// Holds the request payload
+	this.payload = null;
 }

@@ -1,26 +1,19 @@
 /**
- * Renders various HTML form elements using XML as the input source. This
+ * Renders various XML nodes via XPath using XML as the input source. This
  * library depends on AjaxRequestConfig.js and xpath.js libraries.
  */
-function AjaxRenderer(reqConfig, xmlData) {
+function AjaxXmlRenderer(reqConfig, xmlData) {
 	var config = reqConfig;
 	var data = xmlData;
-	var context = new XPathContext();
-	var parser = new XPathParser();
-	context.expressionContextNode = data;
+	var parser, xmlDoc;
+	parser = new DOMParser();
+	xmlDoc = parser.parseFromString(xmlData, "text/xml");
+	
+	// Regarding Microsoft browsers, XPathEvaluator is not supported in IE.  Edge is preferred.
+ 	var xmlEvaluator = new XPathEvaluator();
+	var xmlResolver = xmlEvaluator.createNSResolver(xmlDoc); 
 
-	/**
-	 * Retrieve data value for a XML tag element using XPath expressions. The
-	 * value is returned as an array in the event the propName occurs multiple
-	 * times. 
-	 */
-	this.getElementValue = function(propName) {
-		var xpath = parser.parse(propName);
-		var result = xpath.evaluate(context);
-		var val = result.toArray();
-		return val;
-	}
-
+	
 	/**
 	 * Builds the select options for a an input select control based on the XML
 	 * data derived from the user's Ajax request.  The property names of the 
@@ -28,17 +21,20 @@ function AjaxRenderer(reqConfig, xmlData) {
 	 * as the target input control property name.
 	 */
 	this.buildSelectOptions = function(selObj, codeXPath, textXPath) {
-		var codes;
-		var text;
-		codes = this.getElementValue(codeXPath);
-		text = this.getElementValue(textXPath);
-		if (codes.length != text.length) {
-			return null;
-		}
+		const codes = xmlEvaluator.evaluate(codeXPath, xmlDoc, xmlResolver, XPathResult.ORDERED_NODE_ITERATOR_TYPE, null);
+		const text = xmlEvaluator.evaluate(textXPath, xmlDoc, xmlResolver, XPathResult.ORDERED_NODE_ITERATOR_TYPE, null);
+
+		// remove all items from the HTML Select component
 		this.removeSelectOptions(selObj);
-		var total = codes.length;
-		for ( var ndx = 0; ndx < total; ndx++) {
-			selObj.options[ndx] = new Option(text[ndx].text, codes[ndx].text);
+		
+		// Update the HTML Select component with new items
+		let code = null;
+		var ndx = 0;
+		const tagNames = [];
+		while ((code = codes.iterateNext())) {
+			displayText = text.iterateNext()
+			selObj.options[ndx] = new Option(displayText.textContent, code.textContent);
+			ndx++;
 		}
 		return;
 	}

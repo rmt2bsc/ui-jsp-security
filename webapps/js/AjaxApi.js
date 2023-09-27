@@ -35,12 +35,17 @@ function processAjaxRequest(reqConfig) {
  *  	config.serviceId = "getOrders";
  *  	config.resourceURL = "http://localhost:8080/orderServlet";
  *    config.customParmHandler = setupOrderParms;
+ *    config.payload = createPayload;
  *    config.customResponseHandler = processResults;
  *    config.renderHTML = false;
  *    // Execute service.
  *		try {
  *			ajax = new AjaxHandler(config);
+ *
+ *          // Send the AJAX request either by using 
  *			ajax.sendRequest();
+ *              or
+ *          ajax.send(config.payload);
  *		}
  *		catch (e) {
  *			alert(e);
@@ -60,12 +65,13 @@ function processAjaxRequest(reqConfig) {
  *  }
  *
  *  If Ajax service call requires specific or custom parameter processing,
- *  create a javascript function that with an empty paramter list and
+ *  create a javascript function that with an empty parameter list and
  *  return a String of key/value pairs separated by the "&".   If special
  *  processing is required to processing the end results of the Ajax call,
  *  create a javascript function conforming to the signature,
  *       function funcName(config, data).
- *  the parameter, config, is required to be an instance of RequestConfig and
+ *  <p>
+ *  The parameter, config, is required to be an instance of RequestConfig and
  *  data the XML data returned from the Ajax call.
  */
 function AjaxHandler(reqConfig) {
@@ -89,6 +95,7 @@ function AjaxHandler(reqConfig) {
 		 // create request object
 		xmlHttp = createXMLHttpRequest();
 		var url = config.resourceURL;
+		var payload = config.payload;
 		
 		 // build list of URL parameters.
 		if (config.customParmHandler) {
@@ -103,22 +110,31 @@ function AjaxHandler(reqConfig) {
 			}
 		}
 
-        // Assign state change handler
+	    // Assign state change handler
 		xmlHttp.onreadystatechange = getStateChangeHandler;
 
-	    // Prepare request for transmission
-	    if (!isIE) {
-	        // Mozilla security-permissions workaround for cross-domain server access
-			try {
-				netscape.security.PrivilegeManager.enablePrivilege("UniversalBrowserRead");
-			}
-			catch (e) {
-				alert("Permission UniversalBrowserRead denied for Mozilla browser type");
-		    }
-	    }
+//	    // Prepare request for transmission
+//	    if (!isIE) {
+//	        // Mozilla security-permissions workaround for cross-domain server access
+//			try {
+//				netscape.security.PrivilegeManager.enablePrivilege("UniversalBrowserRead");
+//			}
+//			catch (e) {
+//				alert("Permission UniversalBrowserRead denied for Mozilla browser type");
+//		    }
+//	    }
 		xmlHttp.open(config.method, url, config.asynchronous);
+//		xmlHttp.setRequestHeader('Content-Type', 'text/xml');
+		xmlHttp.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+		
 		 // Send the request.
-		xmlHttp.send(null);
+		if (payload) {
+			xmlHttp.send(payload);	
+		}
+		else {
+			xmlHttp.send(null);
+		}
+		
 	}
 
 
@@ -128,32 +144,34 @@ function AjaxHandler(reqConfig) {
 	var createXMLHttpRequest = function () {
 		var obj;
 
-		// Create XMLHttpRequest object for non-Microsoft browsers
-		if (window.XMLHttpRequest) {
-			obj = new XMLHttpRequest();
-			isIE = false;
-		} 
-		else {
-			if (window.ActiveXObject) {
-				try {
-		      // Try to create XMLHttpRequest in later versions of Internet Explorer
-					obj = new ActiveXObject(REQTYPE_MS_LATER);
-					isIE = true;
-				}
-				catch (e1) {
-		      // Failed to create required ActiveXObject
-					try {
-        		// Try version supported by older versions of Internet Explorer
-						obj = new ActiveXObject(REQTYPE_MS_OLDER);
-						isIE = true;
-					}
-					catch (e2) {
-    	    	// Unable to create an XMLHttpRequest by any means
-						throw "XMLHttpRequest Creatation Error: Unable to create an XMLHttpRequest";
-					}
-				}
-			}
-		}
+		obj = new XMLHttpRequest();
+		
+//		// Create XMLHttpRequest object for non-Microsoft browsers
+//		if (window.XMLHttpRequest) {
+//			obj = new XMLHttpRequest();
+//			isIE = false;
+//		} 
+//		else {
+//			if (window.ActiveXObject) {
+//				try {
+//		      // Try to create XMLHttpRequest in later versions of Internet Explorer
+//					obj = new ActiveXObject(REQTYPE_MS_LATER);
+//					isIE = true;
+//				}
+//				catch (e1) {
+//		      // Failed to create required ActiveXObject
+//					try {
+//        		// Try version supported by older versions of Internet Explorer
+//						obj = new ActiveXObject(REQTYPE_MS_OLDER);
+//						isIE = true;
+//					}
+//					catch (e2) {
+//    	    	// Unable to create an XMLHttpRequest by any means
+//						throw "XMLHttpRequest Creatation Error: Unable to create an XMLHttpRequest";
+//					}
+//				}
+//			}
+//		}
 		return obj;
 	}
 

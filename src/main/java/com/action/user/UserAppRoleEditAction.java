@@ -1,12 +1,7 @@
 package com.action.user;
 
-import java.util.List;
-
-import javax.mail.MessagingException;
-
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
-import org.apache.velocity.runtime.resource.ResourceFactory;
 
 import com.SystemException;
 import com.api.config.old.ProviderConfig;
@@ -17,14 +12,15 @@ import com.api.messaging.MessageException;
 import com.api.messaging.webservice.http.client.HttpClientMessageException;
 import com.api.messaging.webservice.http.client.HttpClientResourceFactory;
 import com.api.messaging.webservice.http.client.HttpMessageSender;
-import com.api.persistence.db.DatabaseConnectionBean;
 import com.api.security.RMT2TagQueryBean;
 import com.api.web.ActionCommandException;
 import com.api.web.Context;
 import com.api.web.ICommand;
 import com.api.web.Request;
 import com.api.web.Response;
+import com.api.web.util.RMT2WebUtility;
 import com.entity.UserLogin;
+import com.entity.UserLoginFactory;
 
 
 /**
@@ -168,31 +164,32 @@ public class UserAppRoleEditAction extends AbstractActionHandler implements ICom
      * @throws ActionCommandException
      */
     protected void receiveClientData() throws ActionCommandException {
-	DatabaseTransApi tx = DatabaseTransFactory.create();
-	UserApi userApi = UserFactory.createApi((DatabaseConnectionBean) tx.getConnector(), this.request);
-        // Retrieve values from the request object into the User object.
         try {
-            this.user = UserFactory.createUserLogin();
-            UserFactory.packageBean(this.request, this.user);
-            // Get all data pertaining to user from the database.
-            this.user = (UserLogin) userApi.findUserByUserName(this.user.getUsername());
-        }
-        catch (Exception e) {
+            // Retrieve values from the request object into the User object.
+            this.user = UserLoginFactory.create();
+            RMT2WebUtility.packageBean(this.request, this.user);
+        } catch (SystemException e) {
             logger.log(Level.ERROR, e.getMessage());
             throw new ActionCommandException(e.getMessage());
         }
-        finally {
-            userApi.close();
-	    tx.close();
-	    userApi = null;
-	    tx = null;
-	}
+        // Retrieve values from the request object into the User object.
+        try {
+            this.user = UserSoapRequests.getUser(this.user.getUsername());
+            // this.user = UserFactory.createUserLogin();
+            // UserFactory.packageBean(this.request, this.user);
+            // // Get all data pertaining to user from the database.
+            // this.user = (UserLogin)
+            // userApi.findUserByUserName(this.user.getUsername());
+        } catch (Exception e) {
+            logger.log(Level.ERROR, e.getMessage());
+            throw new ActionCommandException(e.getMessage());
+        }
 
         // Get application id.
         try {
-            this.appId = Integer.parseInt(this.request.getParameter("ApplicationId"));
-        }
-        catch (NumberFormatException e) {
+            this.appId =
+                    Integer.parseInt(this.request.getParameter("ApplicationId"));
+        } catch (NumberFormatException e) {
             this.appId = 0;
         }
 
@@ -223,75 +220,76 @@ public class UserAppRoleEditAction extends AbstractActionHandler implements ICom
      * 
      * @throws ActionCommandException
      */
-    private void getAllUserAppRoles() throws ActionCommandException {
-	DatabaseTransApi tx = DatabaseTransFactory.create();
-	ApplicationApi appApi = UserFactory.createAppApi((DatabaseConnectionBean) tx.getConnector(), this.request);
-        try {
-            this.apps = appApi.getAllApps();
-
-            // setup user criteria
-            UserLogin userCriteria = UserFactory.createUserLogin();
-            userCriteria.setLoginId(this.user.getLoginId());
-
-            // Setup application-role criteria
-            AppRole appRoleCriteria = UserFactory.createAppRole();
-    	    // Get object that matches the current selected application            
-            if (this.apps != null) {
-        	// Initialize app to be the first element in the event 
-        	// the select application object is not found.
-        	Application app = (Application) ((List <Application>) this.apps).get(0);
-        	int ndx = 0;
-        	for (Object obj : (List <Application>) this.apps) {
-        	    if (((Application) obj).getAppId() == this.appId) {
-        		app = (Application) ((List <Application>) this.apps).get(ndx);
-        		break;
-        	    }
-        	    ndx++;
-        	}
-                appRoleCriteria.setAppId(app.getAppId());
-            }
-            this.assignedRoleObjs = appApi.getAppRoleAssigned(userCriteria, appRoleCriteria);
-            this.revokedRoleObjs = appApi.getAppRoleRevoked(userCriteria, appRoleCriteria);
-        }
-        catch (UserAuthenticationException e) {
-            throw new ActionCommandException(e);
-        }
-        finally {
-            appApi.close();
-	    tx.close();
-	    appApi = null;
-	    tx = null;
-	}
-        return;
-    }
+    // private void getAllUserAppRoles() throws ActionCommandException {
+    // DatabaseTransApi tx = DatabaseTransFactory.create();
+    // ApplicationApi appApi = UserFactory.createAppApi((DatabaseConnectionBean)
+    // tx.getConnector(), this.request);
+    // try {
+    // this.apps = appApi.getAllApps();
+    //
+    // // setup user criteria
+    // UserLogin userCriteria = UserFactory.createUserLogin();
+    // userCriteria.setLoginId(this.user.getLoginId());
+    //
+    // // Setup application-role criteria
+    // AppRole appRoleCriteria = UserFactory.createAppRole();
+    // // Get object that matches the current selected application
+    // if (this.apps != null) {
+    // // Initialize app to be the first element in the event
+    // // the select application object is not found.
+    // Application app = (Application) ((List <Application>) this.apps).get(0);
+    // int ndx = 0;
+    // for (Object obj : (List <Application>) this.apps) {
+    // if (((Application) obj).getAppId() == this.appId) {
+    // app = (Application) ((List <Application>) this.apps).get(ndx);
+    // break;
+    // }
+    // ndx++;
+    // }
+    // appRoleCriteria.setAppId(app.getAppId());
+    // }
+    // this.assignedRoleObjs = appApi.getAppRoleAssigned(userCriteria,
+    // appRoleCriteria);
+    // this.revokedRoleObjs = appApi.getAppRoleRevoked(userCriteria,
+    // appRoleCriteria);
+    // }
+    // catch (UserAuthenticationException e) {
+    // throw new ActionCommandException(e);
+    // }
+    // finally {
+    // appApi.close();
+    // tx.close();
+    // appApi = null;
+    // tx = null;
+    // }
+    // return;
+    // }
 
     private void getUserRoleData() throws ActionCommandException {
-      HttpMessageSender client = HttpClientResourceFactory.getHttpInstance();
-      ProviderConfig config;
-      try {
-          config = ResourceFactory.getHttpConfigInstance();
-          client.connect(config);
-          Object result = client.sendMessage(this.request);
-          this.request.setAttribute(RMT2ServletConst.RESPONSE_NONJSP_DATA, result);
-          return;
-      }
-       catch (MessagingException e) {
-           e.printStackTrace();
+        HttpMessageSender client = HttpClientResourceFactory.getHttpInstance();
+        ProviderConfig config;
+        try {
+            // config = ResourceFactory.getHttpConfigInstance();
+            // client.connect(config);
+            Object result = client.sendMessage(this.request);
+            this.request.setAttribute(RMT2ServletConst.RESPONSE_NONJSP_DATA, result);
+            return;
+        }
+        // catch (MessagingException e) {
+        // e.printStackTrace();
+        // throw new ActionCommandException(e);
+        // }
+        catch (ProviderConnectionException e) {
+            e.printStackTrace();
             throw new ActionCommandException(e);
-       }
-       catch (ProviderConnectionException e) {
-           e.printStackTrace();
+        } catch (HttpClientMessageException e) {
+            e.printStackTrace();
             throw new ActionCommandException(e);
-       }
-       catch (HttpClientMessageException e) {
-           e.printStackTrace();
+        } catch (MessageException e) {
+            e.printStackTrace();
             throw new ActionCommandException(e);
-       }
-       catch (MessageException e) {
-           e.printStackTrace();
-            throw new ActionCommandException(e);
-       }
-  }
+        }
+    }
     
     /**
      * No Action
