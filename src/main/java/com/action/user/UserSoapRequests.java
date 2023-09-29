@@ -1,11 +1,13 @@
 package com.action.user;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.rmt2.constants.ApiHeaderNames;
 import org.rmt2.constants.ApiTransactionCodes;
+import org.rmt2.jaxb.AppRoleType;
 import org.rmt2.jaxb.AuthCriteriaGroupType;
 import org.rmt2.jaxb.AuthProfileGroupType;
 import org.rmt2.jaxb.AuthenticationRequest;
@@ -13,11 +15,14 @@ import org.rmt2.jaxb.AuthenticationResponse;
 import org.rmt2.jaxb.HeaderType;
 import org.rmt2.jaxb.ObjectFactory;
 import org.rmt2.jaxb.ReplyStatusType;
+import org.rmt2.jaxb.UserAppRoleType;
 import org.rmt2.jaxb.UserAppRolesCriteriaType;
 import org.rmt2.jaxb.UserCriteriaType;
 import org.rmt2.jaxb.UserGroupType;
 import org.rmt2.jaxb.UserType;
 import org.rmt2.util.HeaderTypeBuilder;
+import org.rmt2.util.authentication.AppRoleTypeBuilder;
+import org.rmt2.util.authentication.UserAppRoleTypeBuilder;
 import org.rmt2.util.authentication.UserGroupTypeBuilder;
 import org.rmt2.util.authentication.UserTypeBuilder;
 
@@ -243,6 +248,72 @@ public class UserSoapRequests {
 
         apgt.setUserAppRolesCriteria(criteria);
         req.setCriteria(apgt);
+        req.setHeader(head);
+
+        AuthenticationResponse response = null;
+        try {
+            response = SoapJaxbClientWrapper.callSoapRequest(req);
+            return response;
+        } catch (Exception e) {
+            throw new AuthenticationException(UserSoapRequests.MSG, e);
+        }
+    }
+
+    /**
+     * SOAP call to update the user's profile with granted application roles.
+     * <p>
+     * This SOAP call will refresh the user's permissions profile and apply the
+     * newly selected assigned roles.
+     * 
+     * @param userName
+     *            the user's user name
+     * @param assignedRoles
+     *            the roles that were granted to the user
+     * @return {@link AuthenticationResponse}
+     * @throws AuthenticationException
+     */
+    public static final AuthenticationResponse callUpdateUserAppPermissions(String userName, String assignedRoles[])
+            throws AuthenticationException {
+
+        // Retrieve user group from the database using unique id.
+        ObjectFactory fact = new ObjectFactory();
+        AuthenticationRequest req = fact.createAuthenticationRequest();
+
+        HeaderType head = HeaderTypeBuilder.Builder.create()
+                .withApplication(ApiHeaderNames.APP_NAME_AUTHENTICATION)
+                .withModule(AuthConstants.MODULE_ADMIN)
+                .withTransaction(ApiTransactionCodes.AUTH_USER_APPROLE_MAINT)
+                .withMessageMode(ApiHeaderNames.MESSAGE_MODE_REQUEST)
+                .withDeliveryDate(new Date())
+                .withRouting(ApiTransactionCodes.ROUTE_AUTHENTICATION)
+                .withDeliveryMode(ApiHeaderNames.DELIVERY_MODE_SYNC)
+                .build();
+
+        AuthProfileGroupType apgt = fact.createAuthProfileGroupType();
+
+        // Extract all user application roles into a List
+        List<UserAppRoleType> uartList = new ArrayList<>();
+        if (assignedRoles != null) {
+            for (String item : assignedRoles) {
+                AppRoleType art = AppRoleTypeBuilder.Builder.create()
+                        .withCode(item)
+                        .build();
+                UserAppRoleType uart = UserAppRoleTypeBuilder.Builder.create()
+                        .withApplicationRoleInfo(art)
+                        .build();
+                uartList.add(uart);
+            }
+        }
+
+        // Add List of user application roles to the User object
+        UserType ut = UserTypeBuilder.Builder.create()
+                .withUsername(userName)
+                .withGrantedAppRoles(uartList)
+                .build();
+
+        // Finish setting up the remainder of request.
+        apgt.getUserInfo().add(ut);
+        req.setProfile(apgt);
         req.setHeader(head);
 
         AuthenticationResponse response = null;

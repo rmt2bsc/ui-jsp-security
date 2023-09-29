@@ -1,17 +1,19 @@
 package com.action.user;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
+import org.rmt2.jaxb.AuthenticationResponse;
+import org.rmt2.jaxb.ReplyStatusType;
 
 import com.SystemException;
-import com.api.config.old.ProviderConfig;
-import com.api.config.old.ProviderConnectionException;
+import com.action.application.ApplicationSoapRequests;
+import com.action.groups.UserGroupSoapRequests;
+import com.api.constants.GeneralConst;
 import com.api.constants.RMT2ServletConst;
 import com.api.jsp.action.AbstractActionHandler;
-import com.api.messaging.MessageException;
-import com.api.messaging.webservice.http.client.HttpClientMessageException;
-import com.api.messaging.webservice.http.client.HttpClientResourceFactory;
-import com.api.messaging.webservice.http.client.HttpMessageSender;
 import com.api.security.RMT2TagQueryBean;
 import com.api.web.ActionCommandException;
 import com.api.web.Context;
@@ -19,6 +21,10 @@ import com.api.web.ICommand;
 import com.api.web.Request;
 import com.api.web.Response;
 import com.api.web.util.RMT2WebUtility;
+import com.entity.AppRoleFactory;
+import com.entity.Application;
+import com.entity.ApplicationFactory;
+import com.entity.UserGroupFactory;
 import com.entity.UserLogin;
 import com.entity.UserLoginFactory;
 
@@ -51,6 +57,8 @@ public class UserAppRoleEditAction extends AbstractActionHandler implements ICom
     private Object assignedRoleObjs;
 
     private Object revokedRoleObjs;
+
+    private Object grpData;
 
     /**
      * Default constructor responsible for initializing the logger.
@@ -87,12 +95,8 @@ public class UserAppRoleEditAction extends AbstractActionHandler implements ICom
     public void processRequest(Request request, Response response, String command) throws ActionCommandException {
 	super.processRequest(request, response, command);
         this.query = (RMT2TagQueryBean) this.request.getSession().getAttribute(RMT2ServletConst.QUERY_BEAN);
-
         if (command.equalsIgnoreCase(UserAppRoleEditAction.COMMAND_SAVE)) {
             this.saveData();
-        }
-        if (command.equalsIgnoreCase(UserAppRoleEditAction.COMMAND_USER_APP_ROLES)) {
-            this.getUserRoleData();
         }
         if (command.equalsIgnoreCase(UserAppRoleEditAction.COMMAND_BACK)) {
             this.doBack();
@@ -120,30 +124,18 @@ public class UserAppRoleEditAction extends AbstractActionHandler implements ICom
      * @throws ActionCommandException
      */
     public void save() throws ActionCommandException {
-        // DatabaseTransApi tx = DatabaseTransFactory.create();
-        // ApplicationApi appApi =
-        // UserFactory.createAppApi((DatabaseConnectionBean) tx.getConnector(),
-        // this.request);
-        // int rows;
-        // try {
-        // rows = appApi.maintainUserAppRole(this.user.getUsername(),
-        // this.appId, this.assignedRoles, this.revokedRoles);
-        // // Commit Changes to the database
-        // tx.commitUOW();
-        // this.msg = rows + "User Application Roles were added successfully";
-        // // Refresh client presentation data
-        // this.getAllUserAppRoles();
-        // }
-        // catch (ApplicationException e) {
-        // tx.rollbackUOW();
-        // throw new ActionCommandException(e);
-        // }
-        // finally {
-        // appApi.close();
-        // tx.close();
-        // appApi = null;
-        // tx = null;
-        // }
+        // Call SOAP web service to get user and permissions for selected
+        // application
+        AuthenticationResponse response = UserSoapRequests.callUpdateUserAppPermissions(this.user.getUsername(),
+                this.assignedRoles);
+
+        ReplyStatusType rst = response.getReplyStatus();
+        this.msg = rst.getMessage();
+        if (rst.getReturnCode().intValue() == GeneralConst.RC_FAILURE) {
+            this.msg = rst.getMessage();
+            return;
+        }
+        this.getUserRoleData();
     }
 
     /**
@@ -153,6 +145,7 @@ public class UserAppRoleEditAction extends AbstractActionHandler implements ICom
      */
     protected void doBack() throws ActionCommandException {
         this.receiveClientData();
+        this.getUserGroupList();
         this.sendClientData();
         return;
     }
@@ -175,11 +168,6 @@ public class UserAppRoleEditAction extends AbstractActionHandler implements ICom
         // Retrieve values from the request object into the User object.
         try {
             this.user = UserSoapRequests.getUser(this.user.getUsername());
-            // this.user = UserFactory.createUserLogin();
-            // UserFactory.packageBean(this.request, this.user);
-            // // Get all data pertaining to user from the database.
-            // this.user = (UserLogin)
-            // userApi.findUserByUserName(this.user.getUsername());
         } catch (Exception e) {
             logger.log(Level.ERROR, e.getMessage());
             throw new ActionCommandException(e.getMessage());
@@ -210,84 +198,62 @@ public class UserAppRoleEditAction extends AbstractActionHandler implements ICom
         this.request.setAttribute("apps", this.apps);
         this.request.setAttribute("assignedRoles", this.assignedRoleObjs);
         this.request.setAttribute("revokedRoles", this.revokedRoleObjs);
+        this.request.setAttribute(UserConst.CLIENT_DATA_GROUPS, this.grpData);
         this.request.setAttribute(RMT2ServletConst.REQUEST_MSG_INFO, this.msg);
     }
 
-    
-    /**
-     * Gathers all data needed to populate User Application-Role page as a
-     * confirmation to the <i>save</i> request.
-     * 
-     * @throws ActionCommandException
-     */
-    // private void getAllUserAppRoles() throws ActionCommandException {
-    // DatabaseTransApi tx = DatabaseTransFactory.create();
-    // ApplicationApi appApi = UserFactory.createAppApi((DatabaseConnectionBean)
-    // tx.getConnector(), this.request);
-    // try {
-    // this.apps = appApi.getAllApps();
-    //
-    // // setup user criteria
-    // UserLogin userCriteria = UserFactory.createUserLogin();
-    // userCriteria.setLoginId(this.user.getLoginId());
-    //
-    // // Setup application-role criteria
-    // AppRole appRoleCriteria = UserFactory.createAppRole();
-    // // Get object that matches the current selected application
-    // if (this.apps != null) {
-    // // Initialize app to be the first element in the event
-    // // the select application object is not found.
-    // Application app = (Application) ((List <Application>) this.apps).get(0);
-    // int ndx = 0;
-    // for (Object obj : (List <Application>) this.apps) {
-    // if (((Application) obj).getAppId() == this.appId) {
-    // app = (Application) ((List <Application>) this.apps).get(ndx);
-    // break;
-    // }
-    // ndx++;
-    // }
-    // appRoleCriteria.setAppId(app.getAppId());
-    // }
-    // this.assignedRoleObjs = appApi.getAppRoleAssigned(userCriteria,
-    // appRoleCriteria);
-    // this.revokedRoleObjs = appApi.getAppRoleRevoked(userCriteria,
-    // appRoleCriteria);
-    // }
-    // catch (UserAuthenticationException e) {
-    // throw new ActionCommandException(e);
-    // }
-    // finally {
-    // appApi.close();
-    // tx.close();
-    // appApi = null;
-    // tx = null;
-    // }
-    // return;
-    // }
+    private void getUserGroupList() {
+        // Get User Group list
+        AuthenticationResponse response2 = UserGroupSoapRequests.callSearchAllUserGroups();
+
+        // Setup user group list on the Request object in order to pass back
+        // to JSP client.
+        this.grpData = UserGroupFactory.getUserGroupList(response2.getProfile().getUserGroupInfo());
+    }
 
     private void getUserRoleData() throws ActionCommandException {
-        HttpMessageSender client = HttpClientResourceFactory.getHttpInstance();
-        ProviderConfig config;
-        try {
-            // config = ResourceFactory.getHttpConfigInstance();
-            // client.connect(config);
-            Object result = client.sendMessage(this.request);
-            this.request.setAttribute(RMT2ServletConst.RESPONSE_NONJSP_DATA, result);
+        // Call SOAP web service to get complete list of applications
+        AuthenticationResponse appResponse = ApplicationSoapRequests.callApplications();
+        ReplyStatusType rst = appResponse.getReplyStatus();
+        this.msg = rst.getMessage();
+        if (rst.getReturnCode().intValue() == GeneralConst.RC_FAILURE) {
+            this.msg = rst.getMessage();
             return;
         }
-        // catch (MessagingException e) {
-        // e.printStackTrace();
-        // throw new ActionCommandException(e);
-        // }
-        catch (ProviderConnectionException e) {
-            e.printStackTrace();
-            throw new ActionCommandException(e);
-        } catch (HttpClientMessageException e) {
-            e.printStackTrace();
-            throw new ActionCommandException(e);
-        } catch (MessageException e) {
-            e.printStackTrace();
-            throw new ActionCommandException(e);
+        List<Application> applications = ApplicationFactory.create(appResponse.getProfile().getApplicationInfo());
+        this.apps = applications;
+
+        // Get application id.
+        try {
+            this.appId = Integer.parseInt(this.request.getParameter("ApplicationId"));
+        } catch (NumberFormatException e) {
+            this.appId = 0;
+        }
+
+        // Call SOAP web service to get user and permissions for selected
+        // application
+        AuthenticationResponse response = UserSoapRequests.callGetUserAppPermissions(this.user.getUsername(),
+                this.appId);
+        rst = response.getReplyStatus();
+        this.msg = rst.getMessage();
+        if (rst.getReturnCode().intValue() == GeneralConst.RC_FAILURE) {
+            this.msg = rst.getMessage();
+            return;
+        }
+
+        // Sync UserLogin Object
+        this.user = UserLoginFactory.getUser(response.getProfile().getUserInfo().get(0));
+
+        // Extract user's permissions
+        this.assignedRoleObjs = new ArrayList();
+        this.revokedRoleObjs = new ArrayList();
+        if (response.getProfile().getUserInfo().get(0).getGrantedAppRoles() != null) {
+            this.assignedRoleObjs = AppRoleFactory.create(response.getProfile().getUserInfo().get(0).getGrantedAppRoles()
+                    .getUserAppRole());
+        }
+        if (response.getProfile().getUserInfo().get(0).getRevokedAppRoles() != null) {
+            this.revokedRoleObjs = AppRoleFactory.create(response.getProfile().getUserInfo().get(0).getRevokedAppRoles()
+                    .getUserAppRole());
         }
     }
     
