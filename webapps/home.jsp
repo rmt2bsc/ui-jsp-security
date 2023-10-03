@@ -34,16 +34,16 @@
       <td>
       <table width="100%" border="0">
          <tr>
+                  <td width="12%"  valign="top" align="center"> 
+			          <a href="/ui-jsp-security/unsecureRequestProcessor/Group.Search?clientAction=list&<%=SESSION_BEAN.getAuthUrlParms()%>"> 
+			            <img name="m_users" src="<%=APP_ROOT%>/images/mi-usergroups.gif" width="48px" height="70px" style="border: none" alt="User Group Maintenance">
+			          </a>
+			      </td>	 
 			      <td width="12%" valign="top" align="center"> 
 			          <a href="/ui-jsp-security/unsecureRequestProcessor/User.Search?clientAction=newsearch&<%=SESSION_BEAN.getAuthUrlParms()%>"> 
 			            <img name="m_users" src="<%=APP_ROOT%>/images/mi-users.gif"  width="48px" height="70px" style="border: none" alt="User Maintenance">
 			          </a>
 			      </td>
-			      <td width="12%"  valign="top" align="center"> 
-			          <a href="/ui-jsp-security/unsecureRequestProcessor/Group.Search?clientAction=list&<%=SESSION_BEAN.getAuthUrlParms()%>"> 
-			            <img name="m_users" src="<%=APP_ROOT%>/images/mi-usergroups.gif" width="48px" height="70px" style="border: none" alt="User Group Maintenance">
-			          </a>
-			      </td>	  			      
 			      <td width="12%"  valign="top" align="center"> 
 			          <a href="/authentication/unsecureRequestProcessor/App.Search?clientAction=list&<%=SESSION_BEAN.getAuthUrlParms()%>"> 
 			            <img name="m_apps" src="<%=APP_ROOT%>/images/mi-apps.gif" width="48px" height="70px" style="border: none" alt="Application Maintenance">
