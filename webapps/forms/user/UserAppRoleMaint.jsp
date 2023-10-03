@@ -47,48 +47,6 @@
             xmlhttp.send(payload);
         }
         
-        
-        function changeRoles() {
-            
-       		var config = new RequestConfig();
-       		config.method = "POST";
-       		config.resourceURL = "<%=APP_ROOT%>/dataStreamProcessor/UserAppRole.Edit";
-<%--        		config.resourceURL = "<%=APP_ROOT%>/unsecureRequestProcessor/UserAppRole.Edit"; --%>
-
-//             config.resourceURL = "http://localhost:8080/server-external-api/services/soap";
-       		config.customParmHandler = setupRoleParms;
-       		config.payload = setupPayload;
-       		config.customResponseHandler = changeRolesCallback;
-       		config.renderHTML = false;
-       		config.asynchronous = true;
-       		
-       		// Make Ajax call.
-       		processAjaxRequest(config);
-       }    
-
-        // This function is used for HTTP type request.  Ignore for SOAP or REST related messaging.
-       function setupRoleParms() {
-           var args = "clientAction=RQ_authentication_user_app_roles";
-//           var appId = getSelectedRadio(document.DataForm.ApplicationId);
-//           args += "&ApplicationId=" + appId;
-//           args += "&UserAppLoginId=" + document.DataForm.Username.value;
-//           args += "&UID=admin&appcode=authentication";
-           return args;
-//			return null;
-       }
-
-       function setupPayload() {
-           var userName = document.DataForm.Username.value;
-           var appId = getSelectedRadio(document.DataForm.ApplicationId);
-           var payload = '<SOAP-ENV:Envelope xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/"><SOAP-ENV:Header/><SOAP-ENV:Body><AuthenticationRequest><header><routing>JMS: rmt2.queue.authentication</routing><application>authentication</application><module>admin</module><transaction>GET_USER_PERMISSIONS</transaction><delivery_mode/><message_mode>REQUEST</message_mode><delivery_date>'; 
-        	   payload += getCurrentDateTime() + '</delivery_date></header><criteria>';
-        	   payload += '<user_app_roles_criteria>';
-       		   payload += '<user_name>' + userName + '</user_name>';
-       		   payload += '<app_id>' + appId + '</app_id>';
-       		   payload += '</user_app_roles_criteria>';
-       		   payload += '</criteria></AuthenticationRequest></SOAP-ENV:Body></SOAP-ENV:Envelope>';
-           return payload;
-        }
        
 	   function changeRolesCallback(xmlData) {
 	        // Get XML based on entire document
