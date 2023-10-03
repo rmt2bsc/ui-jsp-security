@@ -8,6 +8,7 @@ import org.apache.log4j.Logger;
 import org.rmt2.constants.ApiHeaderNames;
 import org.rmt2.constants.ApiTransactionCodes;
 import org.rmt2.jaxb.AppRoleType;
+import org.rmt2.jaxb.ApplicationType;
 import org.rmt2.jaxb.AuthCriteriaGroupType;
 import org.rmt2.jaxb.AuthProfileGroupType;
 import org.rmt2.jaxb.AuthenticationRequest;
@@ -272,7 +273,7 @@ public class UserSoapRequests {
      * @return {@link AuthenticationResponse}
      * @throws AuthenticationException
      */
-    public static final AuthenticationResponse callUpdateUserAppPermissions(String userName, String assignedRoles[])
+    public static final AuthenticationResponse callUpdateUserAppPermissions(String userName, int appId, String assignedRoles[])
             throws AuthenticationException {
 
         // Retrieve user group from the database using unique id.
@@ -290,6 +291,11 @@ public class UserSoapRequests {
                 .build();
 
         AuthProfileGroupType apgt = fact.createAuthProfileGroupType();
+
+        // Add target application id
+        ApplicationType at = fact.createApplicationType();
+        at.setAppId(appId);
+        apgt.getApplicationInfo().add(at);
 
         // Extract all user application roles into a List
         List<UserAppRoleType> uartList = new ArrayList<>();

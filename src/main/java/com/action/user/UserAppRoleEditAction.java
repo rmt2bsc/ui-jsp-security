@@ -126,7 +126,7 @@ public class UserAppRoleEditAction extends AbstractActionHandler implements ICom
     public void save() throws ActionCommandException {
         // Call SOAP web service to get user and permissions for selected
         // application
-        AuthenticationResponse response = UserSoapRequests.callUpdateUserAppPermissions(this.user.getUsername(),
+        AuthenticationResponse response = UserSoapRequests.callUpdateUserAppPermissions(this.user.getUsername(), this.appId,
                 this.assignedRoles);
 
         ReplyStatusType rst = response.getReplyStatus();
