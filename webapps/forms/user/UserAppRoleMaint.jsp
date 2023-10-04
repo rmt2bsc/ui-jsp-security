@@ -28,7 +28,9 @@
         	 var userName = document.DataForm.Username.value;
              var appId = getSelectedRadio(document.DataForm.ApplicationId);
              var payload = '<SOAP-ENV:Envelope xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/"><SOAP-ENV:Header/>';
-               payload += '<SOAP-ENV:Body><AuthenticationRequest><header><routing>JMS: rmt2.queue.authentication</routing><application>authentication</application><module>admin</module><transaction>GET_USER_PERMISSIONS</transaction><delivery_mode/><message_mode>REQUEST</message_mode>'; 
+               payload += '<SOAP-ENV:Body>';
+               payload += '<AuthenticationRequest><header><routing>JMS: rmt2.queue.authentication</routing><application>authentication</application><module>admin</module>';
+               payload += '<transaction>GET_USER_PERMISSIONS</transaction><delivery_mode/><message_mode>REQUEST</message_mode>'; 
           	   payload += '<delivery_date>'  + getCurrentDateTime() + '</delivery_date></header><criteria>';
           	   payload += '<user_app_roles_criteria>';
        		   payload += '<user_name>' + userName + '</user_name>';
