@@ -20,9 +20,9 @@ import com.entity.Application;
 import com.entity.ApplicationFactory;
 
 /**
- * Action handler provides functionality to respond to requests pertaining 
- * to the application list page.  The following request types are 
- * serviced: list applications, add and application, and edit an application.
+ * Action handler provides functionality to respond to requests pertaining to
+ * the application list page. The following request types are serviced: list
+ * applications, add and application, and edit an application.
  * 
  * @author Roy Terrell
  * 
@@ -36,10 +36,10 @@ public class AppSearchAction extends AbstractActionHandler implements ICommand {
 
     private Logger logger;
 
-//    private ApplicationApi api;
+    // private ApplicationApi api;
 
     private Object data;
-    
+
     private int selectedAppId;
 
     private boolean selectionRequired;
@@ -50,8 +50,8 @@ public class AppSearchAction extends AbstractActionHandler implements ICommand {
      * @throws SystemException
      */
     public AppSearchAction() throws SystemException {
-	super();
-	logger = Logger.getLogger("AppSearchAction");
+        super();
+        logger = Logger.getLogger("AppSearchAction");
     }
 
     /**
@@ -60,7 +60,7 @@ public class AppSearchAction extends AbstractActionHandler implements ICommand {
      * @throws SystemException
      */
     protected void init(Context _context, Request _request) throws SystemException {
-	super.init(_context, _request);
+        super.init(_context, _request);
     }
 
     /**
@@ -76,18 +76,18 @@ public class AppSearchAction extends AbstractActionHandler implements ICommand {
      * @Throws SystemException when an error needs to be reported.
      */
     public void processRequest(Request request, Response response, String command) throws ActionCommandException {
-	super.processRequest(request, response, command);
-	this.selectionRequired = false;
-	if (command.equalsIgnoreCase(AppSearchAction.COMMAND_LIST)) {
-	    this.search();
-	}
-	if (command.equalsIgnoreCase(AppSearchAction.COMMAND_EDIT)) {
-	    this.selectionRequired = true;
-	    this.editData();
-	}
-	if (command.equalsIgnoreCase(AppSearchAction.COMMAND_ADD)) {
-	    this.addData();
-	}
+        super.processRequest(request, response, command);
+        this.selectionRequired = false;
+        if (command.equalsIgnoreCase(AppSearchAction.COMMAND_LIST)) {
+            this.search();
+        }
+        if (command.equalsIgnoreCase(AppSearchAction.COMMAND_EDIT)) {
+            this.selectionRequired = true;
+            this.editData();
+        }
+        if (command.equalsIgnoreCase(AppSearchAction.COMMAND_ADD)) {
+            this.addData();
+        }
     }
 
     /**
@@ -122,7 +122,7 @@ public class AppSearchAction extends AbstractActionHandler implements ICommand {
      */
     public void add() throws ActionCommandException {
         // this.data = UserFactory.createApplication();
-	return;
+        return;
     }
 
     /**
@@ -150,7 +150,7 @@ public class AppSearchAction extends AbstractActionHandler implements ICommand {
         // api = null;
         // tx = null;
         // }
-	return;
+        return;
     }
 
     /**
@@ -163,21 +163,20 @@ public class AppSearchAction extends AbstractActionHandler implements ICommand {
      *             during data retrieval.
      */
     protected void receiveClientData() throws ActionCommandException {
-	if (this.selectionRequired) {
-	    // Client must select a row to edit.	    
-	    if (this.selectedRow < 0) {
-		logger.log(Level.ERROR, RMT2SystemExceptionConst.MSG_ITEM_NOT_SELECTED);
+        if (this.selectionRequired) {
+            // Client must select a row to edit.
+            if (this.selectedRow < 0) {
+                logger.log(Level.ERROR, RMT2SystemExceptionConst.MSG_ITEM_NOT_SELECTED);
                 throw new ActionCommandException(RMT2SystemExceptionConst.MSG_ITEM_NOT_SELECTED,
                         RMT2SystemExceptionConst.RC_ITEM_NOT_SELECTED);
-	    }
-	    String temp = this.getInputValue("AppId", null);
-	    try {
-		this.selectedAppId = Integer.parseInt(temp);
-	    }
-	    catch (NumberFormatException e) {
-		this.selectedAppId = -1;
-	    }
-	}
+            }
+            String temp = this.getInputValue("AppId", null);
+            try {
+                this.selectedAppId = Integer.parseInt(temp);
+            } catch (NumberFormatException e) {
+                this.selectedAppId = -1;
+            }
+        }
     }
 
     /**
@@ -186,7 +185,7 @@ public class AppSearchAction extends AbstractActionHandler implements ICommand {
      * @throws ActionCommandException
      */
     protected void sendClientData() throws ActionCommandException {
-	this.request.setAttribute(GeneralConst.CLIENT_DATA_RECORD, this.data);
+        this.request.setAttribute(GeneralConst.CLIENT_DATA_RECORD, this.data);
     }
 
     /**
@@ -199,6 +198,6 @@ public class AppSearchAction extends AbstractActionHandler implements ICommand {
      * No Action
      */
     public void delete() throws ActionCommandException {
-	return;
+        return;
     }
 }
