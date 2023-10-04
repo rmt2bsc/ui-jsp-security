@@ -136,7 +136,7 @@
 		 <input name="<%=GeneralConst.REQ_DELETE %>" type="button" value="Delete" style=width:90 onClick="handleAction('_self', document.DataForm, this.name)">
 		 <input name="<%=GeneralConst.REQ_CHANGE_PASSWORD %>" type="button" value="Change Password" style=width:140 onClick="handleAction('_self', document.DataForm, this.name)">
 		 <input name="approle" type="button" value="Roles" style=width:90 onClick="handleAction('_self', document.DataForm, this.name)">
-		 <input name="resources" type="button" value="Resources" style=width:90 onClick="handleAction('_self', document.DataForm, this.name)">
+		 <input name="resources" disabled type="button" value="Resources" style=width:90 onClick="handleAction('_self', document.DataForm, this.name)">
 		 <input name="<%=GeneralConst.REQ_BACK %>" type="button" value="Back" style=width:90 onClick="handleAction('_self', document.DataForm, this.name)">
    </form>
    <db:Dispose/>

@@ -24,6 +24,7 @@ import com.api.web.util.RMT2WebUtility;
 import com.entity.AppRoleFactory;
 import com.entity.Application;
 import com.entity.ApplicationFactory;
+import com.entity.ResourceFactory;
 import com.entity.UserLogin;
 import com.entity.UserLoginFactory;
 
@@ -50,6 +51,8 @@ public class UserEditAction extends AbstractActionHandler implements ICommand {
     private Object assignedRoles;
     private Object revokedRoles;
     private String selectedApp;
+    private Object assignedResources;
+    private Object revokedResources;
 
     /**
      * Default constructor responsible for initializing the logger.
@@ -203,40 +206,6 @@ public class UserEditAction extends AbstractActionHandler implements ICommand {
         this.receiveClientData();
         this.getAppRoleData();
         this.sendClientData();
-
-        // DatabaseTransApi tx = DatabaseTransFactory.create();
-        // ApplicationApi appApi =
-        // UserFactory.createAppApi((DatabaseConnectionBean) tx.getConnector(),
-        // this.request);
-        // try {
-        // this.apps = appApi.getAllApps();
-        //
-        // // setup user criteria
-        // UserLogin userCriteria = UserFactory.createUserLogin();
-        // userCriteria.setLoginId(this.user.getLoginId());
-        //
-        // // Setup application-role criteria
-        // AppRole appRoleCriteria = UserFactory.createAppRole();
-        // if (this.apps != null) {
-        // Application app = (Application) ((List) this.apps).get(0);
-        // appRoleCriteria.setAppId(app.getAppId());
-        // this.selectedApp = String.valueOf(app.getAppId());
-        // }
-        // this.assignedRoles = appApi.getAppRoleAssigned(userCriteria,
-        // appRoleCriteria);
-        // this.revokedRoles = appApi.getAppRoleRevoked(userCriteria,
-        // appRoleCriteria);
-        // }
-        // catch (UserAuthenticationException e) {
-        // throw new ActionCommandException(e);
-        // }
-        // finally {
-        // this.sendClientData();
-        // appApi.close();
-        // tx.close();
-        // appApi = null;
-        // tx = null;
-        // }
         return;
     }
 
@@ -281,19 +250,51 @@ public class UserEditAction extends AbstractActionHandler implements ICommand {
     }
 
     protected void doResources() throws ActionCommandException {
-        // try {
-        // UserResourceAccessEditAction delegate = new
-        // UserResourceAccessEditAction();
-        // delegate.processRequest(this.request, this.response,
-        // UserResourceAccessEditAction.COMMAND_FIRSTLOAD);
-        // }
-        // catch (SystemException e) {
-        // this.logger.log(Level.ERROR, e.getMessage());
-        // throw new ActionCommandException(e);
-        // }
-
+        this.receiveClientData();
+        this.getResourcesData();
+        this.sendClientData();
+        return;
     }
 
+    private void getResourcesData() {
+        // Call SOAP web service to get complete list of applications
+        AuthenticationResponse appResponse = ApplicationSoapRequests.callApplications();
+        ReplyStatusType rst = appResponse.getReplyStatus();
+        this.msg = rst.getMessage();
+        if (rst.getReturnCode().intValue() == GeneralConst.RC_FAILURE) {
+            this.msg = rst.getMessage();
+            return;
+        }
+        List<Application> applications = ApplicationFactory.create(appResponse.getProfile().getApplicationInfo());
+        this.apps = applications;
+        this.selectedApp = String.valueOf(applications.get(0).getAppId());
+
+        // Call SOAP web service to get user and permissions for selected
+        // application
+        AuthenticationResponse response = UserSoapRequests.callGetUserAppPermissions(this.user.getUsername(),
+                applications.get(0).getAppId());
+        rst = response.getReplyStatus();
+        this.msg = rst.getMessage();
+        if (rst.getReturnCode().intValue() == GeneralConst.RC_FAILURE) {
+            this.msg = rst.getMessage();
+            return;
+        }
+
+        // Sync UserLogin Object
+        this.user = UserLoginFactory.getUser(response.getProfile().getUserInfo().get(0));
+
+        // Extract user's permissions
+        this.assignedResources = new ArrayList();
+        this.revokedResources = new ArrayList();
+        if (response.getProfile().getUserInfo().get(0).getGrantedResources() != null) {
+            this.assignedResources = ResourceFactory.createUserResourceAccess(response.getProfile().getUserInfo().get(0)
+                    .getGrantedResources());
+        }
+        if (response.getProfile().getUserInfo().get(0).getRevokedResources() != null) {
+            this.revokedResources = ResourceFactory.createUserResourceAccess(response.getProfile().getUserInfo().get(0)
+                    .getRevokedResources());
+        }
+    }
     /**
      * Gathers data from the user's request and packages the data into a
      * UserLogin object.

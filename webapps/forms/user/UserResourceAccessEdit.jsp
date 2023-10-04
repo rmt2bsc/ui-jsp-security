@@ -18,8 +18,8 @@
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="-1">  
     <link rel=STYLESHEET type="text/css" href="<%=APP_ROOT%>/css/RMT2Table.css">
-		<link rel=STYLESHEET type="text/css" href="<%=APP_ROOT%>/css/RMT2General.css">
-		<script Language="JavaScript" src="<%=APP_ROOT%>/js/RMT2General.js"></script>
+	<link rel=STYLESHEET type="text/css" href="<%=APP_ROOT%>/css/RMT2General.css">
+	<script Language="JavaScript" src="<%=APP_ROOT%>/js/RMT2General.js"></script>
     <script Language="JavaScript" src="<%=APP_ROOT%>/js/RMT2Menu.js"></script>
     <script Language="JavaScript" src="<%=APP_ROOT%>/js/dropdown.js"></script>
     <script Language="JavaScript" src="<%=APP_ROOT%>/js/AjaxApi.js"></script>
@@ -28,6 +28,47 @@
     <script Language="JavaScript" src="<%=APP_ROOT%>/js/xpath.js"></script>
     
     <script>
+        var soapURL = 'http://localhost:8080/server-external-api/services/soap';
+        
+	    function doSoapCallForResources() {
+		   	 var xmlhttp = new XMLHttpRequest();
+		    
+		   	 xmlhttp.open('POST', soapURL, true);
+		        
+		   	 var userName = document.DataForm.Username.value;
+		     var appId = getSelectedRadio(document.DataForm.ApplicationId);
+		     var payload = '<SOAP-ENV:Envelope xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/"><SOAP-ENV:Header/>';
+	         payload += '<SOAP-ENV:Body>';
+	         payload += '<AuthenticationRequest><header><routing>JMS: rmt2.queue.authentication</routing><application>authentication</application><module>admin</module>';
+	         payload += '<transaction>GET_USER_PERMISSIONS</transaction><delivery_mode/><message_mode>REQUEST</message_mode>'; 
+	         payload += '<delivery_date>'  + getCurrentDateTime() + '</delivery_date></header><criteria>';
+	     	 payload += '<user_app_roles_criteria>';
+	  		 payload += '<user_name>' + userName + '</user_name>';
+	  		 payload += '<app_id>' + appId + '</app_id>';
+	  		 payload += '</user_app_roles_criteria>';
+	  		 payload += '</criteria></AuthenticationRequest></SOAP-ENV:Body></SOAP-ENV:Envelope>';
+	    		   
+	  		 xmlhttp.onreadystatechange = function () {
+		         if (xmlhttp.readyState == 4) {
+		             if (xmlhttp.status == 200) {
+		                 doSoapCallbackForResources(xmlhttp.responseText);
+		             }
+		         }
+	         }
+		    
+	  		 // Send the POST request
+		     xmlhttp.setRequestHeader('Content-Type', 'text/xml');
+		     xmlhttp.send(payload);
+	    }
+	   
+	  
+		function doSoapCallbackForResources(xmlData) {
+		    // Get XML based on entire document
+		    var renderer = new AjaxXmlRenderer(null, xmlData);
+		  	renderer.buildSelectOptions(document.DataForm.AssignedRoleId, "/SOAP-ENV:Envelope/SOAP-ENV:Body/AuthenticationResponse/profile/user_info/granted_app_roles/user_app_role/app_role_info/app_role_code", "/SOAP-ENV:Envelope/SOAP-ENV:Body/AuthenticationResponse/profile/user_info/granted_app_roles/user_app_role/app_role_info/app_role_name");
+		  	renderer.buildSelectOptions(document.DataForm.RevokedRoleId,  "/SOAP-ENV:Envelope/SOAP-ENV:Body/AuthenticationResponse/profile/user_info/revoked_app_roles/user_app_role/app_role_info/app_role_code", "/SOAP-ENV:Envelope/SOAP-ENV:Body/AuthenticationResponse/profile/user_info/revoked_app_roles/user_app_role/app_role_info/app_role_name");
+		} 
+        
         function changeSubTypes() {
        		var config = new RequestConfig();
        		config.method = "POST";
@@ -92,21 +133,22 @@
        <form name="DataForm" method="POST" action="<%=APP_ROOT%>/unsecureRequestProcessor/UserResourceAccess.Edit">
 		  <h3><strong><%=pageTitle%></strong></h3>
 		  <%@include file="UserHeader.jsp"%>
-  		<br>
+  		  <br>
 
-   <db:datasource id="resTypeDso" 
-                  classId="com.api.DataSourceApi" 
-                  connection="con"
-								  query="UserResourceTypeView"
-								  order="description"
-								  type="xml"/>												  
-   <db:datasource id="resSubTypeDso" 
-                  classId="com.api.DataSourceApi" 
-                  connection="con"
-								  query="UserResourceSubtypeView"
-								  where="<%=subTypeCriteria%>"
-								  order="name"
-								  type="xml"/>												  								  
+		  <db:datasource id="resTypeDso" 
+		                 classId="com.api.DataSourceApi" 
+		                 connection="con"
+						 query="UserResourceTypeView"
+						 order="description"
+						 type="xml"/>												  
+	   
+	     <db:datasource id="resSubTypeDso" 
+	                    classId="com.api.DataSourceApi" 
+	                    connection="con"
+					    query="UserResourceSubtypeView"
+					    where="<%=subTypeCriteria%>"
+					    order="name"
+					    type="xml"/>												  								  
 								  	  
 		
 		<table width="50%" border="0" cellspacing="2" cellpadding="0">
@@ -116,13 +158,13 @@
 						<font size="3"><b>Resource Type</b></font>
 					 </td>
 					 <td align="left">
-							<db:InputControl dataSource="resTypeDso"
-															 type="select"
-															 name="ResourceTypeId"
-															 codeProperty="RsrcTypeId"
-															 displayProperty="Description"
-															 selectedValue="#typeid"
-															 onChange="javascript:changeSubTypes();"/>
+							<db:InputControl dataSource="resourceList"
+											 type="select"
+											 name="ResourceTypeId"
+											 codeProperty="RsrcTypeId"
+											 displayProperty="Description"
+											 selectedValue="#typeid"
+											 onChange="javascript:changeSubTypes();"/>
 					 </td>
 				</tr>								
 				<tr> 
@@ -130,13 +172,13 @@
 						<font size="3"><b>Resource Sub-Type</b></font>
 					 </td>
 					 <td align="left">
-							<db:InputControl dataSource="resSubTypeDso"
-															 type="select"
-															 name="ResourceSubtypeId"
-															 codeProperty="RsrcSubtypeId"
-															 displayProperty="Name"
-															 selectedValue="#subtypeid"
-															 onChange="javascript:getResources();"/>						 
+							<db:InputControl dataSource="resourceSubTypeList"
+											 type="select"
+											 name="ResourceSubtypeId"
+											 codeProperty="RsrcSubtypeId"
+											 displayProperty="Name"
+											 selectedValue="#subtypeid"
+											 onChange="javascript:getResources();"/>						 
 					 </td>
 				</tr>			
 		</table>
@@ -153,14 +195,14 @@
 			</tr>
 			<tr> 
 				<td> 
-					 <beanlib:InputControl dataSource="revokedRsrc"
-																	type="select"
-																	name="RevokedRsrcId"
-																	codeProperty="RsrcId"
-																	displayProperty="Name"
-																	multiSelect="Yes"
-																	size="25"
-																	style="width:400"/>
+					  <beanlib:InputControl dataSource="revokedRsrc"
+											type="select"
+											name="RevokedRsrcId"
+											codeProperty="RsrcId"
+											displayProperty="Name"
+											multiSelect="Yes"
+											size="25"
+											style="width:400"/>
 				</td>
 				<td width="20%" align="center" valign="middle">
 				   <table width="50%" align="center" border="0">
@@ -178,14 +220,14 @@
 				   </table>
 				</td>
 				<td> 
-					 <beanlib:InputControl dataSource="assignedRsrc"
-																	type="select"
-																	name="AssignedRsrcId"
-																	codeProperty="RsrcId"
-																	displayProperty="ResrcName"
-																	multiSelect="Yes"
-																	size="25"
-																	style="width:400"/>				
+					  <beanlib:InputControl dataSource="assignedRsrc"
+											type="select"
+											name="AssignedRsrcId"
+											codeProperty="RsrcId"
+											displayProperty="ResrcName"
+											multiSelect="Yes"
+											size="25"
+											style="width:400"/>				
 				</td>
 			</tr>			
 		</table>
