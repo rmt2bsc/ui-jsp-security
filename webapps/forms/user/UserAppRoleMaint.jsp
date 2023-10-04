@@ -99,22 +99,23 @@
 			  </td>
 			</tr>
 			<tr> 
-				<td> 
+				<td width="40%"> 
 					 <beanlib:InputControl dataSource="revokedRoles"
 											type="select"
 											name="RevokedRoleId"
 											codeProperty="AppRoleId"
 											displayProperty="Name"
 											multiSelect="Yes"
-											size="25"
-											style="width:400"/>
+											size="15"
+											style="width:100%"/>
 				</td>
 				<td width="20%" align="center" valign="middle">
-				   <table width="50%" align="center" border="0">
+				   <table width="100%" align="center" border="0">
 				      <tr>
 					     <td align="center">
-                  <input type="button" name="assigned_cb" value="Assign =&gt;"  style="width:90px" onclick="moveSelected(DataForm.RevokedRoleId, DataForm.AssignedRoleId, true)">
-						   </td>
+                              <input type="button" name="assigned_cb" value="Assign =&gt;"  
+                                     style="width:90px" onclick="moveSelected(DataForm.RevokedRoleId, DataForm.AssignedRoleId, true)">
+						 </td>
 					  </tr>
 					  <tr><td>&nbsp;</td></tr>
 					  <tr>
@@ -124,15 +125,15 @@
 					  </tr>
 				   </table>  
 				</td>
-				<td> 
+				<td width="40%"> 
 					 <beanlib:InputControl dataSource="assignedRoles"
 											type="select"
 											name="AssignedRoleId"
 											codeProperty="AppRoleId"
 											displayProperty="Name"
 											multiSelect="Yes"
-											size="25"
-											style="width:400"/>				
+											size="15"
+											style="width:100%"/>				
 				</td>
 			</tr>			
 		</table>
