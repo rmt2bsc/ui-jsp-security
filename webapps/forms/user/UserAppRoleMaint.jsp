@@ -4,6 +4,7 @@
 
 
 <gen:InitAppRoot id="APP_ROOT"/>
+<gen:InitSoapHost id="SOAP_HOST"/>
 
 <html>
   <head>
@@ -23,7 +24,7 @@
     <script>
         function doSoapCall() {
         	 var xmlhttp = new XMLHttpRequest();
-             xmlhttp.open('POST', 'http://localhost:8080/server-external-api/services/soap', true);
+             xmlhttp.open('POST', '<%=SOAP_HOST%>', true);
              
         	 var userName = document.DataForm.Username.value;
              var appId = getSelectedRadio(document.DataForm.ApplicationId);

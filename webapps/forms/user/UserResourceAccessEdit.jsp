@@ -7,6 +7,8 @@
 <%@ page import="com.constants.RMT2ServletConst" %>
 
 <gen:InitAppRoot id="APP_ROOT"/>
+<gen:InitSoapHost id="SOAP_HOST"/>
+
    <%
       String rsrcTypeId = (String) request.getAttribute("typeid");
       String subTypeCriteria = (rsrcTypeId == null ? "" : "rsrc_type_id = " + rsrcTypeId);
@@ -28,12 +30,9 @@
     <script Language="JavaScript" src="<%=APP_ROOT%>/js/xpath.js"></script>
     
     <script>
-        var soapURL = 'http://localhost:8080/server-external-api/services/soap';
-        
 	    function doSoapCallForResources() {
 		   	 var xmlhttp = new XMLHttpRequest();
-		    
-		   	 xmlhttp.open('POST', soapURL, true);
+		   	 xmlhttp.open('POST', '<%=SOAP_HOST%>', true);
 		        
 		   	 var userName = document.DataForm.Username.value;
 		     var appId = getSelectedRadio(document.DataForm.ApplicationId);
