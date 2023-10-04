@@ -41,7 +41,7 @@
        		   xmlhttp.onreadystatechange = function () {
                 if (xmlhttp.readyState == 4) {
                     if (xmlhttp.status == 200) {
-                        changeRolesCallback(xmlhttp.responseText);
+                        doSoapCallback(xmlhttp.responseText);
                     }
                 }
             }
@@ -51,7 +51,7 @@
         }
         
        
-	   function changeRolesCallback(xmlData) {
+	   function doSoapCallback(xmlData) {
 	        // Get XML based on entire document
 	        var renderer = new AjaxXmlRenderer(null, xmlData);
 	   		renderer.buildSelectOptions(document.DataForm.AssignedRoleId, "/SOAP-ENV:Envelope/SOAP-ENV:Body/AuthenticationResponse/profile/user_info/granted_app_roles/user_app_role/app_role_info/app_role_code", "/SOAP-ENV:Envelope/SOAP-ENV:Body/AuthenticationResponse/profile/user_info/granted_app_roles/user_app_role/app_role_info/app_role_name");
