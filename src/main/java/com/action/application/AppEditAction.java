@@ -85,8 +85,8 @@ public class AppEditAction extends AbstractActionHandler implements ICommand {
     }
 
     /**
-     * Updates an application profile by persiting changes to the database. This
-     * method is used for adding and modifying application profiles.
+     * Updates an application profile by persisting changes to the database.
+     * This method is used for adding and modifying application profiles.
      * 
      * @throws ActionCommandException
      */

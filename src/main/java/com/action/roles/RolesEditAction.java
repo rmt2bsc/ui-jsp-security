@@ -16,6 +16,7 @@ import com.api.web.Context;
 import com.api.web.ICommand;
 import com.api.web.Request;
 import com.api.web.Response;
+import com.api.web.util.RMT2WebUtility;
 import com.entity.RoleFactory;
 import com.entity.Roles;
 
@@ -89,28 +90,23 @@ public class RolesEditAction extends AbstractActionHandler implements ICommand {
      * @throws ActionCommandException
      */
     public void save() throws ActionCommandException {
-        // DatabaseTransApi tx = DatabaseTransFactory.create();
-        // UserApi api = UserFactory.createApi((DatabaseConnectionBean)
-        // tx.getConnector(), this.request);
-        // Roles role = (Roles) this.data;
-        // try {
-        // // Update application profile.
-        // api.maintainRole(role);
-        // // Commit Changes to the database
-        // tx.commitUOW();
-        // this.msg = "Role configuration saved successfully";
-        // }
-        // catch (UserAuthenticationException e) {
-        // this.msg = e.getMessage();
-        // tx.rollbackUOW();
-        // throw new ActionCommandException(this.msg);
-        // }
-        // finally {
-        // api.close();
-        // tx.close();
-        // api = null;
-        // tx = null;
-        // }
+        // Call SOAP web service to persist changes made to the Roles
+        // object.
+        try {
+            AuthenticationResponse appResponse = RoleSoapRequests.callUpdateRole((Roles) this.data);
+            ReplyStatusType rst = appResponse.getReplyStatus();
+            this.msg = rst.getMessage();
+            if (rst.getReturnCode().intValue() == GeneralConst.RC_FAILURE) {
+                this.msg = rst.getMessage();
+                return;
+            }
+            List<Roles> obj = RoleFactory.create(appResponse.getProfile().getRoleInfo());
+            this.data = obj.get(0);
+            this.sendClientData();
+        } catch (Exception e) {
+            logger.log(Level.ERROR, e.getMessage());
+            throw new ActionCommandException(e.getMessage());
+        }
     }
 
     /**
@@ -147,16 +143,15 @@ public class RolesEditAction extends AbstractActionHandler implements ICommand {
      *             during data retrieval.
      */
     protected void receiveClientData() throws ActionCommandException {
-        // try {
-        // // Retrieve the role from the database using unique id.
-        // this.data = UserFactory.createRole();
-        // // Update role object with user input.
-        // UserFactory.packageBean(this.request, this.data);
-        // }
-        // catch (Exception e) {
-        // logger.log(Level.ERROR, e.getMessage());
-        // throw new ActionCommandException(e.getMessage());
-        // }
+        try {
+            // Retrieve application from the database using unique id.
+            this.data = RoleFactory.create();
+            // Update application object with user input.
+            RMT2WebUtility.packageBean(this.request, this.data);
+        } catch (Exception e) {
+            logger.log(Level.ERROR, e.getMessage());
+            throw new ActionCommandException(e.getMessage());
+        }
     }
 
     /**
