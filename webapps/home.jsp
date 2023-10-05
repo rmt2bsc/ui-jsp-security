@@ -53,7 +53,12 @@
 			          <a href="/ui-jsp-security/unsecureRequestProcessor/Roles.Search?clientAction=list&<%=SESSION_BEAN.getAuthUrlParms()%>"> 
 			            <img name="m_apps" src="<%=APP_ROOT%>/images/mi-roles.gif" width="48px" height="70px" style="border: none" alt="Security Roles Maintenance">
 			          </a>
-			      </td>	  			      
+			      </td>	  		
+			      <td width="12%"  valign="top" align="center"> 
+			          <a href="/ui-jsp-security/unsecureRequestProcessor/AppRole.Search?clientAction=new&<%=SESSION_BEAN.getAuthUrlParms()%>"> 
+			            <img name="m_res" src="<%=APP_ROOT%>/images/mi-approles.gif"  width="48px" height="70px" style="border: none" alt="Resource Maintenance">
+			          </a>
+			      </td>	  		      
 			      <td width="12%"  valign="top" align="center"> 
 			          <a href="/ui-jsp-security/unsecureRequestProcessor/ResourceType.Search?clientAction=list&<%=SESSION_BEAN.getAuthUrlParms()%>"> 
 			            <img name="m_restype" src="<%=APP_ROOT%>/images/mi-restype.gif"  width="48px" height="70px" style="border: none" alt="Resource Type Maintenance">
@@ -69,11 +74,6 @@
 			            <img name="m_res" src="<%=APP_ROOT%>/images/mi-res.gif"  width="48px" height="70px" style="border: none" alt="Resource Maintenance">
 			          </a>
 			      </td>	  			      			      			      			      
-			      <td width="12%"  valign="top" align="center"> 
-			          <a href="/ui-jsp-security/unsecureRequestProcessor/AppRole.Search?clientAction=new&<%=SESSION_BEAN.getAuthUrlParms()%>"> 
-			            <img name="m_res" src="<%=APP_ROOT%>/images/mi-approles.gif"  width="48px" height="70px" style="border: none" alt="Resource Maintenance">
-			          </a>
-			      </td>	  			      			      			 			      
 			      <td width="4%"  valign="top" align="center">&nbsp;</td>	  
         </tr>
 
