@@ -134,7 +134,7 @@ public class AppSearchAction extends AbstractActionHandler implements ICommand {
      * @throws ActionCommandException
      */
     public void edit() throws ActionCommandException {
-        Application app = new Application();
+        Application app = ApplicationFactory.create();
         app.setAppId(this.selectedAppId);
         String temp = this.getInputValue("Name", null);
         app.setName(temp);
