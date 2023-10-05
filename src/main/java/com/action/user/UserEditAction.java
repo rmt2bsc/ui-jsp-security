@@ -211,7 +211,7 @@ public class UserEditAction extends AbstractActionHandler implements ICommand {
 
     private void getAppRoleData() {
         // Call SOAP web service to get complete list of applications
-        AuthenticationResponse appResponse = ApplicationSoapRequests.callApplications();
+        AuthenticationResponse appResponse = ApplicationSoapRequests.callGetApplications();
         ReplyStatusType rst = appResponse.getReplyStatus();
         this.msg = rst.getMessage();
         if (rst.getReturnCode().intValue() == GeneralConst.RC_FAILURE) {
@@ -258,7 +258,7 @@ public class UserEditAction extends AbstractActionHandler implements ICommand {
 
     private void getResourcesData() {
         // Call SOAP web service to get complete list of applications
-        AuthenticationResponse appResponse = ApplicationSoapRequests.callApplications();
+        AuthenticationResponse appResponse = ApplicationSoapRequests.callGetApplications();
         ReplyStatusType rst = appResponse.getReplyStatus();
         this.msg = rst.getMessage();
         if (rst.getReturnCode().intValue() == GeneralConst.RC_FAILURE) {

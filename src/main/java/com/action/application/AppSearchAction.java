@@ -99,7 +99,7 @@ public class AppSearchAction extends AbstractActionHandler implements ICommand {
     protected void search() throws ActionCommandException {
         // Call SOAP web service to get complete list of applications
         try {
-            AuthenticationResponse appResponse = ApplicationSoapRequests.callApplications();
+            AuthenticationResponse appResponse = ApplicationSoapRequests.callGetApplications();
             ReplyStatusType rst = appResponse.getReplyStatus();
             this.msg = rst.getMessage();
             if (rst.getReturnCode().intValue() == GeneralConst.RC_FAILURE) {

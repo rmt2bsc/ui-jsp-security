@@ -37,7 +37,7 @@ public class ApplicationSoapRequests {
      * @return {@link AuthenticationResponse}
      * @throws AuthenticationException
      */
-    public static final AuthenticationResponse callApplications() throws AuthenticationException {
+    public static final AuthenticationResponse callGetApplications() throws AuthenticationException {
         // Retrieve all user group records from the database
         ObjectFactory fact = new ObjectFactory();
         AuthenticationRequest req = fact.createAuthenticationRequest();

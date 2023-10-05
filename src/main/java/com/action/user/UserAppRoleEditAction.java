@@ -213,7 +213,7 @@ public class UserAppRoleEditAction extends AbstractActionHandler implements ICom
 
     private void getUserRoleData() throws ActionCommandException {
         // Call SOAP web service to get complete list of applications
-        AuthenticationResponse appResponse = ApplicationSoapRequests.callApplications();
+        AuthenticationResponse appResponse = ApplicationSoapRequests.callGetApplications();
         ReplyStatusType rst = appResponse.getReplyStatus();
         this.msg = rst.getMessage();
         if (rst.getReturnCode().intValue() == GeneralConst.RC_FAILURE) {
