@@ -119,7 +119,7 @@ public class RolesSearchAction extends AbstractActionHandler implements ICommand
      * @throws ActionCommandException
      */
     public void add() throws ActionCommandException {
-        // this.data = UserFactory.createRole();
+        this.data = RoleFactory.create();
         return;
     }
 
