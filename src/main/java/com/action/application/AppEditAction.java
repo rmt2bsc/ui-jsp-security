@@ -113,8 +113,6 @@ public class AppEditAction extends AbstractActionHandler implements ICommand {
     /**
      * Delete an application from the database using the id of the application.
      * 
-     * @param appId
-     *            The id of the application
      * @return Total number of rows deleted.
      * @throws ApplicationException
      */
