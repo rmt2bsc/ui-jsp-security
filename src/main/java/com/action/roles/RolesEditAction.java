@@ -110,6 +110,30 @@ public class RolesEditAction extends AbstractActionHandler implements ICommand {
     }
 
     /**
+     * Delete a role from the database using its unique id.
+     * 
+     * @return Total number of rows deleted.
+     * @throws ActionCommandException
+     */
+    public void delete() throws ActionCommandException {
+        // Call SOAP web service to persist changes made to the Application
+        // object.
+        try {
+            AuthenticationResponse appResponse = RoleSoapRequests.callDeleteRole((Roles) this.data);
+            ReplyStatusType rst = appResponse.getReplyStatus();
+            this.msg = rst.getMessage();
+            if (rst.getReturnCode().intValue() == GeneralConst.RC_FAILURE) {
+                this.msg = rst.getMessage();
+                return;
+            }
+            this.sendClientData();
+        } catch (Exception e) {
+            logger.log(Level.ERROR, e.getMessage());
+            throw new ActionCommandException(e.getMessage());
+        }
+    }
+
+    /**
      * Navigates the user to the Roles List page.
      * 
      * @throws ActionCommandException
@@ -152,41 +176,6 @@ public class RolesEditAction extends AbstractActionHandler implements ICommand {
             logger.log(Level.ERROR, e.getMessage());
             throw new ActionCommandException(e.getMessage());
         }
-    }
-
-    /**
-     * Delete a role from the database using its unique id.
-     * 
-     * @param appId
-     *            The id of the user group
-     * @return Total number of rows deleted.
-     * @throws ActionCommandException
-     */
-    public void delete() throws ActionCommandException {
-        // DatabaseTransApi tx = DatabaseTransFactory.create();
-        // UserApi api = UserFactory.createApi((DatabaseConnectionBean)
-        // tx.getConnector(), this.request);
-        // int rc;
-        // Roles role = (Roles) this.data;
-        // try {
-        // // Update user group profile.
-        // rc = api.deleteRole(role.getRoleId());
-        // // Commit Changes to the database
-        // tx.commitUOW();
-        // this.msg = rc +
-        // " securiy role configuration(s) deleted successfully";
-        // }
-        // catch (UserAuthenticationException e) {
-        // this.msg = e.getMessage();
-        // tx.rollbackUOW();
-        // throw new ActionCommandException(this.msg);
-        // }
-        // finally {
-        // api.close();
-        // tx.close();
-        // api = null;
-        // tx = null;
-        // }
     }
 
     /**
