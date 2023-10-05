@@ -21,9 +21,9 @@ import com.entity.RoleFactory;
 import com.entity.Roles;
 
 /**
- * Action handler provides functionality to respond to requests pertaining 
- * to the Roles edit page.  The following request types are serviced: save 
- * and delete a role, and to navigate back to the role list page.
+ * Action handler provides functionality to respond to requests pertaining to
+ * the Roles edit page. The following request types are serviced: save and
+ * delete a role, and to navigate back to the role list page.
  * 
  * @author Roy Terrell
  * 
@@ -45,8 +45,8 @@ public class RolesEditAction extends AbstractActionHandler implements ICommand {
      * @throws SystemException
      */
     public RolesEditAction() throws SystemException {
-	super();
-	logger = Logger.getLogger("RolesEditAction");
+        super();
+        logger = Logger.getLogger("RolesEditAction");
     }
 
     /**
@@ -55,7 +55,7 @@ public class RolesEditAction extends AbstractActionHandler implements ICommand {
      * @throws SystemException
      */
     protected void init(Context _context, Request _request) throws SystemException {
-	super.init(_context, _request);
+        super.init(_context, _request);
     }
 
     /**
@@ -71,16 +71,16 @@ public class RolesEditAction extends AbstractActionHandler implements ICommand {
      * @Throws SystemException when an error needs to be reported.
      */
     public void processRequest(Request request, Response response, String command) throws ActionCommandException {
-	super.processRequest(request, response, command);
-	if (command.equalsIgnoreCase(RolesEditAction.COMMAND_SAVE)) {
-	    this.saveData();
-	}
-	if (command.equalsIgnoreCase(RolesEditAction.COMMAND_DELETE)) {
-	    this.deleteData();
-	}
-	if (command.equalsIgnoreCase(RolesEditAction.COMMAND_BACK)) {
-	    this.doBack();
-	}
+        super.processRequest(request, response, command);
+        if (command.equalsIgnoreCase(RolesEditAction.COMMAND_SAVE)) {
+            this.saveData();
+        }
+        if (command.equalsIgnoreCase(RolesEditAction.COMMAND_DELETE)) {
+            this.deleteData();
+        }
+        if (command.equalsIgnoreCase(RolesEditAction.COMMAND_BACK)) {
+            this.doBack();
+        }
     }
 
     /**
@@ -185,22 +185,22 @@ public class RolesEditAction extends AbstractActionHandler implements ICommand {
      * @throws ActionCommandException
      */
     protected void sendClientData() throws ActionCommandException {
-	this.request.setAttribute(GeneralConst.CLIENT_DATA_RECORD, this.data);
-	this.request.setAttribute(RMT2ServletConst.REQUEST_MSG_INFO, this.msg);
+        this.request.setAttribute(GeneralConst.CLIENT_DATA_RECORD, this.data);
+        this.request.setAttribute(RMT2ServletConst.REQUEST_MSG_INFO, this.msg);
     }
 
     /**
      * No Action
      */
     public void add() throws ActionCommandException {
-	return;
+        return;
     }
 
     /**
      * No Action
      */
     public void edit() throws ActionCommandException {
-	return;
+        return;
     }
 
 }
