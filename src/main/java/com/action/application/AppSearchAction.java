@@ -11,6 +11,7 @@ import com.SystemException;
 import com.api.constants.GeneralConst;
 import com.api.constants.RMT2SystemExceptionConst;
 import com.api.jsp.action.AbstractActionHandler;
+import com.api.util.RMT2Money;
 import com.api.web.ActionCommandException;
 import com.api.web.Context;
 import com.api.web.ICommand;
@@ -121,35 +122,30 @@ public class AppSearchAction extends AbstractActionHandler implements ICommand {
      * @throws ActionCommandException
      */
     public void add() throws ActionCommandException {
-        // this.data = UserFactory.createApplication();
+        this.data = ApplicationFactory.create();
         return;
     }
 
     /**
      * Obtains the input data from the request and maps the data to an
-     * {@link com.bean.Application Application} object.
+     * {@link com.bean.Application Application} object. Lastly, the application
+     * object is prepared to be forwarded to the next JSP for processing.
      * 
      * @throws ActionCommandException
      */
     public void edit() throws ActionCommandException {
-        // DatabaseTransApi tx = DatabaseTransFactory.create();
-        // ApplicationApi api =
-        // UserFactory.createAppApi((DatabaseConnectionBean) tx.getConnector(),
-        // this.request);
-        // try {
-        // // Retrieve application from the database using unique id.
-        // this.data = api.findApp(this.selectedAppId);
-        // }
-        // catch (Exception e) {
-        // logger.log(Level.ERROR, e.getMessage());
-        // throw new ActionCommandException(e.getMessage());
-        // }
-        // finally {
-        // api.close();
-        // tx.close();
-        // api = null;
-        // tx = null;
-        // }
+        Application app = new Application();
+        app.setAppId(this.selectedAppId);
+        String temp = this.getInputValue("Name", null);
+        app.setName(temp);
+        temp = this.getInputValue("Description", null);
+        app.setDescription(temp);
+        temp = this.getInputValue("Status", null);
+        if (RMT2Money.isNumeric(temp)) {
+            app.setActive(Integer.valueOf(temp));
+        }
+
+        this.data = app;
         return;
     }
 

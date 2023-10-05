@@ -42,6 +42,9 @@
 								<td class="clsTableListHeader">
 								 	<beanlib:InputControl type="radio" name="<%=GeneralConst.CLIENTROW_PROPERTY%>" value="rowid"/>
 								 	<beanlib:InputControl type="hidden" name="AppId" value="#item.AppId" uniqueName="yes"/>
+								 	<beanlib:InputControl type="hidden" name="Name" value="#item.Name" uniqueName="yes"/>
+								 	<beanlib:InputControl type="hidden" name="Description" value="#item.Description" uniqueName="yes"/>
+								 	<beanlib:InputControl type="hidden" name="Status" value="#item.Active" uniqueName="yes"/>
 								</td>	
 								<td align="center">
 									<beanlib:InputControl value="#item.AppId"/>
