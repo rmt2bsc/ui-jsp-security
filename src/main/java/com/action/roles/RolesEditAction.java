@@ -1,6 +1,11 @@
 package com.action.roles;
 
+import java.util.List;
+
+import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
+import org.rmt2.jaxb.AuthenticationResponse;
+import org.rmt2.jaxb.ReplyStatusType;
 
 import com.SystemException;
 import com.api.constants.GeneralConst;
@@ -11,6 +16,8 @@ import com.api.web.Context;
 import com.api.web.ICommand;
 import com.api.web.Request;
 import com.api.web.Response;
+import com.entity.RoleFactory;
+import com.entity.Roles;
 
 /**
  * Action handler provides functionality to respond to requests pertaining 
@@ -42,7 +49,7 @@ public class RolesEditAction extends AbstractActionHandler implements ICommand {
     }
 
     /**
-     * Performs post initialization and sets up an User Api reference.
+     * Performs post initialization and sets up a Roles Api reference.
      * 
      * @throws SystemException
      */
@@ -51,17 +58,16 @@ public class RolesEditAction extends AbstractActionHandler implements ICommand {
     }
 
     /**
-     * Processes the client's requests to save and delete changes made to 
-     * a security role profile, and to navigate back to roles list page.
+     * Processes the client's requests to save and delete changes made to a
+     * security role profile, and to navigate back to roles list page.
      * 
      * @param request
      *            The HttpRequest object
      * @param response
      *            The HttpResponse object
      * @param command
-     *            Comand issued by the client.
-     * @Throws SystemException
-     *             when an error needs to be reported.
+     *            Command issued by the client.
+     * @Throws SystemException when an error needs to be reported.
      */
     public void processRequest(Request request, Response response, String command) throws ActionCommandException {
 	super.processRequest(request, response, command);
@@ -113,25 +119,22 @@ public class RolesEditAction extends AbstractActionHandler implements ICommand {
      * @throws ActionCommandException
      */
     protected void doBack() throws ActionCommandException {
-        // DatabaseTransApi tx = DatabaseTransFactory.create();
-        // UserApi api = UserFactory.createApi((DatabaseConnectionBean)
-        // tx.getConnector(), this.request);
-        // try {
-        // // Retrieve all role records from the database using unique id.
-        // this.data = api.getAllRoles();
-        // this.sendClientData();
-        // this.request.removeAttribute(RMT2ServletConst.REQUEST_MSG_INFO);
-        // }
-        // catch (Exception e) {
-        // logger.log(Level.ERROR, e.getMessage());
-        // throw new ActionCommandException(e.getMessage());
-        // }
-        // finally {
-        // api.close();
-        // tx.close();
-        // api = null;
-        // tx = null;
-        // }
+        // Call SOAP web service to get complete list of roles
+        try {
+            AuthenticationResponse appResponse = RoleSoapRequests.callGetRoles();
+            ReplyStatusType rst = appResponse.getReplyStatus();
+            this.msg = rst.getMessage();
+            if (rst.getReturnCode().intValue() == GeneralConst.RC_FAILURE) {
+                this.msg = rst.getMessage();
+                return;
+            }
+            List<Roles> obj = RoleFactory.create(appResponse.getProfile().getRoleInfo());
+            this.data = obj;
+            this.sendClientData();
+        } catch (Exception e) {
+            logger.log(Level.ERROR, e.getMessage());
+            throw new ActionCommandException(e.getMessage());
+        }
     }
 
     /**

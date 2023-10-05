@@ -152,7 +152,7 @@ public class AppSearchAction extends AbstractActionHandler implements ICommand {
     /**
      * Obtains the application unique id data from the request which was
      * selected by the user. The unique id is used to obtain the application
-     * record from the database and to map the data to its assoicated object.
+     * record from the database and to map the data to its associated object.
      * 
      * @throws ActionCommandException
      *             When a required selection was not made or an error occurrence

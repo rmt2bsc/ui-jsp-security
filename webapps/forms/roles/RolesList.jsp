@@ -39,6 +39,8 @@
 								<td class="clsTableListHeader">
 								 	<beanlib:InputControl type="radio" name="<%=GeneralConst.CLIENTROW_PROPERTY%>" value="rowid"/>
 								 	<beanlib:InputControl type="hidden" name="RoleId" value="#item.RoleId" uniqueName="yes"/>
+								 	<beanlib:InputControl type="hidden" name="Name" value="#item.Name" uniqueName="yes"/>
+								 	<beanlib:InputControl type="hidden" name="Description" value="#item.Description" uniqueName="yes"/>
 								</td>	
 								<td align="center">
 									<beanlib:InputControl value="#item.RoleId"/>
@@ -74,7 +76,7 @@
 				    </a>
 				</td>
 	      <td width="30%" valign="top" align="center"> 
-          <a href="/authentication/index.jsp"> 
+          <a href="/ui-jsp-security/index.jsp"> 
             <img name="m_back" src="<%=APP_ROOT%>/images/cm-back.gif" width="48px" height="70px" style="border: none" alt="Security Main Menu">
           </a>
       </td>	        				

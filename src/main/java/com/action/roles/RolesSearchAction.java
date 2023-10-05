@@ -53,7 +53,7 @@ public class RolesSearchAction extends AbstractActionHandler implements ICommand
     }
 
     /**
-     * Performs post initialization and sets up an User Api reference.
+     * Performs post initialization and sets up a Roles Api reference.
      * 
      * @throws SystemException
      */
@@ -63,7 +63,7 @@ public class RolesSearchAction extends AbstractActionHandler implements ICommand
 
     /**
      * Processes the client's request using request, response, and command. Add,
-     * edit, and list are the user group commands recognized.
+     * edit, and list are the roles commands recognized.
      * 
      * @param request
      *            The HttpRequest object
@@ -124,30 +124,21 @@ public class RolesSearchAction extends AbstractActionHandler implements ICommand
     }
 
     /**
-     * Prepares a selected role for editing. Obtains the input data from the
-     * request and maps the data to a {@link com.bean.Roles Roles} instance.
+     * Obtains the input data from the request and maps the data to an
+     * {@link Roles} object. Lastly, the application object is prepared to be
+     * forwarded to the next JSP for processing.
      * 
      * @throws ActionCommandException
      */
     public void edit() throws ActionCommandException {
-        // DatabaseTransApi tx = DatabaseTransFactory.create();
-        // UserApi api = UserFactory.createApi((DatabaseConnectionBean)
-        // tx.getConnector(), this.request);
-        // try {
-        // // Retrieve role from the database using unique id.
-        // this.data = api.getRole(this.selectedRoleId);
-        // return;
-        // }
-        // catch (Exception e) {
-        // logger.log(Level.ERROR, e.getMessage());
-        // throw new ActionCommandException(e.getMessage());
-        // }
-        // finally {
-        // api.close();
-        // tx.close();
-        // api = null;
-        // tx = null;
-        // }
+        Roles obj = RoleFactory.create();
+        obj.setRoleId(this.selectedRoleId);
+        String temp = this.getInputValue("Name", null);
+        obj.setName(temp);
+        temp = this.getInputValue("Description", null);
+        obj.setDescription(temp);
+        this.data = obj;
+        return;
     }
 
     /**
