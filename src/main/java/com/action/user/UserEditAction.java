@@ -21,10 +21,10 @@ import com.api.web.ICommand;
 import com.api.web.Request;
 import com.api.web.Response;
 import com.api.web.util.RMT2WebUtility;
-import com.entity.AppRoleFactory;
 import com.entity.Application;
 import com.entity.ApplicationFactory;
 import com.entity.ResourceFactory;
+import com.entity.UserAppRoleFactory;
 import com.entity.UserLogin;
 import com.entity.UserLoginFactory;
 
@@ -240,11 +240,11 @@ public class UserEditAction extends AbstractActionHandler implements ICommand {
         this.assignedRoles = new ArrayList();
         this.revokedRoles = new ArrayList();
         if (response.getProfile().getUserInfo().get(0).getGrantedAppRoles() != null) {
-            this.assignedRoles = AppRoleFactory.create(response.getProfile().getUserInfo().get(0).getGrantedAppRoles()
+            this.assignedRoles = UserAppRoleFactory.create(response.getProfile().getUserInfo().get(0).getGrantedAppRoles()
                     .getUserAppRole());
         }
         if (response.getProfile().getUserInfo().get(0).getRevokedAppRoles() != null) {
-            this.revokedRoles = AppRoleFactory.create(response.getProfile().getUserInfo().get(0).getRevokedAppRoles()
+            this.revokedRoles = UserAppRoleFactory.create(response.getProfile().getUserInfo().get(0).getRevokedAppRoles()
                     .getUserAppRole());
         }
     }

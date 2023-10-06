@@ -69,7 +69,7 @@
 						 </tr>
           </table>
         </div>
-        <a href="javascript:handleAction('_self', document.SearchForm, '<%=GeneralConst.REQ_SEARCH%>')">
+        <a href="javascript:handleAction('_self', document.SearchForm, '<%=GeneralConst.REQ_LIST%>')">
 	      <img src="<%=APP_ROOT%>/images/element_find.gif" alt="Search for Application-Roles" style="border:none">
 	    </a>
         <br><br>

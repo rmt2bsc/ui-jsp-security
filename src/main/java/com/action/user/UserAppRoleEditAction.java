@@ -21,9 +21,9 @@ import com.api.web.ICommand;
 import com.api.web.Request;
 import com.api.web.Response;
 import com.api.web.util.RMT2WebUtility;
-import com.entity.AppRoleFactory;
 import com.entity.Application;
 import com.entity.ApplicationFactory;
+import com.entity.UserAppRoleFactory;
 import com.entity.UserGroupFactory;
 import com.entity.UserLogin;
 import com.entity.UserLoginFactory;
@@ -248,11 +248,11 @@ public class UserAppRoleEditAction extends AbstractActionHandler implements ICom
         this.assignedRoleObjs = new ArrayList();
         this.revokedRoleObjs = new ArrayList();
         if (response.getProfile().getUserInfo().get(0).getGrantedAppRoles() != null) {
-            this.assignedRoleObjs = AppRoleFactory.create(response.getProfile().getUserInfo().get(0).getGrantedAppRoles()
+            this.assignedRoleObjs = UserAppRoleFactory.create(response.getProfile().getUserInfo().get(0).getGrantedAppRoles()
                     .getUserAppRole());
         }
         if (response.getProfile().getUserInfo().get(0).getRevokedAppRoles() != null) {
-            this.revokedRoleObjs = AppRoleFactory.create(response.getProfile().getUserInfo().get(0).getRevokedAppRoles()
+            this.revokedRoleObjs = UserAppRoleFactory.create(response.getProfile().getUserInfo().get(0).getRevokedAppRoles()
                     .getUserAppRole());
         }
     }

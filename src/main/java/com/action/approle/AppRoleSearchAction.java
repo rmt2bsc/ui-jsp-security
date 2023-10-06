@@ -23,12 +23,12 @@ import com.api.web.Request;
 import com.api.web.Response;
 import com.api.web.persistence.WebDataSourceConverter;
 import com.api.web.security.RMT2SessionBean;
-import com.entity.AppRole;
-import com.entity.AppRoleFactory;
 import com.entity.Application;
 import com.entity.ApplicationFactory;
 import com.entity.RoleFactory;
 import com.entity.Roles;
+import com.entity.VwAppRoleFactory;
+import com.entity.VwAppRoles;
 
 /**
  * This class provides action handlers to respond to the client's commands from
@@ -51,7 +51,7 @@ public class AppRoleSearchAction extends AbstractActionHandler implements IComma
 
     // private ApplicationApi api;
 
-    private AppRole appRole;
+    private VwAppRoles appRole;
 
     private Logger logger;
 
@@ -152,7 +152,7 @@ public class AppRoleSearchAction extends AbstractActionHandler implements IComma
      *             if a database access error occurs.
      */
     protected void doSearch() throws ActionCommandException {
-        this.buildSearchCriteria();
+        this.buildXMLSearchCriteria();
     }
 
     /**
@@ -214,6 +214,27 @@ public class AppRoleSearchAction extends AbstractActionHandler implements IComma
      *             General database errors
      */
     protected void doList() throws ActionCommandException {
+        this.buildXMLSearchCriteria();
+        AppRoleCriteria criteria = (AppRoleCriteria) this.query.getCustomObj();
+
+        // Call SOAP web service to get list of application/role data
+        try {
+            AuthenticationResponse appResponse = ApplicationRoleSoapRequests.callGetApplicationRoles(criteria);
+            ReplyStatusType rst = appResponse.getReplyStatus();
+            this.msg = rst.getMessage();
+            if (rst.getReturnCode().intValue() == GeneralConst.RC_FAILURE) {
+                this.msg = rst.getMessage();
+                return;
+            }
+            List<VwAppRoles> obj = VwAppRoleFactory.create(appResponse.getProfile().getAppRoleInfo());
+            this.appRoleList = obj;
+            this.getLookupData();
+            this.sendClientData();
+        } catch (Exception e) {
+            logger.log(Level.ERROR, e.getMessage());
+            throw new ActionCommandException(e.getMessage());
+        }
+
         // String criteria = null;
         // String orderBy = null;
         //
@@ -294,7 +315,7 @@ public class AppRoleSearchAction extends AbstractActionHandler implements IComma
      *             if a database access error occurs.
      */
     public void add() throws ActionCommandException {
-        this.appRole = AppRoleFactory.create();
+        this.appRole = VwAppRoleFactory.create();
         this.getLookupData();
         return;
     }

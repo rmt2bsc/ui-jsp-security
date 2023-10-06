@@ -11,7 +11,7 @@ import org.rmt2.jaxb.UserAppRoleType;
  * @author roy.terrell
  * 
  */
-public class AppRoleFactory {
+public class UserAppRoleFactory {
 
     /**
      * Create a new instance of a AppRole class.
@@ -37,7 +37,7 @@ public class AppRoleFactory {
         }
         List<AppRole> results = new ArrayList<>();
         for (UserAppRoleType item : list) {
-            results.add(AppRoleFactory.create(item));
+            results.add(UserAppRoleFactory.create(item));
         }
         return results;
     }
@@ -52,7 +52,7 @@ public class AppRoleFactory {
             return null;
         }
 
-        AppRole results = AppRoleFactory.create();
+        AppRole results = UserAppRoleFactory.create();
         if (obj.getAppRoleInfo() != null) {
             results.setAppRoleId(obj.getAppRoleInfo().getAppRoleId());
             results.setCode(obj.getAppRoleInfo().getAppRoleCode());
