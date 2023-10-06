@@ -34,16 +34,16 @@ public class AppRoleEditAction extends AbstractActionHandler implements ICommand
 
     private Logger logger;
 
-//    private ApplicationApi api;
+    // private ApplicationApi api;
 
     private Object data;
 
     private List appList;
 
     private List roleList;
-    
+
     private Object selectedRole;
-    
+
     private Object selectedApp;
 
     /**
@@ -52,8 +52,8 @@ public class AppRoleEditAction extends AbstractActionHandler implements ICommand
      * @throws SystemException
      */
     public AppRoleEditAction() throws SystemException {
-	super();
-	logger = Logger.getLogger("AppRoleEditAction");
+        super();
+        logger = Logger.getLogger("AppRoleEditAction");
     }
 
     /**
@@ -62,13 +62,13 @@ public class AppRoleEditAction extends AbstractActionHandler implements ICommand
      * @throws SystemException
      */
     protected void init(Context _context, Request _request) throws SystemException {
-	super.init(_context, _request);
+        super.init(_context, _request);
     }
 
     /**
-     * Processes the client's requests to save and delete changes made to 
-     * an application role profile, and to navigate back to application 
-     * roles list page.
+     * Processes the client's requests to save and delete changes made to an
+     * application role profile, and to navigate back to application roles list
+     * page.
      * 
      * @param request
      *            The HttpRequest object
@@ -76,17 +76,16 @@ public class AppRoleEditAction extends AbstractActionHandler implements ICommand
      *            The HttpResponse object
      * @param command
      *            Comand issued by the client.
-     * @Throws SystemException
-     *             when an error needs to be reported.
+     * @Throws SystemException when an error needs to be reported.
      */
     public void processRequest(Request request, Response response, String command) throws ActionCommandException {
-	super.processRequest(request, response, command);
-	if (command.equalsIgnoreCase(AppRoleEditAction.COMMAND_SAVE)) {
-	    this.saveData();
-	}
-	if (command.equalsIgnoreCase(AppRoleEditAction.COMMAND_DELETE)) {
-	    this.deleteData();
-	}
+        super.processRequest(request, response, command);
+        if (command.equalsIgnoreCase(AppRoleEditAction.COMMAND_SAVE)) {
+            this.saveData();
+        }
+        if (command.equalsIgnoreCase(AppRoleEditAction.COMMAND_DELETE)) {
+            this.deleteData();
+        }
     }
 
     /**
@@ -95,27 +94,25 @@ public class AppRoleEditAction extends AbstractActionHandler implements ICommand
      * @throws ActionCommandException
      */
     public void save() throws ActionCommandException {
-	DatabaseTransApi tx = DatabaseTransFactory.create();
-	ApplicationApi api = UserFactory.createAppApi((DatabaseConnectionBean) tx.getConnector(), this.request);
-	int key;
-	AppRole obj = (AppRole) this.data;
-	try {
-	    // Update application profile.
-	    key = api.maintainAppRole(obj);
-	    // Commit Changes to the database
-	    tx.commitUOW();
-	    this.msg = "Application Role configuration saved successfully";
-	}
-	catch (ApplicationException e) {
-	    this.msg = e.getMessage();
-	    tx.rollbackUOW();
-	}
-	finally {
-	    api.close();
-	    api = null;
-	    tx.close();
-	    tx = null;
-	}
+        DatabaseTransApi tx = DatabaseTransFactory.create();
+        ApplicationApi api = UserFactory.createAppApi((DatabaseConnectionBean) tx.getConnector(), this.request);
+        int key;
+        AppRole obj = (AppRole) this.data;
+        try {
+            // Update application profile.
+            key = api.maintainAppRole(obj);
+            // Commit Changes to the database
+            tx.commitUOW();
+            this.msg = "Application Role configuration saved successfully";
+        } catch (ApplicationException e) {
+            this.msg = e.getMessage();
+            tx.rollbackUOW();
+        } finally {
+            api.close();
+            api = null;
+            tx.close();
+            tx = null;
+        }
     }
 
     /**
@@ -128,38 +125,35 @@ public class AppRoleEditAction extends AbstractActionHandler implements ICommand
      *             during data retrieval.
      */
     protected void receiveClientData() throws ActionCommandException {
-	int uid;
-	String temp = this.getInputValue("AppRoleId", null);
-	try {
-	    uid = Integer.parseInt(temp);
-	}
-	catch (NumberFormatException e) {
-	    uid = -1;
-	}
+        int uid;
+        String temp = this.getInputValue("AppRoleId", null);
+        try {
+            uid = Integer.parseInt(temp);
+        } catch (NumberFormatException e) {
+            uid = -1;
+        }
 
-	DatabaseTransApi tx = null;
+        DatabaseTransApi tx = null;
         ApplicationApi api = null;
-	try {
-	    // Retrieve an application role from the database using unique id.
-	    tx = DatabaseTransFactory.create();
-	    api = UserFactory.createAppApi((DatabaseConnectionBean) tx.getConnector(), this.request);
-	    this.data = api.getAppRole(uid);
-	    if (this.data == null) {
-		this.data = UserFactory.createAppRole();
-	    }
-	    // Update an application role object with user input.
-	    UserFactory.packageBean(this.request, this.data);
-	}
-	catch (Exception e) {
-	    logger.log(Level.ERROR, e.getMessage());
+        try {
+            // Retrieve an application role from the database using unique id.
+            tx = DatabaseTransFactory.create();
+            api = UserFactory.createAppApi((DatabaseConnectionBean) tx.getConnector(), this.request);
+            this.data = api.getAppRole(uid);
+            if (this.data == null) {
+                this.data = UserFactory.createAppRole();
+            }
+            // Update an application role object with user input.
+            UserFactory.packageBean(this.request, this.data);
+        } catch (Exception e) {
+            logger.log(Level.ERROR, e.getMessage());
             throw new ActionCommandException(e.getMessage());
-	}
-	finally {
-	    api.close();
-	    api = null;
-	    tx.close();
-	    tx = null;
-	}
+        } finally {
+            api.close();
+            api = null;
+            tx.close();
+            tx = null;
+        }
     }
 
     /**
@@ -169,25 +163,23 @@ public class AppRoleEditAction extends AbstractActionHandler implements ICommand
      * @throws ActionCommandException
      */
     private void getCodeData() throws ActionCommandException {
-	DatabaseTransApi tx = DatabaseTransFactory.create();
-	ApplicationApi api = UserFactory.createAppApi((DatabaseConnectionBean) tx.getConnector(), this.request);
-	UserApi userApi = UserFactory.createApi((DatabaseConnectionBean) tx.getConnector(), this.request);
-	try {
-	    AppRole appRole = (AppRole) this.data;
-	    this.selectedApp = api.findApp(appRole.getAppId());
-	    this.selectedRole = userApi.getRole(appRole.getRoleId());
-	}
-	catch (UserAuthenticationException e) {
+        DatabaseTransApi tx = DatabaseTransFactory.create();
+        ApplicationApi api = UserFactory.createAppApi((DatabaseConnectionBean) tx.getConnector(), this.request);
+        UserApi userApi = UserFactory.createApi((DatabaseConnectionBean) tx.getConnector(), this.request);
+        try {
+            AppRole appRole = (AppRole) this.data;
+            this.selectedApp = api.findApp(appRole.getAppId());
+            this.selectedRole = userApi.getRole(appRole.getRoleId());
+        } catch (UserAuthenticationException e) {
             throw new ActionCommandException(e);
-	}
-	finally {
-	    api.close();
-	    api = null;
-	    userApi.close();
-	    userApi = null;
-	    tx.close();
-	    tx = null;
-	}
+        } finally {
+            api.close();
+            api = null;
+            userApi.close();
+            userApi = null;
+            tx.close();
+            tx = null;
+        }
     }
 
     /**
@@ -199,27 +191,25 @@ public class AppRoleEditAction extends AbstractActionHandler implements ICommand
      * @throws ActionCommandException
      */
     public void delete() throws ActionCommandException {
-	DatabaseTransApi tx = DatabaseTransFactory.create();
-	ApplicationApi api = UserFactory.createAppApi((DatabaseConnectionBean) tx.getConnector(), this.request);
-	int rc;
-	AppRole obj = (AppRole) this.data;
-	try {
-	    // Update user group profile.
-	    rc = api.deleteAppRole(obj.getAppRoleId());
-	    // Commit Changes to the database
-	    tx.commitUOW();
-	    this.msg = rc + " application role configuration(s) deleted successfully";
-	}
-	catch (ApplicationException e) {
-	    this.msg = "Problem occurred deleting application role profile.  Additional information: " + e.getMessage();
-	    tx.rollbackUOW();
-	}
-	finally {
-	    api.close();
-	    api = null;
-	    tx.close();
-	    tx = null;
-	}
+        DatabaseTransApi tx = DatabaseTransFactory.create();
+        ApplicationApi api = UserFactory.createAppApi((DatabaseConnectionBean) tx.getConnector(), this.request);
+        int rc;
+        AppRole obj = (AppRole) this.data;
+        try {
+            // Update user group profile.
+            rc = api.deleteAppRole(obj.getAppRoleId());
+            // Commit Changes to the database
+            tx.commitUOW();
+            this.msg = rc + " application role configuration(s) deleted successfully";
+        } catch (ApplicationException e) {
+            this.msg = "Problem occurred deleting application role profile.  Additional information: " + e.getMessage();
+            tx.rollbackUOW();
+        } finally {
+            api.close();
+            api = null;
+            tx.close();
+            tx = null;
+        }
     }
 
     /**
@@ -229,27 +219,27 @@ public class AppRoleEditAction extends AbstractActionHandler implements ICommand
      * @throws ActionCommandException
      */
     protected void sendClientData() throws ActionCommandException {
-	this.getCodeData();
-	this.request.setAttribute(GeneralConst.CLIENT_DATA_RECORD, this.data);
-	this.request.setAttribute(SecurityConst.APP_LIST, this.appList);
-	this.request.setAttribute(SecurityConst.ROLE_LIST, this.roleList);
-	this.request.setAttribute("selectedApp", this.selectedApp);
-	this.request.setAttribute("selectedRole", this.selectedRole);
-	this.request.setAttribute(RMT2ServletConst.REQUEST_MSG_INFO, this.msg);
+        this.getCodeData();
+        this.request.setAttribute(GeneralConst.CLIENT_DATA_RECORD, this.data);
+        this.request.setAttribute(SecurityConst.APP_LIST, this.appList);
+        this.request.setAttribute(SecurityConst.ROLE_LIST, this.roleList);
+        this.request.setAttribute("selectedApp", this.selectedApp);
+        this.request.setAttribute("selectedRole", this.selectedRole);
+        this.request.setAttribute(RMT2ServletConst.REQUEST_MSG_INFO, this.msg);
     }
 
     /**
      * No Action
      */
     public void add() throws ActionCommandException {
-	return;
+        return;
     }
 
     /**
      * No Action
      */
     public void edit() throws ActionCommandException {
-	return;
+        return;
     }
 
 }
