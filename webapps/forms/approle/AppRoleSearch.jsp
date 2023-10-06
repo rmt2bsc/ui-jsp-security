@@ -19,10 +19,10 @@
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="-1">
     <link rel=STYLESHEET type="text/css" href="<%=APP_ROOT%>/css/RMT2Table.css">
-		<link rel=STYLESHEET type="text/css" href="<%=APP_ROOT%>/css/RMT2General.css">
-		<script Language="JavaScript" src="<%=APP_ROOT%>/js/RMT2General.js"></script>
-		<script Language="JavaScript" src="<%=APP_ROOT%>/js/RMT2Menu.js"></script>
-		<script Language="JavaScript" src="<%=APP_ROOT%>/js/Timesheet.js"></script>
+	<link rel=STYLESHEET type="text/css" href="<%=APP_ROOT%>/css/RMT2General.css">
+	<script Language="JavaScript" src="<%=APP_ROOT%>/js/RMT2General.js"></script>
+	<script Language="JavaScript" src="<%=APP_ROOT%>/js/RMT2Menu.js"></script>
+	<script Language="JavaScript" src="<%=APP_ROOT%>/js/Timesheet.js"></script>
   </head>
 
 
@@ -145,7 +145,7 @@
 			          </a>
 			      </td>	  			      			      			 			      			      
 			      <td width="60%" valign="top" align="center"> 
-    		    	  <a href="/authentication/index.jsp"> 
+    		    	  <a href="/ui-jsp-security/index.jsp"> 
         	   			<img name="m_back" src="<%=APP_ROOT%>/images/cm-back.gif" width="48px" height="70px" style="border: none" alt="Security Main Menu">
           			</a>
       			</td>	        				
