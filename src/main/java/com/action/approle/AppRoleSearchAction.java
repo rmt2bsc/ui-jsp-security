@@ -5,20 +5,30 @@ import java.util.List;
 
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
+import org.rmt2.jaxb.AuthenticationResponse;
+import org.rmt2.jaxb.ReplyStatusType;
 
+import com.AuthConstants;
 import com.SystemException;
+import com.action.application.ApplicationSoapRequests;
+import com.action.roles.RoleSoapRequests;
 import com.api.constants.GeneralConst;
 import com.api.constants.RMT2ServletConst;
 import com.api.jsp.action.AbstractActionHandler;
 import com.api.persistence.DatabaseException;
-import com.api.persistence.db.DatabaseConnectionBean;
 import com.api.security.RMT2TagQueryBean;
 import com.api.web.ActionCommandException;
 import com.api.web.ICommand;
 import com.api.web.Request;
 import com.api.web.Response;
+import com.api.web.persistence.WebDataSourceConverter;
 import com.api.web.security.RMT2SessionBean;
 import com.entity.AppRole;
+import com.entity.AppRoleFactory;
+import com.entity.Application;
+import com.entity.ApplicationFactory;
+import com.entity.RoleFactory;
+import com.entity.Roles;
 
 /**
  * This class provides action handlers to respond to the client's commands from
@@ -118,7 +128,7 @@ public class AppRoleSearchAction extends AbstractActionHandler implements IComma
     protected void doNewSearch() throws ActionCommandException {
         this.startSearchConsole();
         this.query = (RMT2TagQueryBean) this.request.getSession().getAttribute(RMT2ServletConst.QUERY_BEAN);
-        this.getCodeData();
+        this.getLookupData();
         this.appRoleList = new ArrayList();
         this.sendClientData();
     }
@@ -128,7 +138,8 @@ public class AppRoleSearchAction extends AbstractActionHandler implements IComma
      * = -1.
      */
     protected String doInitialCriteria(RMT2TagQueryBean _query) throws ActionCommandException {
-        return "app_role_id = -1";
+        // return "app_role_id = -1";
+        return null;
     }
 
     /**
@@ -154,17 +165,29 @@ public class AppRoleSearchAction extends AbstractActionHandler implements IComma
      *             Error transferring client data to the criteria object.
      */
     protected Object doCustomInitialization() throws ActionCommandException {
-        this.setBaseClass("com.bean.VwAppRoles");
-        this.setBaseView("VwAppRolesView");
+        // this.setBaseClass("com.bean.VwAppRoles");
+        // this.setBaseView("VwAppRolesView");
+        // AppRoleCriteria criteriaObj = AppRoleCriteria.getInstance();
+        // if (!this.isFirstTime()) {
+        // try {
+        // WebDataSourceConverter.packageBean(this.request, criteriaObj);
+        // } catch (SystemException e) {
+        // this.msg =
+        // "Problem gathering Application-Role Search request parameters:  " +
+        // e.getMessage();
+        // logger.log(Level.ERROR, this.msg);
+        // throw new ActionCommandException(this.msg);
+        // }
+        // }
+        // return criteriaObj;
+
         AppRoleCriteria criteriaObj = AppRoleCriteria.getInstance();
-        if (!this.isFirstTime()) {
-            try {
-                DataSourceAdapter.packageBean(this.request, criteriaObj);
-            } catch (SystemException e) {
-                this.msg = "Problem gathering Application-Role Search request parameters:  " + e.getMessage();
-                logger.log(Level.ERROR, this.msg);
-                throw new ActionCommandException(this.msg);
-            }
+        try {
+            WebDataSourceConverter.packageBean(this.request, criteriaObj);
+        } catch (SystemException e) {
+            this.msg = "Problem gathering Application-Role Search request parameters:  " + e.getMessage();
+            logger.log(Level.ERROR, this.msg);
+            throw new ActionCommandException(this.msg);
         }
         return criteriaObj;
     }
@@ -191,33 +214,35 @@ public class AppRoleSearchAction extends AbstractActionHandler implements IComma
      *             General database errors
      */
     protected void doList() throws ActionCommandException {
-        String criteria = null;
-        String orderBy = null;
-
-        // Get selection criteria from session object
-        criteria = this.query.getWhereClause();
-        orderBy = this.query.getOrderByClause();
-
-        DatabaseTransApi tx = DatabaseTransFactory.create();
-        ApplicationApi api = UserFactory.createAppApi((DatabaseConnectionBean) tx.getConnector(), this.request);
-        try {
-            api.setBaseClass("com.bean.VwAppRoles");
-            api.setBaseView("VwAppRolesView");
-            this.appRoleList = api.findData(criteria, orderBy);
-            this.getCodeData();
-
-            // Send data to client
-            this.sendClientData();
-            return;
-        } catch (Exception e) {
-            logger.log(Level.ERROR, e.getMessage());
-            throw new ActionCommandException(e.getMessage());
-        } finally {
-            api.close();
-            tx.close();
-            api = null;
-            tx = null;
-        }
+        // String criteria = null;
+        // String orderBy = null;
+        //
+        // // Get selection criteria from session object
+        // criteria = this.query.getWhereClause();
+        // orderBy = this.query.getOrderByClause();
+        //
+        // DatabaseTransApi tx = DatabaseTransFactory.create();
+        // ApplicationApi api =
+        // UserFactory.createAppApi((DatabaseConnectionBean) tx.getConnector(),
+        // this.request);
+        // try {
+        // api.setBaseClass("com.bean.VwAppRoles");
+        // api.setBaseView("VwAppRolesView");
+        // this.appRoleList = api.findData(criteria, orderBy);
+        // this.getLookupData();
+        //
+        // // Send data to client
+        // this.sendClientData();
+        // return;
+        // } catch (Exception e) {
+        // logger.log(Level.ERROR, e.getMessage());
+        // throw new ActionCommandException(e.getMessage());
+        // } finally {
+        // api.close();
+        // tx.close();
+        // api = null;
+        // tx = null;
+        // }
     }
 
     /**
@@ -226,24 +251,37 @@ public class AppRoleSearchAction extends AbstractActionHandler implements IComma
      * 
      * @throws ActionCommandException
      */
-    private void getCodeData() throws ActionCommandException {
-        if (command.equalsIgnoreCase(AppRoleSearchAction.COMMAND_NEW)
-                || command.equalsIgnoreCase(AppRoleSearchAction.COMMAND_LIST)) {
-            DatabaseTransApi tx = DatabaseTransFactory.create();
-            ApplicationApi api = UserFactory.createAppApi((DatabaseConnectionBean) tx.getConnector(), this.request);
-            try {
-                this.appList = (List) api.getAllApps();
-                this.roleList = (List) api.getAllRoles();
+    private void getLookupData() throws ActionCommandException {
+        // Call SOAP web service to get complete list of applications
+        try {
+            AuthenticationResponse appResponse = ApplicationSoapRequests.callGetApplications();
+            ReplyStatusType rst = appResponse.getReplyStatus();
+            this.msg = rst.getMessage();
+            if (rst.getReturnCode().intValue() == GeneralConst.RC_FAILURE) {
+                this.msg = rst.getMessage();
                 return;
-            } catch (Exception e) {
-                logger.log(Level.ERROR, e.getMessage());
-                throw new ActionCommandException(e.getMessage());
-            } finally {
-                api.close();
-                tx.close();
-                api = null;
-                tx = null;
             }
+            List<Application> applications = ApplicationFactory.create(appResponse.getProfile().getApplicationInfo());
+            this.appList = applications;
+        } catch (Exception e) {
+            logger.log(Level.ERROR, e.getMessage());
+            throw new ActionCommandException(e.getMessage());
+        }
+
+        // Call SOAP web service to get complete list of roles
+        try {
+            AuthenticationResponse appResponse = RoleSoapRequests.callGetRoles();
+            ReplyStatusType rst = appResponse.getReplyStatus();
+            this.msg = rst.getMessage();
+            if (rst.getReturnCode().intValue() == GeneralConst.RC_FAILURE) {
+                this.msg = rst.getMessage();
+                return;
+            }
+            List<Roles> obj = RoleFactory.create(appResponse.getProfile().getRoleInfo());
+            this.roleList = obj;
+        } catch (Exception e) {
+            logger.log(Level.ERROR, e.getMessage());
+            throw new ActionCommandException(e.getMessage());
         }
         return;
     }
@@ -256,33 +294,36 @@ public class AppRoleSearchAction extends AbstractActionHandler implements IComma
      *             if a database access error occurs.
      */
     public void add() throws ActionCommandException {
-        this.appRole = UserFactory.createAppRole();
-        this.getCodeData();
+        this.appRole = AppRoleFactory.create();
+        this.getLookupData();
         return;
     }
 
     /**
-     * Retreives instances of the selected {@link com.bean.Application
+     * Retrieves instances of the selected {@link com.bean.Application
      * Application} and {@link com.bean.Role Role}
      * 
      * @throws ActionCommandException
      */
     public void edit() throws ActionCommandException {
-        DatabaseTransApi tx = DatabaseTransFactory.create();
-        ApplicationApi api = UserFactory.createAppApi((DatabaseConnectionBean) tx.getConnector(), this.request);
-        UserApi userApi = UserFactory.createApi((DatabaseConnectionBean) tx.getConnector(), this.request);
-        try {
-            this.selectedApp = api.findApp(this.appRole.getAppId());
-            this.selectedRole = userApi.getRole(this.appRole.getRoleId());
-            return;
-        } catch (UserAuthenticationException e) {
-            throw new ActionCommandException(e);
-        } finally {
-            api.close();
-            tx.close();
-            api = null;
-            tx = null;
-        }
+        // DatabaseTransApi tx = DatabaseTransFactory.create();
+        // ApplicationApi api =
+        // UserFactory.createAppApi((DatabaseConnectionBean) tx.getConnector(),
+        // this.request);
+        // UserApi userApi = UserFactory.createApi((DatabaseConnectionBean)
+        // tx.getConnector(), this.request);
+        // try {
+        // this.selectedApp = api.findApp(this.appRole.getAppId());
+        // this.selectedRole = userApi.getRole(this.appRole.getRoleId());
+        // return;
+        // } catch (UserAuthenticationException e) {
+        // throw new ActionCommandException(e);
+        // } finally {
+        // api.close();
+        // tx.close();
+        // api = null;
+        // tx = null;
+        // }
     }
 
     /**
@@ -313,26 +354,28 @@ public class AppRoleSearchAction extends AbstractActionHandler implements IComma
      * 
      */
     protected void receiveClientData() throws ActionCommandException {
-        String temp = null;
-        DatabaseTransApi tx = DatabaseTransFactory.create();
-        ApplicationApi api = UserFactory.createAppApi((DatabaseConnectionBean) tx.getConnector(), this.request);
-        try {
-            temp = this.getInputValue("AppRoleId", null);
-            int uid;
-            try {
-                uid = Integer.parseInt(temp);
-            } catch (NumberFormatException e) {
-                uid = 0;
-            }
-            this.appRole = (AppRole) api.getAppRole(uid);
-        } catch (Exception e) {
-            throw new ActionCommandException(e.getMessage());
-        } finally {
-            api.close();
-            tx.close();
-            api = null;
-            tx = null;
-        }
+        // String temp = null;
+        // DatabaseTransApi tx = DatabaseTransFactory.create();
+        // ApplicationApi api =
+        // UserFactory.createAppApi((DatabaseConnectionBean) tx.getConnector(),
+        // this.request);
+        // try {
+        // temp = this.getInputValue("AppRoleId", null);
+        // int uid;
+        // try {
+        // uid = Integer.parseInt(temp);
+        // } catch (NumberFormatException e) {
+        // uid = 0;
+        // }
+        // this.appRole = (AppRole) api.getAppRole(uid);
+        // } catch (Exception e) {
+        // throw new ActionCommandException(e.getMessage());
+        // } finally {
+        // api.close();
+        // tx.close();
+        // api = null;
+        // tx = null;
+        // }
     }
 
     /**
@@ -369,8 +412,8 @@ public class AppRoleSearchAction extends AbstractActionHandler implements IComma
     protected void sendClientData() throws ActionCommandException {
         this.request.setAttribute(GeneralConst.CLIENT_DATA_RECORD, this.appRole);
         this.request.setAttribute(GeneralConst.CLIENT_DATA_LIST, this.appRoleList);
-        this.request.setAttribute(SecurityConst.APP_LIST, this.appList);
-        this.request.setAttribute(SecurityConst.ROLE_LIST, this.roleList);
+        this.request.setAttribute(AuthConstants.APP_LIST, this.appList);
+        this.request.setAttribute(AuthConstants.ROLE_LIST, this.roleList);
         this.request.setAttribute("selectedApp", this.selectedApp);
         this.request.setAttribute("selectedRole", this.selectedRole);
         return;

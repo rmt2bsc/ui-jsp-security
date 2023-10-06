@@ -1,10 +1,10 @@
 <%@ taglib uri="/rmt2-beantaglib" prefix="beanlib" %>
 <%@ taglib uri="/rmt2-generaltaglib" prefix="gen" %>
 <%@ taglib uri="/rmt2-xmltaglib" prefix="xml" %>
-<%@ page import="com.bean.criteria.AppRoleCriteria" %>
-<%@ page import="com.bean.RMT2TagQueryBean" %>
-<%@ page import="com.constants.GeneralConst" %>
-<%@ page import="com.api.security.user.SecurityConst" %>
+<%@ page import="com.action.approle.AppRoleCriteria" %>
+<%@ page import="com.api.security.RMT2TagQueryBean" %>
+<%@ page import="com.api.constants.GeneralConst" %>
+<%@ page import="com.AuthConstants" %>
 
 
 <gen:InitAppRoot id="APP_ROOT"/>
@@ -40,21 +40,21 @@
              <tr>
 						   <td width="20%" class="clsTableFormHeader">Application</td>
 						   <td width="30%">
-							 <beanlib:InputControl dataSource="<%=SecurityConst.APP_LIST%>"
-																	   type="select"
-																	   name="qry_ApplicationId"
-																	   codeProperty="AppId"
-																	   displayProperty="Name"
-								                     selectedValue="#QUERY_BEAN.CustomObj.Qry_ApplicationId"/>								  
+							 <beanlib:InputControl dataSource="<%=AuthConstants.APP_LIST%>"
+												   type="select"
+												   name="qry_ApplicationId"
+												   codeProperty="AppId"
+												   displayProperty="Name"
+					                               selectedValue="#QUERY_BEAN.CustomObj.Qry_ApplicationId"/>								  
 						   </td>
 						   <td width="20%" class="clsTableFormHeader">Role</td>
 						   <td width="30%">
-							 <beanlib:InputControl dataSource="<%=SecurityConst.ROLE_LIST%>"
-																	   type="select"
-																	   name="qry_RoleId"
-																	   codeProperty="RoleId"
-																	   displayProperty="Name"
-																	   selectedValue="#QUERY_BEAN.CustomObj.Qry_RoleId"/>
+							 <beanlib:InputControl dataSource="<%=AuthConstants.ROLE_LIST%>"
+												   type="select"
+												   name="qry_RoleId"
+												   codeProperty="RoleId"
+												   displayProperty="Name"
+												   selectedValue="#QUERY_BEAN.CustomObj.Qry_RoleId"/>
 						   </td>
              </tr>
 						 <tr>
@@ -73,7 +73,7 @@
 	      <img src="<%=APP_ROOT%>/images/element_find.gif" alt="Search for Application-Roles" style="border:none">
 	    </a>
         <br><br>
-     <!--  Begin Search Resultssection -->
+     <!--  Begin Search Results section -->
 
         <font size="4" style="color:blue">Search Results</font>
         <div style="border-style:groove; border-color:#999999; background-color:buttonface; width:90%; height:480px; overflow:auto">

@@ -1,4 +1,4 @@
-<%@ page import="com.bean.RMT2TagQueryBean" %>
+<%@ page import="com.api.security.RMT2TagQueryBean" %>
 <%
 Object genericCustomQueryObj = null;
 RMT2TagQueryBean baseQueryObj = (RMT2TagQueryBean) session.getAttribute("QUERY_BEAN");
