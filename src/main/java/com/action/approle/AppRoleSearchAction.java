@@ -226,7 +226,11 @@ public class AppRoleSearchAction extends AbstractActionHandler implements IComma
                 this.msg = rst.getMessage();
                 return;
             }
-            List<VwAppRoles> obj = VwAppRoleFactory.create(appResponse.getProfile().getAppRoleInfo());
+
+            List<VwAppRoles> obj = new ArrayList<>();
+            if (appResponse.getProfile() != null) {
+                obj = VwAppRoleFactory.create(appResponse.getProfile().getAppRoleInfo());
+            }
             this.appRoleList = obj;
             this.getLookupData();
             this.sendClientData();
