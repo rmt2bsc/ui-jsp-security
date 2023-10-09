@@ -238,36 +238,6 @@ public class AppRoleSearchAction extends AbstractActionHandler implements IComma
             logger.log(Level.ERROR, e.getMessage());
             throw new ActionCommandException(e.getMessage());
         }
-
-        // String criteria = null;
-        // String orderBy = null;
-        //
-        // // Get selection criteria from session object
-        // criteria = this.query.getWhereClause();
-        // orderBy = this.query.getOrderByClause();
-        //
-        // DatabaseTransApi tx = DatabaseTransFactory.create();
-        // ApplicationApi api =
-        // UserFactory.createAppApi((DatabaseConnectionBean) tx.getConnector(),
-        // this.request);
-        // try {
-        // api.setBaseClass("com.bean.VwAppRoles");
-        // api.setBaseView("VwAppRolesView");
-        // this.appRoleList = api.findData(criteria, orderBy);
-        // this.getLookupData();
-        //
-        // // Send data to client
-        // this.sendClientData();
-        // return;
-        // } catch (Exception e) {
-        // logger.log(Level.ERROR, e.getMessage());
-        // throw new ActionCommandException(e.getMessage());
-        // } finally {
-        // api.close();
-        // tx.close();
-        // api = null;
-        // tx = null;
-        // }
     }
 
     /**
@@ -331,24 +301,7 @@ public class AppRoleSearchAction extends AbstractActionHandler implements IComma
      * @throws ActionCommandException
      */
     public void edit() throws ActionCommandException {
-        // DatabaseTransApi tx = DatabaseTransFactory.create();
-        // ApplicationApi api =
-        // UserFactory.createAppApi((DatabaseConnectionBean) tx.getConnector(),
-        // this.request);
-        // UserApi userApi = UserFactory.createApi((DatabaseConnectionBean)
-        // tx.getConnector(), this.request);
-        // try {
-        // this.selectedApp = api.findApp(this.appRole.getAppId());
-        // this.selectedRole = userApi.getRole(this.appRole.getRoleId());
-        // return;
-        // } catch (UserAuthenticationException e) {
-        // throw new ActionCommandException(e);
-        // } finally {
-        // api.close();
-        // tx.close();
-        // api = null;
-        // tx = null;
-        // }
+        return;
     }
 
     /**
@@ -379,6 +332,36 @@ public class AppRoleSearchAction extends AbstractActionHandler implements IComma
      * 
      */
     protected void receiveClientData() throws ActionCommandException {
+        String temp = null;
+        int uid = 0;
+        this.appRole = VwAppRoleFactory.create();
+
+        temp = this.getInputValue("AppRoleId", null);
+        try {
+            uid = Integer.parseInt(temp);
+            this.appRole.setAppRoleId(uid);
+        } catch (NumberFormatException e) {
+            uid = 0;
+        }
+
+        temp = this.getInputValue("AppRoleName", null);
+        this.appRole.setAppRoleName(temp);
+
+        temp = this.getInputValue("AppRoleCode", null);
+        this.appRole.setAppRoleCode(temp);
+
+        temp = this.getInputValue("AppName", null);
+        this.appRole.setAppName(temp);
+
+        temp = this.getInputValue("RoleName", null);
+        this.appRole.setRoleName(temp);
+
+        temp = this.getInputValue("AppRoleDescription", null);
+        this.appRole.setAppRoleDescription(temp);
+
+        this.selectedApp = this.getInputValue("ApplicationId", null);
+        this.selectedRole = this.getInputValue("RoleId", null);
+
         // String temp = null;
         // DatabaseTransApi tx = DatabaseTransFactory.create();
         // ApplicationApi api =
