@@ -60,41 +60,44 @@ public class ApplicationRoleSoapRequests {
         UserAppRolesCriteriaType criteria = fact.createUserAppRolesCriteriaType();
 
         // Verify and obtain parameter values
-        try {
-            Verifier.verifyEmpty(parms.getQry_Id());
-        } catch (VerifyException e) {
-            criteria.setAppRoleId(Integer.valueOf(parms.getQry_Id()));
+        if (parms != null) {
+            try {
+                Verifier.verifyEmpty(parms.getQry_Id());
+            } catch (VerifyException e) {
+                criteria.setAppRoleId(Integer.valueOf(parms.getQry_Id()));
+            }
+
+            try {
+                Verifier.verifyEmpty(parms.getQry_ApplicationId());
+            } catch (VerifyException e) {
+                criteria.setAppId(Integer.valueOf(parms.getQry_ApplicationId()));
+            }
+
+            try {
+                Verifier.verifyEmpty(parms.getQry_RoleId());
+            } catch (VerifyException e) {
+                criteria.setRoleId(Integer.valueOf(parms.getQry_RoleId()));
+            }
+
+            try {
+                Verifier.verifyEmpty(parms.getQry_AppRoleCode());
+            } catch (VerifyException e) {
+                criteria.setAppRoleCode(parms.getQry_AppRoleCode());
+            }
+
+            try {
+                Verifier.verifyEmpty(parms.getQry_AppRoleName());
+            } catch (VerifyException e) {
+                criteria.setAppRoleName(parms.getQry_AppRoleName());
+            }
+
+            try {
+                Verifier.verifyEmpty(parms.getQry_Description());
+            } catch (VerifyException e) {
+                criteria.setAppRoleDescription(parms.getQry_Description());
+            }
         }
 
-        try {
-            Verifier.verifyEmpty(parms.getQry_ApplicationId());
-        } catch (VerifyException e) {
-            criteria.setAppId(Integer.valueOf(parms.getQry_ApplicationId()));
-        }
-
-        try {
-            Verifier.verifyEmpty(parms.getQry_RoleId());
-        } catch (VerifyException e) {
-            criteria.setRoleId(Integer.valueOf(parms.getQry_RoleId()));
-        }
-
-        try {
-            Verifier.verifyEmpty(parms.getQry_AppRoleCode());
-        } catch (VerifyException e) {
-            criteria.setAppRoleCode(parms.getQry_AppRoleCode());
-        }
-
-        try {
-            Verifier.verifyEmpty(parms.getQry_AppRoleName());
-        } catch (VerifyException e) {
-            criteria.setAppRoleName(parms.getQry_AppRoleName());
-        }
-
-        try {
-            Verifier.verifyEmpty(parms.getQry_Description());
-        } catch (VerifyException e) {
-            criteria.setAppRoleDescription(parms.getQry_Description());
-        }
 
         acgt.setUserAppRolesCriteria(criteria);
         req.setCriteria(acgt);

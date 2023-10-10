@@ -96,26 +96,33 @@
 			        <td>
 			            <font size="2">
 			               <beanlib:InputControl value="#item.AppRoleName"/>
+			               <beanlib:InputControl type="hidden" name="AppRoleName" value="#item.AppRoleName" uniqueName="yes"/>
 			            </font>
 			        </td>
 			        <td>
 			           <font size="2">
 			              <beanlib:InputControl value="#item.AppRoleCode"/>
+			              <beanlib:InputControl type="hidden" name="AppRoleCode" value="#item.AppRoleCode" uniqueName="yes"/>
 			           </font>
 			        </td>
 			        <td>
 			           <font size="2">
   			              <beanlib:InputControl value="#item.AppName"/>
+  			              <beanlib:InputControl type="hidden" name="AppName" value="#item.AppName" uniqueName="yes"/>
+  			              <beanlib:InputControl type="hidden" name="ApplicationId" value="#item.ApplicationId" uniqueName="yes"/>
   			           </font>
 			        </td>
 			        <td>
 			           <font size="2">
   			              <beanlib:InputControl value="#item.RoleName"/>
+  			              <beanlib:InputControl type="hidden" name="RoleName" value="#item.RoleName" uniqueName="yes"/>
+  			              <beanlib:InputControl type="hidden" name="RoleId" value="#item.RoleId" uniqueName="yes"/>
   			           </font>
 			        </td>			        
 			        <td>
 			            <font color="blue" size="2">
 			               <beanlib:InputControl value="#item.AppRoleDescription"/>
+			               <beanlib:InputControl type="hidden" name="AppRoleDescription" value="#item.AppRoleDescription" uniqueName="yes"/>
 			            </font>
 			        </td>
 			     </tr>
