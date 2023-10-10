@@ -5,6 +5,8 @@ import java.util.Date;
 import org.apache.log4j.Logger;
 import org.rmt2.constants.ApiHeaderNames;
 import org.rmt2.constants.ApiTransactionCodes;
+import org.rmt2.jaxb.AppRoleType;
+import org.rmt2.jaxb.ApplicationType;
 import org.rmt2.jaxb.AuthCriteriaGroupType;
 import org.rmt2.jaxb.AuthProfileGroupType;
 import org.rmt2.jaxb.AuthenticationRequest;
@@ -14,12 +16,16 @@ import org.rmt2.jaxb.ObjectFactory;
 import org.rmt2.jaxb.RoleType;
 import org.rmt2.jaxb.UserAppRolesCriteriaType;
 import org.rmt2.util.HeaderTypeBuilder;
+import org.rmt2.util.authentication.AppRoleTypeBuilder;
+import org.rmt2.util.authentication.ApplicationTypeBuilder;
+import org.rmt2.util.authentication.RoleTypeBuilder;
 
 import com.AuthConstants;
 import com.api.messaging.webservice.soap.client.SoapJaxbClientWrapper;
 import com.api.security.authentication.web.AuthenticationException;
 import com.api.util.assistants.Verifier;
 import com.api.util.assistants.VerifyException;
+import com.entity.AppRole;
 import com.entity.Roles;
 
 /**
@@ -113,22 +119,22 @@ public class ApplicationRoleSoapRequests {
     }
 
     /**
-     * SOAP call to update a single role.
+     * SOAP call to update a single application role.
      * 
      * @param data
-     *            {@link Roles}
+     *            {@link AppRole}
      * @return {@link AuthenticationResponse}
      * @throws AuthenticationException
      */
-    public static final AuthenticationResponse callUpdateRole(Roles data) throws AuthenticationException {
-        // Retrieve all user group records from the database
+    public static final AuthenticationResponse callUpdateApplicationRole(AppRole data) throws AuthenticationException {
+        // Retrieve all application role records from the database
         ObjectFactory fact = new ObjectFactory();
         AuthenticationRequest req = fact.createAuthenticationRequest();
 
         HeaderType head = HeaderTypeBuilder.Builder.create()
                 .withApplication(ApiHeaderNames.APP_NAME_AUTHENTICATION)
                 .withModule(AuthConstants.MODULE_ADMIN)
-                .withTransaction(ApiTransactionCodes.AUTH_ROLE_UPDATE)
+                .withTransaction(ApiTransactionCodes.AUTH_APP_ROLE_UPDATE)
                 .withMessageMode(ApiHeaderNames.MESSAGE_MODE_REQUEST)
                 .withDeliveryDate(new Date())
                 .withRouting(ApiTransactionCodes.ROUTE_AUTHENTICATION)
@@ -136,12 +142,23 @@ public class ApplicationRoleSoapRequests {
                 .build();
 
         AuthProfileGroupType apgt = fact.createAuthProfileGroupType();
-        RoleType obj = fact.createRoleType();
-        obj.setRoleId(data.getRoleId());
-        obj.setRoleName(data.getName());
-        obj.setRoleDescription(data.getDescription());
+        ApplicationType at = ApplicationTypeBuilder.Builder.create()
+                .withAppId(data.getAppId())
+                .build();
+        RoleType rt = RoleTypeBuilder.Builder.create()
+                .withRoleId(data.getRoleId())
+                .build();
 
-        apgt.getRoleInfo().add(obj);
+        AppRoleType art = AppRoleTypeBuilder.Builder.create()
+                .withAppRoleId(data.getAppRoleId())
+                .withCode(data.getCode())
+                .withName(data.getName())
+                .withDescription(data.getDescription())
+                .withApplication(at)
+                .withRole(rt)
+                .build();
+
+        apgt.getAppRoleInfo().add(art);
         req.setProfile(apgt);
         req.setHeader(head);
 

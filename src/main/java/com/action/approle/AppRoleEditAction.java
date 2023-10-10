@@ -21,6 +21,8 @@ import com.api.web.Context;
 import com.api.web.ICommand;
 import com.api.web.Request;
 import com.api.web.Response;
+import com.entity.AppRole;
+import com.entity.AppRoleFactory;
 import com.entity.Application;
 import com.entity.ApplicationFactory;
 import com.entity.RoleFactory;
@@ -109,27 +111,23 @@ public class AppRoleEditAction extends AbstractActionHandler implements ICommand
      * @throws ActionCommandException
      */
     public void save() throws ActionCommandException {
-        // DatabaseTransApi tx = DatabaseTransFactory.create();
-        // ApplicationApi api =
-        // UserFactory.createAppApi((DatabaseConnectionBean) tx.getConnector(),
-        // this.request);
-        // int key;
-        // AppRole obj = (AppRole) this.data;
-        // try {
-        // // Update application profile.
-        // key = api.maintainAppRole(obj);
-        // // Commit Changes to the database
-        // tx.commitUOW();
-        // this.msg = "Application Role configuration saved successfully";
-        // } catch (ApplicationException e) {
-        // this.msg = e.getMessage();
-        // tx.rollbackUOW();
-        // } finally {
-        // api.close();
-        // api = null;
-        // tx.close();
-        // tx = null;
-        // }
+        // Call SOAP web service to persist changes made to the Application Role
+        // object.
+        AppRole obj = AppRoleFactory.create((VwAppRoles) this.data);
+        try {
+            AuthenticationResponse appResponse = ApplicationRoleSoapRequests.callUpdateApplicationRole(obj);
+            ReplyStatusType rst = appResponse.getReplyStatus();
+            this.msg = rst.getMessage();
+            if (rst.getReturnCode().intValue() == GeneralConst.RC_FAILURE) {
+                this.msg = rst.getMessage();
+                return;
+            }
+            // this.data = AppRoleFactory.create((VwAppRoles) this.data);
+            this.sendClientData();
+        } catch (Exception e) {
+            logger.log(Level.ERROR, e.getMessage());
+            throw new ActionCommandException(e.getMessage());
+        }
     }
 
     /**
@@ -215,13 +213,51 @@ public class AppRoleEditAction extends AbstractActionHandler implements ICommand
      *             during data retrieval.
      */
     protected void receiveClientData() throws ActionCommandException {
+        VwAppRoles var = VwAppRoleFactory.create();
         int uid;
         String temp = this.getInputValue("AppRoleId", null);
         try {
             uid = Integer.parseInt(temp);
+            var.setAppRoleId(uid);
         } catch (NumberFormatException e) {
-            uid = -1;
+            var.setAppRoleId(0);
         }
+
+        temp = this.getInputValue("Name", null);
+        var.setAppRoleName(temp);
+
+        temp = this.getInputValue("Code", null);
+        var.setAppRoleCode(temp);
+
+        temp = this.getInputValue("AppName", null);
+        var.setAppName(temp);
+
+        temp = this.getInputValue("RoleName", null);
+        var.setRoleName(temp);
+
+        temp = this.getInputValue("Description", null);
+        var.setAppRoleDescription(temp);
+
+        this.selectedApp = this.getInputValue("AppId", null);
+        var.setApplicationId(Integer.valueOf(this.selectedApp.toString()));
+
+        this.selectedRole = this.getInputValue("RoleId", null);
+        var.setRoleId(Integer.valueOf(this.selectedRole.toString()));
+
+        this.data = var;
+
+        // this.data = UserAppRoleFactory.create();
+        // try {
+        // WebDataSourceConverter.packageBean(this.request, this.data);
+        // return;
+        // } catch (SystemException e) {
+        // this.msg =
+        // "Problem gathering Application-Role Search request parameters:  " +
+        // e.getMessage();
+        // logger.log(Level.ERROR, this.msg);
+        // throw new ActionCommandException(this.msg);
+        // }
+
 
         // DatabaseTransApi tx = null;
         // ApplicationApi api = null;

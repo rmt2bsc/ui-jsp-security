@@ -66,6 +66,7 @@
 					 </td>
 					 <td align="left">
 					    <beanlib:InputControl value="#record.AppName"/>
+					    <beanlib:InputControl type="hidden" name="AppName" value="#record.AppName"/>
 					    <beanlib:InputControl type="hidden" name="AppId" value="#selectedApp.AppId"/>
 					 </td>
 				</tr>								
@@ -75,6 +76,7 @@
 					 </td>
 					 <td align="left">
  					    <beanlib:InputControl value="#record.RoleName"/>
+ 					    <beanlib:InputControl type="hidden" name="RoleName" value="#record.RoleName"/>
 					    <beanlib:InputControl type="hidden" name="RoleId" value="#selectedRole.RoleId"/>
 					 </td>
 				</tr>												
