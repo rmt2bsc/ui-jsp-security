@@ -20,11 +20,9 @@ import com.api.web.util.RMT2WebUtility;
 import com.entity.ResourceTypeFactory;
 import com.entity.UserResourceType;
 
-
-
 /**
- * Action handler provides functionality to respond to requests pertaining 
- * to the Resource Type edit page.  The following request types are serviced: save 
+ * Action handler provides functionality to respond to requests pertaining to
+ * the Resource Type edit page. The following request types are serviced: save
  * and delete a resource type, and to navigate back to the role list page.
  * 
  * @author Roy Terrell
@@ -47,8 +45,8 @@ public class TypeEditAction extends AbstractActionHandler implements ICommand {
      * @throws SystemException
      */
     public TypeEditAction() throws SystemException {
-	super();
-	logger = Logger.getLogger("TypeEditAction");
+        super();
+        logger = Logger.getLogger("TypeEditAction");
     }
 
     /**
@@ -57,12 +55,12 @@ public class TypeEditAction extends AbstractActionHandler implements ICommand {
      * @throws SystemException
      */
     protected void init(Context _context, Request _request) throws SystemException {
-	super.init(_context, _request);
+        super.init(_context, _request);
     }
 
     /**
-     * Processes the client's requests to save and delete changes made to 
-     * a resource type profile, and to navigate back to roles list page.
+     * Processes the client's requests to save and delete changes made to a
+     * resource type profile, and to navigate back to roles list page.
      * 
      * @param request
      *            The HttpRequest object
@@ -70,20 +68,19 @@ public class TypeEditAction extends AbstractActionHandler implements ICommand {
      *            The HttpResponse object
      * @param command
      *            Comand issued by the client.
-     * @Throws SystemException
-     *             when an error needs to be reported.
+     * @Throws SystemException when an error needs to be reported.
      */
     public void processRequest(Request request, Response response, String command) throws ActionCommandException {
-	super.processRequest(request, response, command);
-	if (command.equalsIgnoreCase(TypeEditAction.COMMAND_SAVE)) {
-	    this.saveData();
-	}
-	if (command.equalsIgnoreCase(TypeEditAction.COMMAND_DELETE)) {
-	    this.deleteData();
-	}
-	if (command.equalsIgnoreCase(TypeEditAction.COMMAND_BACK)) {
-	    this.doBack();
-	}
+        super.processRequest(request, response, command);
+        if (command.equalsIgnoreCase(TypeEditAction.COMMAND_SAVE)) {
+            this.saveData();
+        }
+        if (command.equalsIgnoreCase(TypeEditAction.COMMAND_DELETE)) {
+            this.deleteData();
+        }
+        if (command.equalsIgnoreCase(TypeEditAction.COMMAND_BACK)) {
+            this.doBack();
+        }
     }
 
     /**
@@ -93,7 +90,7 @@ public class TypeEditAction extends AbstractActionHandler implements ICommand {
      * @throws ActionCommandException
      */
     public void save() throws ActionCommandException {
-        // Call SOAP web service to get complete list of resource types
+        // Call SOAP web service to update a resource type
         try {
             AuthenticationResponse response = ResourceTypeSoapRequests.callUpdate((UserResourceType) this.data);
             ReplyStatusType rst = response.getReplyStatus();
@@ -118,7 +115,20 @@ public class TypeEditAction extends AbstractActionHandler implements ICommand {
      * @throws ActionCommandException
      */
     public void delete() throws ActionCommandException {
-
+        // Call SOAP web service to delete a resource types
+        try {
+            AuthenticationResponse response = ResourceTypeSoapRequests.callDelete((UserResourceType) this.data);
+            ReplyStatusType rst = response.getReplyStatus();
+            this.msg = rst.getMessage();
+            if (rst.getReturnCode().intValue() == GeneralConst.RC_FAILURE) {
+                this.msg = rst.getMessage();
+                return;
+            }
+            this.sendClientData();
+        } catch (Exception e) {
+            logger.log(Level.ERROR, e.getMessage());
+            throw new ActionCommandException(e.getMessage());
+        }
     }
 
     /**
@@ -173,22 +183,22 @@ public class TypeEditAction extends AbstractActionHandler implements ICommand {
      * @throws ActionCommandException
      */
     protected void sendClientData() throws ActionCommandException {
-	this.request.setAttribute(GeneralConst.CLIENT_DATA_RECORD, this.data);
-	this.request.setAttribute(RMT2ServletConst.REQUEST_MSG_INFO, this.msg);
+        this.request.setAttribute(GeneralConst.CLIENT_DATA_RECORD, this.data);
+        this.request.setAttribute(RMT2ServletConst.REQUEST_MSG_INFO, this.msg);
     }
 
     /**
      * No Action
      */
     public void add() throws ActionCommandException {
-	return;
+        return;
     }
 
     /**
      * No Action
      */
     public void edit() throws ActionCommandException {
-	return;
+        return;
     }
 
 }

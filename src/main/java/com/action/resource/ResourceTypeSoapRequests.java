@@ -5,7 +5,6 @@ import java.util.Date;
 import org.apache.log4j.Logger;
 import org.rmt2.constants.ApiHeaderNames;
 import org.rmt2.constants.ApiTransactionCodes;
-import org.rmt2.jaxb.ApplicationType;
 import org.rmt2.jaxb.AuthCriteriaGroupType;
 import org.rmt2.jaxb.AuthProfileGroupType;
 import org.rmt2.jaxb.AuthenticationRequest;
@@ -22,7 +21,6 @@ import org.rmt2.util.authentication.ResourcetypeTypeBuilder;
 import com.AuthConstants;
 import com.api.messaging.webservice.soap.client.SoapJaxbClientWrapper;
 import com.api.security.authentication.web.AuthenticationException;
-import com.entity.Application;
 import com.entity.UserResourceType;
 
 /**
@@ -43,7 +41,7 @@ public class ResourceTypeSoapRequests {
      * @throws AuthenticationException
      */
     public static final AuthenticationResponse callGet() throws AuthenticationException {
-        // Retrieve all user group records from the database
+        // Retrieve all resource type records from the database
         ObjectFactory fact = new ObjectFactory();
         AuthenticationRequest req = fact.createAuthenticationRequest();
 
@@ -76,12 +74,12 @@ public class ResourceTypeSoapRequests {
      * SOAP call to update a single resource type object.
      * 
      * @param data
-     *            {@link Application}
+     *            {@link UserResourceType}
      * @return {@link AuthenticationResponse}
      * @throws AuthenticationException
      */
     public static final AuthenticationResponse callUpdate(UserResourceType data) throws AuthenticationException {
-        // Retrieve all user group records from the database
+        // Modify a resource type record
         ObjectFactory fact = new ObjectFactory();
         AuthenticationRequest req = fact.createAuthenticationRequest();
 
@@ -122,19 +120,19 @@ public class ResourceTypeSoapRequests {
      * SOAP call to delete a single resource type.
      * 
      * @param data
-     *            {@link Application}
+     *            {@link UserResourceType}
      * @return {@link AuthenticationResponse}
      * @throws AuthenticationException
      */
-    public static final AuthenticationResponse callDelete(Application data) throws AuthenticationException {
-        // Retrieve all user group records from the database
+    public static final AuthenticationResponse callDelete(UserResourceType data) throws AuthenticationException {
+        // Delete resource type record from the database
         ObjectFactory fact = new ObjectFactory();
         AuthenticationRequest req = fact.createAuthenticationRequest();
 
         HeaderType head = HeaderTypeBuilder.Builder.create()
                 .withApplication(ApiHeaderNames.APP_NAME_AUTHENTICATION)
                 .withModule(AuthConstants.MODULE_ADMIN)
-                .withTransaction(ApiTransactionCodes.AUTH_APPLICATION_DELETE)
+                .withTransaction(ApiTransactionCodes.AUTH_RESOURCE_TYPE_DELETE)
                 .withMessageMode(ApiHeaderNames.MESSAGE_MODE_REQUEST)
                 .withDeliveryDate(new Date())
                 .withRouting(ApiTransactionCodes.ROUTE_AUTHENTICATION)
@@ -142,10 +140,15 @@ public class ResourceTypeSoapRequests {
                 .build();
 
         AuthProfileGroupType apgt = fact.createAuthProfileGroupType();
-        ApplicationType app = fact.createApplicationType();
-        app.setAppId(data.getAppId());
+        ResourcetypeType rt = ResourcetypeTypeBuilder.Builder.create()
+                .withTypeId(data.getRsrcTypeId())
+                .build();
 
-        apgt.getApplicationInfo().add(app);
+        ResourcesInfoType rit = ResourcesInfoTypeBuilder.Builder.create()
+                .addResourceType(rt)
+                .build();
+
+        apgt.setResourcesInfo(rit);
         req.setProfile(apgt);
         req.setHeader(head);
 
