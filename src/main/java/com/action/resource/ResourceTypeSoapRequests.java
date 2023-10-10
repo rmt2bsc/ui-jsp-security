@@ -13,12 +13,17 @@ import org.rmt2.jaxb.AuthenticationResponse;
 import org.rmt2.jaxb.HeaderType;
 import org.rmt2.jaxb.ObjectFactory;
 import org.rmt2.jaxb.ResourceCriteriaType;
+import org.rmt2.jaxb.ResourcesInfoType;
+import org.rmt2.jaxb.ResourcetypeType;
 import org.rmt2.util.HeaderTypeBuilder;
+import org.rmt2.util.authentication.ResourcesInfoTypeBuilder;
+import org.rmt2.util.authentication.ResourcetypeTypeBuilder;
 
 import com.AuthConstants;
 import com.api.messaging.webservice.soap.client.SoapJaxbClientWrapper;
 import com.api.security.authentication.web.AuthenticationException;
 import com.entity.Application;
+import com.entity.UserResourceType;
 
 /**
  * Help class for constructing and invoking SOAP calls pertaining to the
@@ -75,7 +80,7 @@ public class ResourceTypeSoapRequests {
      * @return {@link AuthenticationResponse}
      * @throws AuthenticationException
      */
-    public static final AuthenticationResponse callUpdate(Application data) throws AuthenticationException {
+    public static final AuthenticationResponse callUpdate(UserResourceType data) throws AuthenticationException {
         // Retrieve all user group records from the database
         ObjectFactory fact = new ObjectFactory();
         AuthenticationRequest req = fact.createAuthenticationRequest();
@@ -83,7 +88,7 @@ public class ResourceTypeSoapRequests {
         HeaderType head = HeaderTypeBuilder.Builder.create()
                 .withApplication(ApiHeaderNames.APP_NAME_AUTHENTICATION)
                 .withModule(AuthConstants.MODULE_ADMIN)
-                .withTransaction(ApiTransactionCodes.AUTH_APPLICATION_UPDATE)
+                .withTransaction(ApiTransactionCodes.AUTH_RESOURCE_TYPE_UPDATE)
                 .withMessageMode(ApiHeaderNames.MESSAGE_MODE_REQUEST)
                 .withDeliveryDate(new Date())
                 .withRouting(ApiTransactionCodes.ROUTE_AUTHENTICATION)
@@ -91,13 +96,16 @@ public class ResourceTypeSoapRequests {
                 .build();
 
         AuthProfileGroupType apgt = fact.createAuthProfileGroupType();
-        ApplicationType app = fact.createApplicationType();
-        app.setActive(data.getActive());
-        app.setAppCode(data.getName());
-        app.setAppId(data.getAppId());
-        app.setDescription(data.getDescription());
+        ResourcetypeType rt = ResourcetypeTypeBuilder.Builder.create()
+                .withTypeId(data.getRsrcTypeId())
+                .withDescription(data.getDescription())
+                .build();
 
-        apgt.getApplicationInfo().add(app);
+        ResourcesInfoType rit = ResourcesInfoTypeBuilder.Builder.create()
+                .addResourceType(rt)
+                .build();
+
+        apgt.setResourcesInfo(rit);
         req.setProfile(apgt);
         req.setHeader(head);
 

@@ -16,6 +16,7 @@ import com.api.web.Context;
 import com.api.web.ICommand;
 import com.api.web.Request;
 import com.api.web.Response;
+import com.api.web.util.RMT2WebUtility;
 import com.entity.ResourceTypeFactory;
 import com.entity.UserResourceType;
 
@@ -92,28 +93,32 @@ public class TypeEditAction extends AbstractActionHandler implements ICommand {
      * @throws ActionCommandException
      */
     public void save() throws ActionCommandException {
-        // DatabaseTransApi tx = DatabaseTransFactory.create();
-        // ResourceApi api = ResourceFactory.createApi((DatabaseConnectionBean)
-        // tx.getConnector(), this.request);
-        // UserResourceType type = (UserResourceType) this.data;
-        // try {
-        // // Update application profile.
-        // api.maintainType(type);
-        // // Commit Changes to the database
-        // tx.commitUOW();
-        // this.msg = "Resource Type configuration saved successfully";
-        // }
-        // catch (Exception e) {
-        // this.msg = e.getMessage();
-        // tx.rollbackUOW();
-        // throw new ActionCommandException(this.msg);
-        // }
-        // finally {
-        // api.close();
-        // tx.close();
-        // api = null;
-        // tx = null;
-        // }
+        // Call SOAP web service to get complete list of resource types
+        try {
+            AuthenticationResponse response = ResourceTypeSoapRequests.callUpdate((UserResourceType) this.data);
+            ReplyStatusType rst = response.getReplyStatus();
+            this.msg = rst.getMessage();
+            if (rst.getReturnCode().intValue() == GeneralConst.RC_FAILURE) {
+                this.msg = rst.getMessage();
+                return;
+            }
+            List<UserResourceType> results = ResourceTypeFactory.create(response.getProfile().getResourcesInfo());
+            this.data = results.get(0);
+            this.sendClientData();
+        } catch (Exception e) {
+            logger.log(Level.ERROR, e.getMessage());
+            throw new ActionCommandException(e.getMessage());
+        }
+    }
+
+    /**
+     * Delete a resource type from the database using its unique id.
+     * 
+     * @return Total number of rows deleted.
+     * @throws ActionCommandException
+     */
+    public void delete() throws ActionCommandException {
+
     }
 
     /**
@@ -150,47 +155,15 @@ public class TypeEditAction extends AbstractActionHandler implements ICommand {
      *             during data retrieval.
      */
     protected void receiveClientData() throws ActionCommandException {
-        // try {
-        // this.data = ResourceFactory.createUserResourceType();
-        // ResourceFactory.packageBean(this.request, this.data);
-        // }
-        // catch (Exception e) {
-        // logger.log(Level.ERROR, e.getMessage());
-        // throw new ActionCommandException(e.getMessage());
-        // }
-    }
-
-    /**
-     * Delete a resource type from the database using its unique id.
-     * 
-     * @return Total number of rows deleted.
-     * @throws ActionCommandException
-     */
-    public void delete() throws ActionCommandException {
-        // DatabaseTransApi tx = DatabaseTransFactory.create();
-        // ResourceApi api = ResourceFactory.createApi((DatabaseConnectionBean)
-        // tx.getConnector(), this.request);
-        // int rc;
-        // UserResourceType type = (UserResourceType) this.data;
-        // try {
-        // // Update resource type profile.
-        // rc = api.deleteType(type.getRsrcTypeId());
-        // // Commit Changes to the database
-        // tx.commitUOW();
-        // this.msg = rc +
-        // " securiy role configuration(s) deleted successfully";
-        // }
-        // catch (Exception e) {
-        // this.msg = e.getMessage();
-        // tx.rollbackUOW();
-        // throw new ActionCommandException(this.msg);
-        // }
-        // finally {
-        // api.close();
-        // tx.close();
-        // api = null;
-        // tx = null;
-        // }
+        try {
+            // Retrieve application from the database using unique id.
+            this.data = ResourceTypeFactory.create();
+            // Update application object with user input.
+            RMT2WebUtility.packageBean(this.request, this.data);
+        } catch (Exception e) {
+            logger.log(Level.ERROR, e.getMessage());
+            throw new ActionCommandException(e.getMessage());
+        }
     }
 
     /**
