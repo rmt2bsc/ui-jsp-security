@@ -118,7 +118,7 @@ public class TypeSearchAction extends AbstractActionHandler implements ICommand 
      * @throws ActionCommandException
      */
     public void add() throws ActionCommandException {
-        // this.data = ResourceFactory.createUserResourceType();
+        this.data = ResourceTypeFactory.create();
         return;
     }
 
@@ -130,32 +130,7 @@ public class TypeSearchAction extends AbstractActionHandler implements ICommand 
      * @throws ActionCommandException
      */
     public void edit() throws ActionCommandException {
-        // if (this.data == null) {
-        // return;
-        // }
-        //
-        // // Since resource api returns resource types in a List collection,
-        // isolate single element.
-        // if (this.data instanceof List) {
-        // List list = (List) this.data;
-        // if (list.size() > 1) {
-        // this.msg =
-        // "Edit Error: More than one occurrence of the selected item was found to be assoicated with the user\'s selection";
-        // logger.log(Level.ERROR, this.msg);
-        // throw new ActionCommandException(this.msg);
-        // }
-        // this.data = list.get(0);
-        // }
-        //
-        // // Update object with user's changes.
-        // try {
-        // ResourceFactory.packageBean(this.request, this.data,
-        // this.selectedRow);
-        // }
-        // catch (Exception e) {
-        // logger.log(Level.ERROR, e.getMessage());
-        // throw new ActionCommandException(e.getMessage());
-        // }
+
         return;
     }
 
@@ -176,34 +151,20 @@ public class TypeSearchAction extends AbstractActionHandler implements ICommand 
                 throw new ActionCommandException(RMT2SystemExceptionConst.MSG_ITEM_NOT_SELECTED,
                         RMT2SystemExceptionConst.RC_ITEM_NOT_SELECTED);
             }
+
+            UserResourceType obj = ResourceTypeFactory.create();
             int uid;
             String temp = this.getInputValue("RsrcTypeId", null);
             try {
                 uid = Integer.parseInt(temp);
+                obj.setRsrcTypeId(uid);
             } catch (NumberFormatException e) {
-                uid = -1;
+                obj.setRsrcTypeId(0);
             }
 
-            // DatabaseTransApi tx = DatabaseTransFactory.create();
-            // ResourceApi api =
-            // ResourceFactory.createApi((DatabaseConnectionBean)
-            // tx.getConnector(), this.request);
-            // try {
-            // // Retrieve role from the database using unique id.
-            // UserResourceType type = ResourceFactory.createUserResourceType();
-            // type.setRsrcTypeId(uid);
-            // this.data = api.getType(type);
-            // }
-            // catch (Exception e) {
-            // logger.log(Level.ERROR, e.getMessage());
-            // throw new ActionCommandException(e.getMessage());
-            // }
-            // finally {
-            // api.close();
-            // tx.close();
-            // api = null;
-            // tx = null;
-            // }
+            temp = this.getInputValue("Description", null);
+            obj.setDescription(temp);
+            this.data = obj;
         }
     }
 
