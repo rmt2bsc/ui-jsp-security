@@ -122,7 +122,15 @@ public class AppRoleEditAction extends AbstractActionHandler implements ICommand
                 this.msg = rst.getMessage();
                 return;
             }
-            // this.data = AppRoleFactory.create((VwAppRoles) this.data);
+
+            // This is used for the "Add" functionality to update the
+            // application role id to it new value. This logic should be
+            // redundant for updates to existing records.
+            List<VwAppRoles> results = new ArrayList<>();
+            if (appResponse.getProfile() != null) {
+                results = VwAppRoleFactory.create(appResponse.getProfile().getAppRoleInfo());
+                ((VwAppRoles) this.data).setAppRoleId(results.get(0).getAppRoleId());
+            }
             this.sendClientData();
         } catch (Exception e) {
             logger.log(Level.ERROR, e.getMessage());

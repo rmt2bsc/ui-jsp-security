@@ -1,10 +1,12 @@
 <%@ taglib uri="/rmt2-generaltaglib" prefix="gen" %>
 <%@ taglib uri="/rmt2-beantaglib" prefix="beanlib" %>
 <%@ taglib uri="/rmt2-taglib" prefix="db" %>
-<%@ page import="com.constants.GeneralConst" %>
-<%@ page import="com.bean.AppRole" %>
-<%@ page import="com.api.security.authentication.AuthenticationConst" %>
-<%@ page import="com.constants.RMT2ServletConst" %>
+<%@ page import="com.api.constants.GeneralConst" %>
+<%@ page import="com.entity.VwAppRoles" %>
+<%@ page import="com.api.security.authentication.web.AuthenticationConst" %>
+<%@ page import="com.api.constants.RMT2ServletConst" %>
+<%@ page import="com.AuthConstants" %>
+
 
 <gen:InitAppRoot id="APP_ROOT"/>
 
@@ -17,28 +19,23 @@
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="-1">  
     <link rel=STYLESHEET type="text/css" href="<%=APP_ROOT%>/css/RMT2Table.css">
-		<link rel=STYLESHEET type="text/css" href="<%=APP_ROOT%>/css/RMT2General.css">
-		<script Language="JavaScript" src="<%=APP_ROOT%>/js/RMT2General.js"></script>
+	<link rel=STYLESHEET type="text/css" href="<%=APP_ROOT%>/css/RMT2General.css">
+	<script Language="JavaScript" src="<%=APP_ROOT%>/js/RMT2General.js"></script>
     <script Language="JavaScript" src="<%=APP_ROOT%>/js/RMT2Menu.js"></script>
     <script Language="JavaScript" src="<%=APP_ROOT%>/js/AjaxApi.js"></script>
     <script Language="JavaScript" src="<%=APP_ROOT%>/js/AjaxRequestConfig.js"></script>
     <script Language="JavaScript" src="<%=APP_ROOT%>/js/AjaxRenderer.js"></script>
+    <script> 
+         function getAppNameChange() {
+        	 document.DataForm.AppName.value = document.DataForm.AppId.options[document.DataForm.AppId.selectedIndex].text;
+         }
+         
+         function getRoleNameChange() {
+        	 document.DataForm.RoleName.value = document.DataForm.RoleId.options[document.DataForm.RoleId.selectedIndex].text;
+         }
+    </script>
   </head>
-  
-   <db:connection id="con" classId="com.bean.db.DatabaseConnectionBean"/>
-	 <db:datasource id="appsDso" 
-                  classId="com.api.DataSourceApi" 
-                  connection="con"
-									query="ApplicationView"
-									order="name"
-									type="xml"/>												  								  
-	 <db:datasource id="rolesDso" 
-                  classId="com.api.DataSourceApi" 
-                  connection="con"
-									query="RolesView"
-									order="name"
-									type="xml"/>												  								  								  
-						  
+  					  
   <body bgcolor="#FFFFFF" text="#000000">
        <form name="DataForm" method="POST" action="<%=APP_ROOT%>/unsecureRequestProcessor/AppRole.Edit">
 		  <h3><strong><%=pageTitle%></strong></h3>
@@ -51,7 +48,7 @@
 					 </td>
 					 <td align="left" width="75%" >
 					     <beanlib:InputControl type="hidden" name="AppRoleId" value="#record.AppRoleId"/>                                  
-					 	   <beanlib:InputControl value="#record.AppRoleId"/>                                  
+					 	 <beanlib:InputControl value="#record.AppRoleId"/>                                  
 					 </td>
 				</tr>
 				<tr> 
@@ -75,13 +72,13 @@
 						<font size="3"><b>Application</b></font>
 					 </td>
 					 <td align="left">
-							<db:InputControl dataSource="appsDso"
-															 type="select"
-															 name="AppId"
-															 codeProperty="AppId"
-															 displayProperty="Name"
-															 selectedValue="#record.AppId"						 
-															 onChange="javascript:changeRoles();"/>
+					         <beanlib:InputControl dataSource="<%=AuthConstants.APP_LIST%>"
+												   type="select"
+												   name="AppId"
+												   codeProperty="AppId"
+												   displayProperty="Name"
+												   onChange="javascript:getAppNameChange();"/>	
+                             <beanlib:InputControl type="hidden" name="AppName"/>												   
 					 </td>
 				</tr>								
 				<tr> 
@@ -89,11 +86,13 @@
 						<font size="3"><b>Role</b></font>
 					 </td>
 					 <td align="left">
-							<db:InputControl dataSource="rolesDso"
-															 type="select"
-															 name="RoleId"
-															 codeProperty="RoleId"
-															 displayProperty="Name"/>						 
+					         <beanlib:InputControl dataSource="<%=AuthConstants.ROLE_LIST%>"
+												   type="select"
+												   name="RoleId"
+												   codeProperty="RoleId"
+												   displayProperty="Name"
+												   onChange="javascript:getRoleNameChange();"/>
+	                         <beanlib:InputControl type="hidden" name="RoleName"/>
 					 </td>
 				</tr>												
 				<tr> 
@@ -127,7 +126,7 @@
 				    </a>
 				</td>
 	      <td width="10%" valign="top" align="center"> 
-          <a  href="javascript:handleAction('_self', document.DataForm, '<%=GeneralConst.REQ_SEARCH%>')"> 
+          <a  href="javascript:handleAction('_self', document.DataForm, '<%=GeneralConst.REQ_LIST%>')"> 
             <img name="m_back" src="<%=APP_ROOT%>/images/cm-back.gif" width="48px" height="70px" style="border: none" alt="Back to Application Role List">
           </a>
       </td>	        				
