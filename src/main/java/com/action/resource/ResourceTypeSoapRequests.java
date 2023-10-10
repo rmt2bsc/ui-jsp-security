@@ -35,7 +35,7 @@ public class ResourceTypeSoapRequests {
     private static final String MSG = "SOAP invocation error occurred regarding server-side messaging";
 
     /**
-     * SOAP call to fetch all applications.
+     * SOAP call to fetch all resource type records.
      * 
      * @return {@link AuthenticationResponse}
      * @throws AuthenticationException
