@@ -138,6 +138,40 @@ public class AppRoleEditAction extends AbstractActionHandler implements ICommand
         }
     }
 
+
+    /**
+     * Delete an application role from the database using its unique id.
+     *
+     * @return Total number of rows deleted.
+     * @throws ActionCommandException
+     */
+    public void delete() throws ActionCommandException {
+        // Call SOAP web service to delete an Application Role object.
+        AppRole obj = AppRoleFactory.create((VwAppRoles) this.data);
+        try {
+            AuthenticationResponse appResponse = ApplicationRoleSoapRequests.callDeleteApplicationRole(obj);
+            ReplyStatusType rst = appResponse.getReplyStatus();
+            this.msg = rst.getMessage();
+            if (rst.getReturnCode().intValue() == GeneralConst.RC_FAILURE) {
+                this.msg = rst.getMessage();
+                return;
+            }
+
+            // This is used for the "Add" functionality to update the
+            // application role id to it new value. This logic should be
+            // redundant for updates to existing records.
+            List<VwAppRoles> results = new ArrayList<>();
+            if (appResponse.getProfile() != null) {
+                results = VwAppRoleFactory.create(appResponse.getProfile().getAppRoleInfo());
+                ((VwAppRoles) this.data).setAppRoleId(results.get(0).getAppRoleId());
+            }
+            this.sendClientData();
+        } catch (Exception e) {
+            logger.log(Level.ERROR, e.getMessage());
+            throw new ActionCommandException(e.getMessage());
+        }
+    }
+
     /**
      * Navigates the user to the Application Role Search page.
      * 
@@ -253,79 +287,6 @@ public class AppRoleEditAction extends AbstractActionHandler implements ICommand
         var.setRoleId(Integer.valueOf(this.selectedRole.toString()));
 
         this.data = var;
-
-        // this.data = UserAppRoleFactory.create();
-        // try {
-        // WebDataSourceConverter.packageBean(this.request, this.data);
-        // return;
-        // } catch (SystemException e) {
-        // this.msg =
-        // "Problem gathering Application-Role Search request parameters:  " +
-        // e.getMessage();
-        // logger.log(Level.ERROR, this.msg);
-        // throw new ActionCommandException(this.msg);
-        // }
-
-
-        // DatabaseTransApi tx = null;
-        // ApplicationApi api = null;
-        // try {
-        // // Retrieve an application role from the database using unique id.
-        // tx = DatabaseTransFactory.create();
-        // api = UserFactory.createAppApi((DatabaseConnectionBean)
-        // tx.getConnector(), this.request);
-        // this.data = api.getAppRole(uid);
-        // if (this.data == null) {
-        // this.data = UserFactory.createAppRole();
-        // }
-        // // Update an application role object with user input.
-        // UserFactory.packageBean(this.request, this.data);
-        // } catch (Exception e) {
-        // logger.log(Level.ERROR, e.getMessage());
-        // throw new ActionCommandException(e.getMessage());
-        // } finally {
-        // api.close();
-        // api = null;
-        // tx.close();
-        // tx = null;
-        // }
-    }
-
-
-
-    /**
-     * Delete an application role from the database using its unique id.
-     * 
-     * @param appId
-     *            The id of the user group
-     * @return Total number of rows deleted.
-     * @throws ActionCommandException
-     */
-    public void delete() throws ActionCommandException {
-        // DatabaseTransApi tx = DatabaseTransFactory.create();
-        // ApplicationApi api =
-        // UserFactory.createAppApi((DatabaseConnectionBean) tx.getConnector(),
-        // this.request);
-        // int rc;
-        // AppRole obj = (AppRole) this.data;
-        // try {
-        // // Update user group profile.
-        // rc = api.deleteAppRole(obj.getAppRoleId());
-        // // Commit Changes to the database
-        // tx.commitUOW();
-        // this.msg = rc +
-        // " application role configuration(s) deleted successfully";
-        // } catch (ApplicationException e) {
-        // this.msg =
-        // "Problem occurred deleting application role profile.  Additional information: "
-        // + e.getMessage();
-        // tx.rollbackUOW();
-        // } finally {
-        // api.close();
-        // api = null;
-        // tx.close();
-        // tx = null;
-        // }
     }
 
     /**

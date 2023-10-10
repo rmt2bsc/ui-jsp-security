@@ -26,7 +26,6 @@ import com.api.security.authentication.web.AuthenticationException;
 import com.api.util.assistants.Verifier;
 import com.api.util.assistants.VerifyException;
 import com.entity.AppRole;
-import com.entity.Roles;
 
 /**
  * Help class for constructing and invoking SOAP calls pertaining to the
@@ -172,14 +171,14 @@ public class ApplicationRoleSoapRequests {
     }
 
     /**
-     * SOAP call to delete a single role.
+     * SOAP call to delete a single application role.
      * 
      * @param data
-     *            {@link Roles}
+     *            {@link AppRole}
      * @return {@link AuthenticationResponse}
      * @throws AuthenticationException
      */
-    public static final AuthenticationResponse callDeleteRole(Roles data) throws AuthenticationException {
+    public static final AuthenticationResponse callDeleteApplicationRole(AppRole data) throws AuthenticationException {
         // Retrieve all user group records from the database
         ObjectFactory fact = new ObjectFactory();
         AuthenticationRequest req = fact.createAuthenticationRequest();
@@ -187,7 +186,7 @@ public class ApplicationRoleSoapRequests {
         HeaderType head = HeaderTypeBuilder.Builder.create()
                 .withApplication(ApiHeaderNames.APP_NAME_AUTHENTICATION)
                 .withModule(AuthConstants.MODULE_ADMIN)
-                .withTransaction(ApiTransactionCodes.AUTH_ROLE_DELETE)
+                .withTransaction(ApiTransactionCodes.AUTH_APP_ROLE_DELETE)
                 .withMessageMode(ApiHeaderNames.MESSAGE_MODE_REQUEST)
                 .withDeliveryDate(new Date())
                 .withRouting(ApiTransactionCodes.ROUTE_AUTHENTICATION)
@@ -195,10 +194,11 @@ public class ApplicationRoleSoapRequests {
                 .build();
 
         AuthProfileGroupType apgt = fact.createAuthProfileGroupType();
-        RoleType obj = fact.createRoleType();
-        obj.setRoleId(data.getRoleId());
+        AppRoleType art = AppRoleTypeBuilder.Builder.create()
+                .withAppRoleId(data.getAppRoleId())
+                .build();
 
-        apgt.getRoleInfo().add(obj);
+        apgt.getAppRoleInfo().add(art);
         req.setProfile(apgt);
         req.setHeader(head);
 
