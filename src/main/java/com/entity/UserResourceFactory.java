@@ -18,7 +18,7 @@ import org.rmt2.jaxb.UserResourceAccessType;
  * @author roy.terrell
  * 
  */
-public class ResourceFactory {
+public class UserResourceFactory {
 
     /**
      * Create a new instance of a UserResource class.
@@ -42,7 +42,7 @@ public class ResourceFactory {
      */
     public static UserResource createUserResource(ResourceType item) {
         try {
-            UserResource obj = ResourceFactory.createUserResource();
+            UserResource obj = UserResourceFactory.createUserResource();
             obj.setRsrcId(item.getUid());
             obj.setName(item.getCode());
             obj.setDescription(item.getDescription());
@@ -74,7 +74,7 @@ public class ResourceFactory {
             List<UserResource> obj = new ArrayList<>();
             List<UserResourceAccessType> uratList = items.getUserResourceAccess();
             for (UserResourceAccessType item : uratList) {
-                obj.add(ResourceFactory.createUserResource(item.getResourceInfo()));
+                obj.add(UserResourceFactory.createUserResource(item.getResourceInfo()));
             }
             return obj;
         } catch (Exception e) {
@@ -94,7 +94,7 @@ public class ResourceFactory {
             List<ResourceType> list = items.getResource();
             List<UserResource> obj = new ArrayList<>();
             for (ResourceType item : list) {
-                obj.add(ResourceFactory.createUserResource(item));
+                obj.add(UserResourceFactory.createUserResource(item));
             }
             return obj;
         } catch (Exception e) {
@@ -124,7 +124,7 @@ public class ResourceFactory {
      */
     public static UserResourceAccess createUserResourceAccess(UserResourceAccessType item) {
         try {
-            UserResourceAccess obj = ResourceFactory.createUserResourceAccess();
+            UserResourceAccess obj = UserResourceFactory.createUserResourceAccess();
             obj.setRsrcAccessId(item.getResourceInfo().getUid());
             obj.setLoginId(item.getUserInfo().getLoginId());
             obj.setRsrcId(item.getResourceInfo().getUid());
@@ -146,7 +146,7 @@ public class ResourceFactory {
             List<UserResourceAccess> obj = new ArrayList<>();
             List<UserResourceAccessType> uratList = items.getUserResourceAccess();
             for (UserResourceAccessType item : uratList) {
-                obj.add(ResourceFactory.createUserResourceAccess(item));
+                obj.add(UserResourceFactory.createUserResourceAccess(item));
             }
             return obj;
         } catch (Exception e) {
@@ -176,7 +176,7 @@ public class ResourceFactory {
      */
     public static UserResourceType createUserResourceType(ResourcetypeType item) {
         try {
-            UserResourceType obj = ResourceFactory.createUserResourceType();
+            UserResourceType obj = UserResourceFactory.createUserResourceType();
             obj.setRsrcTypeId(item.getUid());
             obj.setDescription(item.getDescription());
             if (item.getTracking() != null) {
@@ -202,7 +202,7 @@ public class ResourceFactory {
             List<ResourcetypeType> list = items.getResourcetype();
             List<UserResourceType> obj = new ArrayList<>();
             for (ResourcetypeType item : list) {
-                obj.add(ResourceFactory.createUserResourceType(item));
+                obj.add(UserResourceFactory.createUserResourceType(item));
             }
             return obj;
         } catch (Exception e) {
@@ -233,7 +233,7 @@ public class ResourceFactory {
      */
     public static UserResourceSubtype createUserResourceSubtype(ResourcesubtypeType item) {
         try {
-            UserResourceSubtype obj = ResourceFactory.createUserResourceSubtype();
+            UserResourceSubtype obj = UserResourceFactory.createUserResourceSubtype();
             obj.setRsrcSubtypeId(item.getUid());
             obj.setRsrcTypeId(item.getResourceTypeId());
             obj.setName(item.getCode());
@@ -261,7 +261,7 @@ public class ResourceFactory {
             List<ResourcesubtypeType> list = items.getResourcesubtype();
             List<UserResourceSubtype> obj = new ArrayList<>();
             for (ResourcesubtypeType item : list) {
-                obj.add(ResourceFactory.createUserResourceSubtype(item));
+                obj.add(UserResourceFactory.createUserResourceSubtype(item));
             }
             return obj;
         } catch (Exception e) {

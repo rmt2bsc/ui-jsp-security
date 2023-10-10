@@ -23,7 +23,7 @@ import com.api.web.Response;
 import com.api.web.util.RMT2WebUtility;
 import com.entity.Application;
 import com.entity.ApplicationFactory;
-import com.entity.ResourceFactory;
+import com.entity.UserResourceFactory;
 import com.entity.UserAppRoleFactory;
 import com.entity.UserLogin;
 import com.entity.UserLoginFactory;
@@ -287,11 +287,11 @@ public class UserEditAction extends AbstractActionHandler implements ICommand {
         this.assignedResources = new ArrayList();
         this.revokedResources = new ArrayList();
         if (response.getProfile().getUserInfo().get(0).getGrantedResources() != null) {
-            this.assignedResources = ResourceFactory.createUserResourceAccess(response.getProfile().getUserInfo().get(0)
+            this.assignedResources = UserResourceFactory.createUserResourceAccess(response.getProfile().getUserInfo().get(0)
                     .getGrantedResources());
         }
         if (response.getProfile().getUserInfo().get(0).getRevokedResources() != null) {
-            this.revokedResources = ResourceFactory.createUserResourceAccess(response.getProfile().getUserInfo().get(0)
+            this.revokedResources = UserResourceFactory.createUserResourceAccess(response.getProfile().getUserInfo().get(0)
                     .getRevokedResources());
         }
     }
