@@ -38,21 +38,21 @@
 						 <gen:ColorBarLines evenColor="#CCFFCC" oddColor="#FFFFFF"/>
 								<td class="clsTableListHeader" valign="middle">
 								 	<beanlib:InputControl type="radio" name="<%=GeneralConst.CLIENTROW_PROPERTY%>" value="rowid"/>
-								 	<beanlib:InputControl type="hidden" name="RsrcSubtypeId" value="#item.RsrcSubtypeId" uniqueName="yes"/>
-								 	<beanlib:InputControl type="hidden" name="RsrcTypeId" value="#item.RsrcTypeId" uniqueName="yes"/>
+								 	<beanlib:InputControl type="hidden" name="RsrcSubtypeId" value="#item.ResrcSubtypeId" uniqueName="yes"/>
+								 	<beanlib:InputControl type="hidden" name="RsrcTypeId" value="#item.ResrcTypeId" uniqueName="yes"/>
 								 	
 								</td>	
 								<td align="center">
-									<beanlib:InputControl value="#item.RsrcSubtypeId"/>
+									<beanlib:InputControl value="#item.ResrcSubtypeId"/>
 								</td>
 								<td>
-									<beanlib:InputControl value="#item.Name"/>
+									<beanlib:InputControl value="#item.ResrcSubtypeName"/>
 								</td>
 								<td>
 									<beanlib:InputControl value="#item.ResrcTypeName"/>
 								</td>																
 								<td>
-									<beanlib:InputControl value="#item.Description"/>
+									<beanlib:InputControl value="#item.ResrcSubtypeDesc"/>
 								</td>
 						 </tr>
 				 </beanlib:LoopRows>		

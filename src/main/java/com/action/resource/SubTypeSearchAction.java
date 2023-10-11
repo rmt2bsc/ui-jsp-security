@@ -16,8 +16,8 @@ import com.api.web.Context;
 import com.api.web.ICommand;
 import com.api.web.Request;
 import com.api.web.Response;
-import com.entity.ResourceSubTypeFactory;
-import com.entity.UserResourceSubtype;
+import com.entity.VwResourceType;
+import com.entity.VwResourceTypeFactory;
 
 /**
  * Action handler provides functionality to respond to requests pertaining to
@@ -106,7 +106,7 @@ public class SubTypeSearchAction extends AbstractActionHandler implements IComma
                 this.msg = rst.getMessage();
                 return;
             }
-            List<UserResourceSubtype> results = ResourceSubTypeFactory.create(response.getProfile().getResourcesInfo());
+            List<VwResourceType> results = VwResourceTypeFactory.create(response.getProfile().getResourcesInfo());
             this.data = results;
             this.sendClientData();
         } catch (Exception e) {

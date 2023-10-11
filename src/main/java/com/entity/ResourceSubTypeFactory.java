@@ -40,7 +40,7 @@ public class ResourceSubTypeFactory {
         try {
             UserResourceSubtype obj = ResourceSubTypeFactory.create();
             obj.setRsrcSubtypeId(item.getUid());
-            obj.setRsrcTypeId(item.getResourceTypeId());
+            obj.setRsrcTypeId(item.getTypeInfo().getUid());
             obj.setName(item.getCode());
             obj.setDescription(item.getDescription());
             if (item.getTracking() != null) {
