@@ -172,7 +172,8 @@ public class SubTypeSearchAction extends AbstractActionHandler implements IComma
      * @throws ActionCommandException
      */
     public void add() throws ActionCommandException {
-        // this.data = ResourceFactory.createUserResourceSubtype();
+        this.data = ResourceSubTypeFactory.create();
+        this.lookupData = this.getLookupData();
         return;
     }
 
@@ -184,6 +185,10 @@ public class SubTypeSearchAction extends AbstractActionHandler implements IComma
      * @throws ActionCommandException
      */
     public void edit() throws ActionCommandException {
+        this.lookupData = this.getLookupData();
+    }
+
+    private List<UserResourceType> getLookupData() throws ActionCommandException {
         // Call SOAP web service to get complete list of resource types
         try {
             AuthenticationResponse response = ResourceTypeSoapRequests.callGet();
@@ -191,10 +196,10 @@ public class SubTypeSearchAction extends AbstractActionHandler implements IComma
             this.msg = rst.getMessage();
             if (rst.getReturnCode().intValue() == GeneralConst.RC_FAILURE) {
                 this.msg = rst.getMessage();
-                return;
+                return null;
             }
             List<UserResourceType> results = ResourceTypeFactory.create(response.getProfile().getResourcesInfo());
-            this.lookupData = results;
+            return results;
         } catch (Exception e) {
             logger.log(Level.ERROR, e.getMessage());
             throw new ActionCommandException(e.getMessage());
