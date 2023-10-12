@@ -7,6 +7,7 @@ import org.apache.log4j.Logger;
 import org.rmt2.jaxb.AuthenticationResponse;
 import org.rmt2.jaxb.ReplyStatusType;
 
+import com.AuthConstants;
 import com.SystemException;
 import com.api.constants.GeneralConst;
 import com.api.constants.RMT2SystemExceptionConst;
@@ -16,6 +17,10 @@ import com.api.web.Context;
 import com.api.web.ICommand;
 import com.api.web.Request;
 import com.api.web.Response;
+import com.entity.ResourceSubTypeFactory;
+import com.entity.ResourceTypeFactory;
+import com.entity.UserResourceSubtype;
+import com.entity.UserResourceType;
 import com.entity.VwResourceType;
 import com.entity.VwResourceTypeFactory;
 
@@ -39,6 +44,8 @@ public class SubTypeSearchAction extends AbstractActionHandler implements IComma
     private Logger logger;
 
     private Object data;
+
+    private Object lookupData;
 
     private boolean selectionRequired;
 
@@ -177,33 +184,21 @@ public class SubTypeSearchAction extends AbstractActionHandler implements IComma
      * @throws ActionCommandException
      */
     public void edit() throws ActionCommandException {
-        // if (this.data == null) {
-        // return;
-        // }
-        //
-        // // Since resource api returns resource sub-types in a List
-        // collection, isolate single element.
-        // if (this.data instanceof List) {
-        // List list = (List) this.data;
-        // if (list.size() > 1) {
-        // this.msg =
-        // "Edit Error: More than one occurrence of the selected item was found to be assoicated with the user\'s selection";
-        // logger.log(Level.ERROR, this.msg);
-        // throw new ActionCommandException(this.msg);
-        // }
-        // this.data = list.get(0);
-        // }
-        //
-        // // Update object with user's changes.
-        // try {
-        // ResourceFactory.packageBean(this.request, this.data,
-        // this.selectedRow);
-        // }
-        // catch (Exception e) {
-        // logger.log(Level.ERROR, e.getMessage());
-        // throw new ActionCommandException(e.getMessage());
-        // }
-        // return;
+        // Call SOAP web service to get complete list of resource types
+        try {
+            AuthenticationResponse response = ResourceTypeSoapRequests.callGet();
+            ReplyStatusType rst = response.getReplyStatus();
+            this.msg = rst.getMessage();
+            if (rst.getReturnCode().intValue() == GeneralConst.RC_FAILURE) {
+                this.msg = rst.getMessage();
+                return;
+            }
+            List<UserResourceType> results = ResourceTypeFactory.create(response.getProfile().getResourcesInfo());
+            this.lookupData = results;
+        } catch (Exception e) {
+            logger.log(Level.ERROR, e.getMessage());
+            throw new ActionCommandException(e.getMessage());
+        }
     }
 
     /**
@@ -223,35 +218,33 @@ public class SubTypeSearchAction extends AbstractActionHandler implements IComma
                 throw new ActionCommandException(RMT2SystemExceptionConst.MSG_ITEM_NOT_SELECTED,
                         RMT2SystemExceptionConst.RC_ITEM_NOT_SELECTED);
             }
+
+            UserResourceSubtype rec = ResourceSubTypeFactory.create();
+
             int uid;
             String temp = this.getInputValue("RsrcSubtypeId", null);
             try {
                 uid = Integer.parseInt(temp);
+                rec.setRsrcSubtypeId(uid);
             } catch (NumberFormatException e) {
-                uid = -1;
+                rec.setRsrcSubtypeId(0);
             }
 
-            // DatabaseTransApi tx = DatabaseTransFactory.create();
-            // ResourceApi api =
-            // ResourceFactory.createApi((DatabaseConnectionBean)
-            // tx.getConnector(), this.request);
-            // try {
-            // // Retrieve resource sub-type from the database using unique id.
-            // UserResourceSubtype subType =
-            // ResourceFactory.createUserResourceSubtype();
-            // subType.setRsrcSubtypeId(uid);
-            // this.data = api.getSubType(subType);
-            // }
-            // catch (Exception e) {
-            // logger.log(Level.ERROR, e.getMessage());
-            // throw new ActionCommandException(e.getMessage());
-            // }
-            // finally {
-            // api.close();
-            // tx.close();
-            // api = null;
-            // tx = null;
-            // }
+            temp = this.getInputValue("RsrcTypeId", null);
+            try {
+                uid = Integer.parseInt(temp);
+                rec.setRsrcTypeId(uid);
+            } catch (NumberFormatException e) {
+                rec.setRsrcTypeId(0);
+            }
+
+            temp = this.getInputValue("SubtypeName", null);
+            rec.setName(temp);
+
+            temp = this.getInputValue("SubtypeDesc", null);
+            rec.setDescription(temp);
+
+            this.data = rec;
         }
     }
 
@@ -263,6 +256,7 @@ public class SubTypeSearchAction extends AbstractActionHandler implements IComma
      */
     protected void sendClientData() throws ActionCommandException {
         this.request.setAttribute(GeneralConst.CLIENT_DATA_RECORD, this.data);
+        this.request.setAttribute(AuthConstants.RESOURCETYPE_LIST, this.lookupData);
     }
 
     /**

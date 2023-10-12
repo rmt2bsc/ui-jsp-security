@@ -14,9 +14,11 @@ import org.rmt2.jaxb.ObjectFactory;
 import org.rmt2.jaxb.ResourceCriteriaType;
 import org.rmt2.jaxb.ResourcesInfoType;
 import org.rmt2.jaxb.ResourcesubtypeType;
+import org.rmt2.jaxb.ResourcetypeType;
 import org.rmt2.util.HeaderTypeBuilder;
 import org.rmt2.util.authentication.ResourceSubtypeTypeBuilder;
 import org.rmt2.util.authentication.ResourcesInfoTypeBuilder;
+import org.rmt2.util.authentication.ResourcetypeTypeBuilder;
 
 import com.AuthConstants;
 import com.api.messaging.webservice.soap.client.SoapJaxbClientWrapper;
@@ -95,12 +97,20 @@ public class ResourceSubTypeSoapRequests {
                 .build();
 
         AuthProfileGroupType apgt = fact.createAuthProfileGroupType();
-        ResourcesubtypeType rt = ResourceSubtypeTypeBuilder.Builder.create()
+
+        ResourcetypeType rt = ResourcetypeTypeBuilder.Builder.create()
+                .withTypeId(data.getRsrcTypeId())
+                .build();
+
+        ResourcesubtypeType rst = ResourceSubtypeTypeBuilder.Builder.create()
                 .withSubTypeId(data.getRsrcSubtypeId())
+                .withType(rt)
+                .withName(data.getName())
+                .withDescription(data.getDescription())
                 .build();
 
         ResourcesInfoType rit = ResourcesInfoTypeBuilder.Builder.create()
-                .addResourceSubType(rt)
+                .addResourceSubType(rst)
                 .build();
 
         apgt.setResourcesInfo(rit);

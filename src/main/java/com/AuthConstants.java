@@ -9,4 +9,7 @@ public class AuthConstants {
 
     /** Role List variable */
     public static final String ROLE_LIST = "rolelist";
+
+    /** Role List variable */
+    public static final String RESOURCETYPE_LIST = "resourceTypeList";
 }

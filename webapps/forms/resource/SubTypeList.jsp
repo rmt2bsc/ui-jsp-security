@@ -40,7 +40,8 @@
 								 	<beanlib:InputControl type="radio" name="<%=GeneralConst.CLIENTROW_PROPERTY%>" value="rowid"/>
 								 	<beanlib:InputControl type="hidden" name="RsrcSubtypeId" value="#item.ResrcSubtypeId" uniqueName="yes"/>
 								 	<beanlib:InputControl type="hidden" name="RsrcTypeId" value="#item.ResrcTypeId" uniqueName="yes"/>
-								 	
+								 	<beanlib:InputControl type="hidden" name="SubtypeName" value="#item.ResrcSubtypeName" uniqueName="yes"/>
+								 	<beanlib:InputControl type="hidden" name="SubtypeDesc" value="#item.ResrcSubtypeDesc" uniqueName="yes"/>
 								</td>	
 								<td align="center">
 									<beanlib:InputControl value="#item.ResrcSubtypeId"/>
