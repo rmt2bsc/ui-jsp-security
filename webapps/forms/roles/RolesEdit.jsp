@@ -43,7 +43,7 @@
 						<font size="3"><b>Name</b></font>
 					 </td>
 					 <td align="left">
-						<beanlib:InputControl type="text" name="Name" value="#record.Name" size="60" maxLength="25"/>                                  
+						<beanlib:InputControl type="text" name="Name" value="#record.Name" size="15" maxLength="10"/>                                  
 					 </td>
 				</tr>				
 				<tr> 
@@ -51,7 +51,7 @@
 						<font size="3"><b>Description</b></font>
 					 </td>
 					 <td align="left">
-						<beanlib:InputControl type="text" name="Description" value="#record.Description" size="60" maxLength="25"/>                                  
+						<beanlib:InputControl type="text" name="Description" value="#record.Description" size="38" maxLength="30"/>                                  
 					 </td>
 				</tr>
 		</table>

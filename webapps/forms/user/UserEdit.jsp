@@ -55,11 +55,19 @@
 			 <tr>
 				 <th class="clsTableFormHeader">First Name:</th>
 				 <td>
-				     <beanlib:InputControl type="text" name="Firstname" value="#user.Firstname" size="30"/>
+				     <beanlib:InputControl type="text" 
+				                           name="Firstname" 
+				                           value="#user.Firstname" 
+				                           size="30" 
+				                           maxLength="25"/>
 				 </td>
 				 <th class="clsTableFormHeader">Last Name:</th>
 				 <td>
-				     <beanlib:InputControl type="text" name="Lastname" value="#user.Lastname" size="30"/>
+				     <beanlib:InputControl type="text" 
+				                           name="Lastname" 
+				                           value="#user.Lastname" 
+				                           size="30" 
+				                           maxLength="35"/>
 				 </td>
 			 </tr>
 			 
@@ -71,7 +79,7 @@
 				 </td>
 				 <th class="clsTableFormHeader">SSN:</th>
 				 <td>
-				     <beanlib:InputControl type="text" name="Ssn" value="#user.Ssn" size="30"/>
+				     <beanlib:InputControl type="text" name="Ssn" value="#user.Ssn" size="15" maxLength="11"/>
 				 </td>
 			 </tr>			 
 			 
@@ -90,17 +98,16 @@
 			 <tr>
 				 <th class="clsTableFormHeader">Email:</th>
 				 <td>
-				    <beanlib:InputControl type="text" name="Email" value="#user.Email" size="40"/>
+				    <beanlib:InputControl type="text" name="Email" value="#user.Email" size="40" maxLength="40"/>
 				 </td>
 				 <th class="clsTableFormHeader">Group:</th>
 				 <td> 
-					 <beanlib:InputControl
-					     dataSource="<%=UserConst.CLIENT_DATA_GROUPS %>"
-					     name="GrpId"
-					     type="select"
-					     displayProperty="description"
-					     codeProperty="grpId"
-					     selectedValue="#user.GrpId"/>
+					 <beanlib:InputControl dataSource="<%=UserConst.CLIENT_DATA_GROUPS %>"
+										   name="GrpId"
+										   type="select"
+										   displayProperty="description"
+										   codeProperty="grpId"
+										   selectedValue="#user.GrpId"/>
 				 </td>				 
 			 </tr>
 			 <tr>

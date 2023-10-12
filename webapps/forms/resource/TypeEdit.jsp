@@ -41,7 +41,7 @@
 						<font size="3"><b>Description</b></font>
 					 </td>
 					 <td align="left">
-						<beanlib:InputControl type="text" name="Description" value="#record.Description" size="60" maxLength="25"/>                                  
+						<beanlib:InputControl type="text" name="Description" value="#record.Description" size="30" maxLength="25"/>                                  
 					 </td>
 				</tr>
 		</table>

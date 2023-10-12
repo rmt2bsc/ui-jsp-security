@@ -49,7 +49,7 @@
 						<font size="3"><b>Name</b></font>
 					 </td>
 					 <td align="left">
-						<beanlib:InputControl type="text" name="Name" value="#record.AppRoleName" size="60" maxLength="25"/>                                  
+						<beanlib:InputControl type="text" name="Name" value="#record.AppRoleName" size="35" maxLength="30"/>                                  
 					 </td>
 				</tr>				
 				<tr> 
@@ -57,7 +57,7 @@
 						<font size="3"><b>Code</b></font>
 					 </td>
 					 <td align="left">
-						<beanlib:InputControl type="text" name="Code" value="#record.AppRoleCode" size="60" maxLength="25"/>                                  
+						<beanlib:InputControl type="text" name="Code" value="#record.AppRoleCode" size="15" maxLength="12"/>                                  
 					 </td>
 				</tr>								
 				<tr> 
@@ -85,7 +85,12 @@
 						<font size="3"><b>Description</b></font>
 					 </td>
 					 <td align="left">
-						<beanlib:InputControl type="textarea" name="Description" value="#record.AppRoleDescription" size="60" maxLength="250"/>                                  
+						<beanlib:InputControl type="textarea" 
+						                      name="Description" 
+						                      value="#record.AppRoleDescription" 
+						                      cols="50"
+						                      rows="3" 
+						                      maxLength="150"/>                                  
 					 </td>
 				</tr>
 				
