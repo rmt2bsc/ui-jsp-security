@@ -166,7 +166,7 @@ public class TypeEditAction extends AbstractActionHandler implements ICommand {
      */
     protected void receiveClientData() throws ActionCommandException {
         try {
-            // Retrieve application from the database using unique id.
+            // Retrieve resource type data from the JSP form.
             this.data = ResourceTypeFactory.create();
             // Update application object with user input.
             RMT2WebUtility.packageBean(this.request, this.data);
