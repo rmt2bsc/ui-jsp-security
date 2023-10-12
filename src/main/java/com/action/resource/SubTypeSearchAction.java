@@ -193,7 +193,6 @@ public class SubTypeSearchAction extends AbstractActionHandler implements IComma
         try {
             AuthenticationResponse response = ResourceTypeSoapRequests.callGet();
             ReplyStatusType rst = response.getReplyStatus();
-            this.msg = rst.getMessage();
             if (rst.getReturnCode().intValue() == GeneralConst.RC_FAILURE) {
                 this.msg = rst.getMessage();
                 return null;

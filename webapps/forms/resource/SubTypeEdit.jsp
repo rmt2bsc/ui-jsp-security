@@ -44,7 +44,7 @@
 						<font size="3"><b>Name</b></font>
 					 </td>
 					 <td align="left">
-						<beanlib:InputControl type="text" name="Name" value="#record.Name" size="60" maxLength="25"/>                                  
+						<beanlib:InputControl type="text" name="Name" value="#record.Name" size="12" maxLength="10"/>                                  
 					 </td>
 				</tr>				
 				<tr> 
@@ -69,7 +69,8 @@
 						                      name="Description" 
 						                      value="#record.Description"
 						                      rows="5"
-						                      cols="60"/>                                  
+						                      cols="60"
+						                      maxLength="300"/>                                  
 					 </td>
 				</tr>
 		 </table>

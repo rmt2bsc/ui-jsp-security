@@ -117,43 +117,8 @@ public class SubTypeEditAction extends AbstractActionHandler implements ICommand
         }
 
         // Call SOAP web service to get complete list of resource types
-        try {
-            AuthenticationResponse response = ResourceTypeSoapRequests.callGet();
-            ReplyStatusType rst = response.getReplyStatus();
-            if (rst.getReturnCode().intValue() == GeneralConst.RC_FAILURE) {
-                this.msg = rst.getMessage();
-                return;
-            }
-            List<UserResourceType> results = ResourceTypeFactory.create(response.getProfile().getResourcesInfo());
-            this.lookupData = results;
-        } catch (Exception e) {
-            logger.log(Level.ERROR, e.getMessage());
-            throw new ActionCommandException(e.getMessage());
-        }
+        this.lookupData = this.getLookupData();
 
-        // DatabaseTransApi tx = DatabaseTransFactory.create();
-        // ResourceApi api = ResourceFactory.createApi((DatabaseConnectionBean)
-        // tx.getConnector(), this.request);
-        // int key;
-        // UserResourceSubtype subType = (UserResourceSubtype) this.data;
-        // try {
-        // // Update application profile.
-        // key = api.maintainSubtype(subType);
-        // // Commit Changes to the database
-        // tx.commitUOW();
-        // this.msg = "Resource Type configuration saved successfully";
-        // }
-        // catch (Exception e) {
-        // this.msg = e.getMessage();
-        // tx.rollbackUOW();
-        // throw new ActionCommandException(this.msg);
-        // }
-        // finally {
-        // api.close();
-        // tx.close();
-        // api = null;
-        // tx = null;
-        // }
     }
 
     /**
@@ -163,30 +128,23 @@ public class SubTypeEditAction extends AbstractActionHandler implements ICommand
      * @throws ActionCommandException
      */
     public void delete() throws ActionCommandException {
-        // DatabaseTransApi tx = DatabaseTransFactory.create();
-        // ResourceApi api = ResourceFactory.createApi((DatabaseConnectionBean)
-        // tx.getConnector(), this.request);
-        // int rc;
-        // UserResourceSubtype subType = (UserResourceSubtype) this.data;
-        // try {
-        // // Update resource type profile.
-        // rc = api.deleteSubtype(subType.getRsrcSubtypeId());
-        // // Commit Changes to the database
-        // tx.commitUOW();
-        // this.msg = rc +
-        // " securiy role configuration(s) deleted successfully";
-        // }
-        // catch (Exception e) {
-        // this.msg = e.getMessage();
-        // tx.rollbackUOW();
-        // throw new ActionCommandException(this.msg);
-        // }
-        // finally {
-        // api.close();
-        // tx.close();
-        // api = null;
-        // tx = null;
-        // }
+        // Call SOAP web service to delete a resource sub type changes from the
+        // database
+        try {
+            AuthenticationResponse response = ResourceSubTypeSoapRequests.callDelete((UserResourceSubtype) this.data);
+            ReplyStatusType rst = response.getReplyStatus();
+            this.msg = rst.getMessage();
+            if (rst.getReturnCode().intValue() == GeneralConst.RC_FAILURE) {
+                this.msg = rst.getMessage();
+                return;
+            }
+        } catch (Exception e) {
+            logger.log(Level.ERROR, e.getMessage());
+            throw new ActionCommandException(e.getMessage());
+        }
+
+        // Call SOAP web service to get complete list of resource types
+        this.lookupData = this.getLookupData();
     }
 
     /**
@@ -213,6 +171,23 @@ public class SubTypeEditAction extends AbstractActionHandler implements ICommand
         }
     }
 
+    private List<UserResourceType> getLookupData() throws ActionCommandException {
+        // Call SOAP web service to get complete list of resource types
+        try {
+            AuthenticationResponse response = ResourceTypeSoapRequests.callGet();
+            ReplyStatusType rst = response.getReplyStatus();
+            if (rst.getReturnCode().intValue() == GeneralConst.RC_FAILURE) {
+                this.msg = rst.getMessage();
+                return null;
+            }
+            List<UserResourceType> results = ResourceTypeFactory.create(response.getProfile().getResourcesInfo());
+            return results;
+        } catch (Exception e) {
+            logger.log(Level.ERROR, e.getMessage());
+            throw new ActionCommandException(e.getMessage());
+        }
+    }
+
     /**
      * Obtains the selected resource sub-type from the user's request. The
      * resource sub-type is identified by its unique id and is used to obtain
@@ -232,15 +207,6 @@ public class SubTypeEditAction extends AbstractActionHandler implements ICommand
             logger.log(Level.ERROR, e.getMessage());
             throw new ActionCommandException(e.getMessage());
         }
-
-        int selectedResourceTypeId;
-        String temp = this.getInputValue("RsrcTypeId", null);
-        try {
-            selectedResourceTypeId = Integer.parseInt(temp);
-        } catch (NumberFormatException e) {
-            selectedResourceTypeId = -1;
-        }
-
     }
 
     /**
