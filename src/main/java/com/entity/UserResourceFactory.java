@@ -46,8 +46,8 @@ public class UserResourceFactory {
             obj.setRsrcId(item.getUid());
             obj.setName(item.getCode());
             obj.setDescription(item.getDescription());
-            obj.setRsrcTypeId(item.getTypeId());
-            obj.setRsrcSubtypeId(item.getSubtypeId());
+            obj.setRsrcTypeId(item.getTypeInfo().getUid());
+            obj.setRsrcSubtypeId(item.getSubtypeInfo().getUid());
             obj.setUrl(item.getUrl());
             obj.setSecured(item.getSecured());
             obj.setHost(item.getHost());
@@ -235,7 +235,7 @@ public class UserResourceFactory {
         try {
             UserResourceSubtype obj = UserResourceFactory.createUserResourceSubtype();
             obj.setRsrcSubtypeId(item.getUid());
-            obj.setRsrcTypeId(item.getResourceTypeId());
+            obj.setRsrcTypeId(item.getTypeInfo().getUid());
             obj.setName(item.getCode());
             obj.setDescription(item.getDescription());
             if (item.getTracking() != null) {
