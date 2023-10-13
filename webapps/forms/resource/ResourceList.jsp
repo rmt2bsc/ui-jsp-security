@@ -26,11 +26,11 @@
             <table width="100%" border="0" cellpadding="0" cellspacing="0">
 				<tr>
 					 <th width="5%" class="clsTableListHeader">&nbsp;</th>
-					 <th width="10%" class="clsTableListHeader">Id</th>
-					 <th width="15%" class="clsTableListHeader" style="text-align:left">Name</th>					 
+					 <th width="5%" class="clsTableListHeader">Id</th>
+					 <th width="25%" class="clsTableListHeader" style="text-align:left">Name</th>					 
 					 <th width="10%" class="clsTableListHeader" style="text-align:left">Type</th>					 
 					 <th width="10%" class="clsTableListHeader" style="text-align:left">Sub-Type</th>					 
-					 <th width="45%" class="clsTableListHeader" style="text-align:left">Description</th>
+					 <th width="40%" class="clsTableListHeader" style="text-align:left">Description</th>
 					 <th width="5%" class="clsTableListHeader" style="text-align:left">Secured</th>
 				 </tr>
 
