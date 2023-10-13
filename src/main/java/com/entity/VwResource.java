@@ -29,6 +29,8 @@ public class VwResource extends OrmBean {
   public static final String PROP_DESCRIPTION = "Description";
 /** The property name constant equivalent to property, Secured, of respective DataSource view. */
   public static final String PROP_SECURED = "Secured";
+/** The property name constant equivalent to property, Host, of respective DataSource view. */
+  public static final String PROP_HOST = "Host";
 /** The property name constant equivalent to property, RsrcTypeId, of respective DataSource view. */
   public static final String PROP_RSRCTYPEID = "RsrcTypeId";
 /** The property name constant equivalent to property, TypeDescr, of respective DataSource view. */
@@ -52,6 +54,8 @@ public class VwResource extends OrmBean {
   private String description;
 /** The javabean property equivalent of database column vw_resource.secured */
   private int secured;
+/** The javabean property equivalent of database column vw_resource.host */
+  private String host;
 /** The javabean property equivalent of database column vw_resource.rsrc_type_id */
   private int rsrcTypeId;
 /** The javabean property equivalent of database column vw_resource.type_descr */
@@ -132,6 +136,18 @@ public class VwResource extends OrmBean {
  */
   public int getSecured() {
     return this.secured;
+  }
+/**
+ * Sets the value of member variable host
+ */
+  public void setHost(String value) {
+    this.host = value;
+  }
+/**
+ * Gets the value of member variable host
+ */
+  public String getHost() {
+    return this.host;
   }
 /**
  * Sets the value of member variable rsrcTypeId
@@ -221,6 +237,9 @@ public boolean equals(Object obj) {
    if (EqualityAssistant.notEqual(this.secured, other.secured)) {
       return false;
    }
+   if (EqualityAssistant.notEqual(this.host, other.host)) {
+      return false;
+   }
    if (EqualityAssistant.notEqual(this.rsrcTypeId, other.rsrcTypeId)) {
       return false;
    }
@@ -246,6 +265,7 @@ public int hashCode() {
                HashCodeAssistant.hashObject(this.url),
                HashCodeAssistant.hashObject(this.description),
                HashCodeAssistant.hashObject(this.secured),
+               HashCodeAssistant.hashObject(this.host),
                HashCodeAssistant.hashObject(this.rsrcTypeId),
                HashCodeAssistant.hashObject(this.typeDescr),
                HashCodeAssistant.hashObject(this.rsrcSubtypeId),
@@ -260,6 +280,7 @@ public String toString() {
           ", url=" + url + 
           ", description=" + description + 
           ", secured=" + secured + 
+          ", host=" + host + 
           ", rsrcTypeId=" + rsrcTypeId + 
           ", typeDescr=" + typeDescr + 
           ", rsrcSubtypeId=" + rsrcSubtypeId + 
