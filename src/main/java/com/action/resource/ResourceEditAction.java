@@ -1,15 +1,30 @@
 package com.action.resource;
 
-import org.apache.log4j.Logger;
+import java.util.List;
 
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
+import org.rmt2.jaxb.AuthenticationResponse;
+import org.rmt2.jaxb.ReplyStatusType;
+
+import com.AuthConstants;
 import com.SystemException;
 import com.api.constants.GeneralConst;
 import com.api.constants.RMT2ServletConst;
+import com.api.security.authentication.web.AuthenticationException;
 import com.api.web.ActionCommandException;
 import com.api.web.Context;
 import com.api.web.ICommand;
 import com.api.web.Request;
 import com.api.web.Response;
+import com.api.web.util.RMT2WebUtility;
+import com.entity.ResourceSubTypeFactory;
+import com.entity.UserResource;
+import com.entity.UserResourceFactory;
+import com.entity.UserResourceSubtype;
+import com.entity.VwResource;
+import com.entity.VwResourceFactory;
+
 
 /**
  * Action handler provides functionality to respond to requests pertaining to
@@ -27,6 +42,7 @@ public class ResourceEditAction extends ResourceAbstractAction implements IComma
     private static final String COMMAND_BACK = "Resource.Edit.back";
 
     private Logger logger;
+
 
 
     /**
@@ -80,29 +96,28 @@ public class ResourceEditAction extends ResourceAbstractAction implements IComma
      * @throws ActionCommandException
      */
     public void save() throws ActionCommandException {
-        // DatabaseTransApi tx = DatabaseTransFactory.create();
-        // ResourceApi api = ResourceFactory.createApi((DatabaseConnectionBean)
-        // tx.getConnector(), this.request);
-        // int key;
-        // UserResource res = (UserResource) this.data;
-        // try {
-        // // Update application profile.
-        // key = api.maintainResource(res);
-        // // Commit Changes to the database
-        // tx.commitUOW();
-        // this.msg = "Resource configuration saved successfully";
-        // }
-        // catch (Exception e) {
-        // this.msg = e.getMessage();
-        // tx.rollbackUOW();
-        // throw new ActionCommandException(this.msg);
-        // }
-        // finally {
-        // api.close();
-        // tx.close();
-        // api = null;
-        // tx = null;
-        // }
+        // Calls SOAP web service to persist changes
+        try {
+            AuthenticationResponse response = ResourceSoapRequests.callUpdate((UserResource) this.data);
+            ReplyStatusType rst = response.getReplyStatus();
+            this.msg = rst.getMessage();
+            if (rst.getReturnCode().intValue() == GeneralConst.RC_FAILURE) {
+                throw new ActionCommandException(rst.getMessage());
+            }
+            List<VwResource> results = VwResourceFactory.create(response.getProfile().getResourcesInfo());
+        } catch (AuthenticationException e) {
+            logger.log(Level.ERROR, e.getMessage());
+            throw new ActionCommandException(e.getMessage());
+        }
+
+        // Calls SOAP web service to get complete list of resource types
+        this.typeData = this.lookupResourceTypes();
+
+        // Calls SOAP web service to get complete list of resource sub types
+        int selectResourceTypeId = ((UserResource) this.data).getRsrcTypeId();
+        UserResourceSubtype criteria = ResourceSubTypeFactory.create();
+        criteria.setRsrcTypeId(selectResourceTypeId);
+        this.subTypeData = this.lookupResourceSubTypes(criteria);
     }
 
     /**
@@ -157,53 +172,15 @@ public class ResourceEditAction extends ResourceAbstractAction implements IComma
      *             during data retrieval.
      */
     protected void receiveClientData() throws ActionCommandException {
-        int uid;
-        String temp = this.getInputValue("Id", null);
         try {
-            uid = Integer.parseInt(temp);
-        } catch (NumberFormatException e) {
-            uid = -1;
+            // Retrieve resource sub type data from the JSP form.
+            this.data = UserResourceFactory.createUserResource();
+            // Update application object with user input.
+            RMT2WebUtility.packageBean(this.request, this.data);
+        } catch (Exception e) {
+            logger.log(Level.ERROR, e.getMessage());
+            throw new ActionCommandException(e.getMessage());
         }
-
-        // DatabaseTransApi tx = DatabaseTransFactory.create();
-        // ResourceApi api = ResourceFactory.createApi((DatabaseConnectionBean)
-        // tx.getConnector(), this.request);
-        // try {
-        // UserResource res = ResourceFactory.createUserResource();
-        // if (uid > 0) {
-        // // Retrieve resource from the database using unique id.
-        // res.setRsrcId(uid);
-        // this.data = api.get(res);
-        //
-        // // Since resource api returns resource in a List collection, isolate
-        // single element.
-        // if (this.data instanceof List) {
-        // List list = (List) this.data;
-        // if (list.size() > 1) {
-        // this.msg =
-        // "Edit Error: More than one occurrence of the selected item was found to be assoicated with the user\'s selection";
-        // logger.log(Level.ERROR, this.msg);
-        // throw new ActionCommandException(this.msg);
-        // }
-        // this.data = list.get(0);
-        // }
-        // }
-        // else {
-        // this.data = res;
-        // }
-        // // Created UserResource delta from the request.
-        // ResourceFactory.packageBean(this.request, this.data);
-        // }
-        // catch (Exception e) {
-        // logger.log(Level.ERROR, e.getMessage());
-        // throw new ActionCommandException(e.getMessage());
-        // }
-        // finally {
-        // api.close();
-        // tx.close();
-        // api = null;
-        // tx = null;
-        // }
     }
 
     /**
@@ -214,6 +191,8 @@ public class ResourceEditAction extends ResourceAbstractAction implements IComma
      */
     protected void sendClientData() throws ActionCommandException {
         this.request.setAttribute(GeneralConst.CLIENT_DATA_RECORD, this.data);
+        this.request.setAttribute(AuthConstants.RESOURCE_TYPE_LIST, this.typeData);
+        this.request.setAttribute(AuthConstants.RESOURCE_SUBTYPE_LIST, this.subTypeData);
         this.request.setAttribute(RMT2ServletConst.REQUEST_MSG_INFO, this.msg);
     }
 

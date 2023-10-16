@@ -155,7 +155,7 @@ public class SubTypeEditAction extends AbstractActionHandler implements ICommand
     protected void doBack() throws ActionCommandException {
         // Call SOAP web service to get complete list of resource sub types
         try {
-            AuthenticationResponse response = ResourceSubTypeSoapRequests.callGet();
+            AuthenticationResponse response = ResourceSubTypeSoapRequests.callGet(null);
             ReplyStatusType rst = response.getReplyStatus();
             this.msg = rst.getMessage();
             if (rst.getReturnCode().intValue() == GeneralConst.RC_FAILURE) {

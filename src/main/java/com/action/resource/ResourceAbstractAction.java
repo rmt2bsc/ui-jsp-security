@@ -16,6 +16,7 @@ import com.api.web.Context;
 import com.api.web.ICommand;
 import com.api.web.Request;
 import com.entity.ResourceTypeFactory;
+import com.entity.UserResourceSubtype;
 import com.entity.UserResourceType;
 import com.entity.VwResource;
 import com.entity.VwResourceFactory;
@@ -118,14 +119,13 @@ public abstract class ResourceAbstractAction extends AbstractActionHandler imple
      * 
      * @return List of {@linkplain VwResourceType}
      * @throws ActionCommandException
-     *             when SOAP call fails invocation or when the message handlder
+     *             when SOAP call fails invocation or when the message handler
      *             returns a critical processing error.
      */
-    protected List<VwResourceType> lookupResourceSubTypes() throws ActionCommandException {
+    protected List<VwResourceType> lookupResourceSubTypes(UserResourceSubtype criteria) throws ActionCommandException {
         try {
-            AuthenticationResponse response = ResourceSubTypeSoapRequests.callGet();
+            AuthenticationResponse response = ResourceSubTypeSoapRequests.callGet(criteria);
             ReplyStatusType rst = response.getReplyStatus();
-            this.msg = rst.getMessage();
             if (rst.getReturnCode().intValue() == GeneralConst.RC_FAILURE) {
                 throw new ActionCommandException(rst.getMessage());
             }

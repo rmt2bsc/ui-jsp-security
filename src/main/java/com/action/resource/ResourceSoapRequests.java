@@ -12,17 +12,20 @@ import org.rmt2.jaxb.AuthenticationResponse;
 import org.rmt2.jaxb.HeaderType;
 import org.rmt2.jaxb.ObjectFactory;
 import org.rmt2.jaxb.ResourceCriteriaType;
+import org.rmt2.jaxb.ResourceType;
 import org.rmt2.jaxb.ResourcesInfoType;
 import org.rmt2.jaxb.ResourcesubtypeType;
 import org.rmt2.jaxb.ResourcetypeType;
 import org.rmt2.util.HeaderTypeBuilder;
 import org.rmt2.util.authentication.ResourceSubtypeTypeBuilder;
+import org.rmt2.util.authentication.ResourceTypeBuilder;
 import org.rmt2.util.authentication.ResourcesInfoTypeBuilder;
 import org.rmt2.util.authentication.ResourcetypeTypeBuilder;
 
 import com.AuthConstants;
 import com.api.messaging.webservice.soap.client.SoapJaxbClientWrapper;
 import com.api.security.authentication.web.AuthenticationException;
+import com.entity.UserResource;
 import com.entity.UserResourceSubtype;
 import com.entity.VwResource;
 
@@ -90,11 +93,11 @@ public class ResourceSoapRequests {
      * SOAP call to update a single resource object.
      * 
      * @param data
-     *            {@link UserResourceSubtype}
+     *            {@link UserResource}
      * @return {@link AuthenticationResponse}
      * @throws AuthenticationException
      */
-    public static final AuthenticationResponse callUpdate(UserResourceSubtype data) throws AuthenticationException {
+    public static final AuthenticationResponse callUpdate(UserResource data) throws AuthenticationException {
         // Modify a resource type record
         ObjectFactory fact = new ObjectFactory();
         AuthenticationRequest req = fact.createAuthenticationRequest();
@@ -102,7 +105,7 @@ public class ResourceSoapRequests {
         HeaderType head = HeaderTypeBuilder.Builder.create()
                 .withApplication(ApiHeaderNames.APP_NAME_AUTHENTICATION)
                 .withModule(AuthConstants.MODULE_ADMIN)
-                .withTransaction(ApiTransactionCodes.AUTH_RESOURCE_SUB_TYPE_UPDATE)
+                .withTransaction(ApiTransactionCodes.AUTH_RESOURCE_UPDATE)
                 .withMessageMode(ApiHeaderNames.MESSAGE_MODE_REQUEST)
                 .withDeliveryDate(new Date())
                 .withRouting(ApiTransactionCodes.ROUTE_AUTHENTICATION)
@@ -111,19 +114,27 @@ public class ResourceSoapRequests {
 
         AuthProfileGroupType apgt = fact.createAuthProfileGroupType();
 
-        ResourcetypeType rt = ResourcetypeTypeBuilder.Builder.create()
+        ResourcetypeType rtt = ResourcetypeTypeBuilder.Builder.create()
                 .withTypeId(data.getRsrcTypeId())
                 .build();
 
         ResourcesubtypeType rst = ResourceSubtypeTypeBuilder.Builder.create()
                 .withSubTypeId(data.getRsrcSubtypeId())
-                .withType(rt)
+                .build();
+
+        ResourceType rt = ResourceTypeBuilder.Builder.create()
+                .withResourceId(data.getRsrcId())
                 .withName(data.getName())
                 .withDescription(data.getDescription())
+                .withType(rtt)
+                .withSubType(rst)
+                .withUrl(data.getUrl())
+                .withHost(data.getHost())
+                .withSecuredFlag(data.getSecured())
                 .build();
 
         ResourcesInfoType rit = ResourcesInfoTypeBuilder.Builder.create()
-                .addResourceSubType(rst)
+                .addResource(rt)
                 .build();
 
         apgt.setResourcesInfo(rit);

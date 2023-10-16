@@ -128,7 +128,7 @@ public class ResourceSearchAction extends ResourceAbstractAction implements ICom
         this.typeData = this.lookupResourceTypes();
 
         // Calls SOAP web service to get complete list of resource sub types
-        this.subTypeData = this.lookupResourceSubTypes();
+        this.subTypeData = this.lookupResourceSubTypes(null);
 
         this.sendClientData();
         return;

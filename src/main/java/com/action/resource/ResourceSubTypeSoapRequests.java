@@ -42,7 +42,7 @@ public class ResourceSubTypeSoapRequests {
      * @return {@link AuthenticationResponse}
      * @throws AuthenticationException
      */
-    public static final AuthenticationResponse callGet() throws AuthenticationException {
+    public static final AuthenticationResponse callGet(UserResourceSubtype parms) throws AuthenticationException {
         // Retrieve all resource type records from the database
         ObjectFactory fact = new ObjectFactory();
         AuthenticationRequest req = fact.createAuthenticationRequest();
@@ -59,6 +59,15 @@ public class ResourceSubTypeSoapRequests {
 
         AuthCriteriaGroupType apgt = fact.createAuthCriteriaGroupType();
         ResourceCriteriaType criteria = fact.createResourceCriteriaType();
+
+        if (parms != null) {
+            if (parms.getRsrcSubtypeId() > 0) {
+                criteria.setRsrcSubtypeId(parms.getRsrcSubtypeId());
+            }
+            if (parms.getRsrcTypeId() > 0) {
+                criteria.setRsrcTypeId(parms.getRsrcTypeId());
+            }
+        }
         apgt.setResourceCriteria(criteria);
 
         req.setCriteria(apgt);
