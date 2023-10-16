@@ -4,13 +4,11 @@ import java.util.List;
 
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
-import org.rmt2.jaxb.AuthenticationResponse;
-import org.rmt2.jaxb.ReplyStatusType;
 
+import com.AuthConstants;
 import com.SystemException;
 import com.api.constants.GeneralConst;
 import com.api.constants.RMT2SystemExceptionConst;
-import com.api.jsp.action.AbstractActionHandler;
 import com.api.web.ActionCommandException;
 import com.api.web.Context;
 import com.api.web.ICommand;
@@ -27,7 +25,7 @@ import com.entity.VwResourceFactory;
  * @author Roy Terrell
  * 
  */
-public class ResourceSearchAction extends AbstractActionHandler implements ICommand {
+public class ResourceSearchAction extends ResourceAbstractAction implements ICommand {
     private static final String COMMAND_LIST = "Resource.Search.list";
 
     private static final String COMMAND_EDIT = "Resource.Search.edit";
@@ -37,10 +35,6 @@ public class ResourceSearchAction extends AbstractActionHandler implements IComm
     private static final String COMMAND_FETCH_ACCESS = "Resource.Search.fetchresourceaccess";
 
     private Logger logger;
-
-    private Object data;
-
-    private boolean selectionRequired;
 
     /**
      * Default class constructor responsible for initializing the logger.
@@ -99,21 +93,8 @@ public class ResourceSearchAction extends AbstractActionHandler implements IComm
      */
     protected void search() throws ActionCommandException {
         // Call SOAP web service to get complete list of resource objects
-        try {
-            AuthenticationResponse response = ResourceSoapRequests.callGet();
-            ReplyStatusType rst = response.getReplyStatus();
-            this.msg = rst.getMessage();
-            if (rst.getReturnCode().intValue() == GeneralConst.RC_FAILURE) {
-                this.msg = rst.getMessage();
-                return;
-            }
-            List<VwResource> results = VwResourceFactory.create(response.getProfile().getResourcesInfo());
-            this.data = results;
-            this.sendClientData();
-        } catch (Exception e) {
-            logger.log(Level.ERROR, e.getMessage());
-            throw new ActionCommandException(e.getMessage());
-        }
+        this.data = this.doList(null);
+        this.sendClientData();
     }
 
     /**
@@ -135,32 +116,21 @@ public class ResourceSearchAction extends AbstractActionHandler implements IComm
      * @throws ActionCommandException
      */
     public void edit() throws ActionCommandException {
-        // if (this.data == null) {
-        // return;
-        // }
-        //
-        // // Since resource api returns resource sub-types in a List
-        // collection, isolate single element.
-        // if (this.data instanceof List) {
-        // List list = (List) this.data;
-        // if (list.size() > 1) {
-        // this.msg =
-        // "More than one occurrence of the selected item was found to be assoicated with the user\'s selection";
-        // logger.log(Level.ERROR, this.msg);
-        // throw new ActionCommandException(this.msg);
-        // }
-        // this.data = list.get(0);
-        // }
-        //
-        // // Update object with user's changes.
-        // try {
-        // ResourceFactory.packageBean(this.request, this.data,
-        // this.selectedRow);
-        // }
-        // catch (Exception e) {
-        // logger.log(Level.ERROR, e.getMessage());
-        // throw new ActionCommandException(e.getMessage());
-        // }
+        // Call SOAP web service to get a single resource object
+        VwResource criteria = VwResourceFactory.create();
+        criteria.setRsrcId(this.selectedResourceId);
+        List<VwResource> results = this.doList(criteria);
+        if (results != null && results.size() > 0) {
+            this.data = results.get(0);
+        }
+
+        // Calls SOAP web service to get complete list of resource types
+        this.typeData = this.lookupResourceTypes();
+
+        // Calls SOAP web service to get complete list of resource sub types
+        this.subTypeData = this.lookupResourceSubTypes();
+
+        this.sendClientData();
         return;
     }
 
@@ -181,34 +151,12 @@ public class ResourceSearchAction extends AbstractActionHandler implements IComm
                 throw new ActionCommandException(RMT2SystemExceptionConst.MSG_ITEM_NOT_SELECTED,
                         RMT2SystemExceptionConst.RC_ITEM_NOT_SELECTED);
             }
-            int uid;
             String temp = this.getInputValue("RsrcId", null);
             try {
-                uid = Integer.parseInt(temp);
+                this.selectedResourceId = Integer.parseInt(temp);
             } catch (NumberFormatException e) {
-                uid = -1;
+                this.selectedResourceId = -1;
             }
-
-            // DatabaseTransApi tx = DatabaseTransFactory.create();
-            // ResourceApi api =
-            // ResourceFactory.createApi((DatabaseConnectionBean)
-            // tx.getConnector(), this.request);
-            // try {
-            // // Retrieve resource from the database using unique id.
-            // UserResource res = ResourceFactory.createUserResource();
-            // res.setRsrcId(uid);
-            // this.data = api.get(res);
-            // }
-            // catch (Exception e) {
-            // logger.log(Level.ERROR, e.getMessage());
-            // throw new ActionCommandException(e.getMessage());
-            // }
-            // finally {
-            // api.close();
-            // tx.close();
-            // api = null;
-            // tx = null;
-            // }
         }
     }
 
@@ -220,6 +168,9 @@ public class ResourceSearchAction extends AbstractActionHandler implements IComm
      */
     protected void sendClientData() throws ActionCommandException {
         this.request.setAttribute(GeneralConst.CLIENT_DATA_RECORD, this.data);
+        this.request.setAttribute(AuthConstants.RESOURCE_TYPE_LIST, this.typeData);
+        this.request.setAttribute(AuthConstants.RESOURCE_SUBTYPE_LIST, this.subTypeData);
+
     }
 
     private void fetchResourceAccess() throws ActionCommandException {

@@ -24,6 +24,7 @@ import com.AuthConstants;
 import com.api.messaging.webservice.soap.client.SoapJaxbClientWrapper;
 import com.api.security.authentication.web.AuthenticationException;
 import com.entity.UserResourceSubtype;
+import com.entity.VwResource;
 
 /**
  * Help class for constructing and invoking SOAP calls pertaining to the
@@ -38,11 +39,17 @@ public class ResourceSoapRequests {
 
     /**
      * SOAP call to fetch all resource records.
+     * <p>
+     * Check if <i>criteria</i> object is needed. If not, return all rows
      * 
+     * @param criteria
+     *            {@link VwResource} If null, all rows are returned. Otherwise,
+     *            use parameter to build selection criteria. Currently, only
+     *            resource id is observed in <i>criteria<i/>.
      * @return {@link AuthenticationResponse}
      * @throws AuthenticationException
      */
-    public static final AuthenticationResponse callGet() throws AuthenticationException {
+    public static final AuthenticationResponse callGet(VwResource criteria) throws AuthenticationException {
         // Retrieve all resource records from the database
         ObjectFactory fact = new ObjectFactory();
         AuthenticationRequest req = fact.createAuthenticationRequest();
@@ -58,10 +65,17 @@ public class ResourceSoapRequests {
                 .build();
 
         AuthCriteriaGroupType apgt = fact.createAuthCriteriaGroupType();
-        ResourceCriteriaType criteria = fact.createResourceCriteriaType();
-        apgt.setResourceCriteria(criteria);
+        ResourceCriteriaType rct = fact.createResourceCriteriaType();
+        apgt.setResourceCriteria(rct);
         req.setCriteria(apgt);
         req.setHeader(head);
+
+        // Check if criteria object is needed. If not, return all rows
+        if (criteria != null) {
+            if (criteria.getRsrcId() > 0) {
+                rct.setRsrcId(criteria.getRsrcId());
+            }
+        }
 
         AuthenticationResponse response = null;
         try {
