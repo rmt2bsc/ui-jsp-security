@@ -26,7 +26,6 @@ import com.AuthConstants;
 import com.api.messaging.webservice.soap.client.SoapJaxbClientWrapper;
 import com.api.security.authentication.web.AuthenticationException;
 import com.entity.UserResource;
-import com.entity.UserResourceSubtype;
 import com.entity.VwResource;
 
 /**
@@ -154,11 +153,11 @@ public class ResourceSoapRequests {
      * SOAP call to delete a single resource.
      * 
      * @param data
-     *            {@link UserResourceSubtype}
+     *            {@link UserResource}
      * @return {@link AuthenticationResponse}
      * @throws AuthenticationException
      */
-    public static final AuthenticationResponse callDelete(UserResourceSubtype data) throws AuthenticationException {
+    public static final AuthenticationResponse callDelete(UserResource data) throws AuthenticationException {
         // Delete resource type record from the database
         ObjectFactory fact = new ObjectFactory();
         AuthenticationRequest req = fact.createAuthenticationRequest();
@@ -166,7 +165,7 @@ public class ResourceSoapRequests {
         HeaderType head = HeaderTypeBuilder.Builder.create()
                 .withApplication(ApiHeaderNames.APP_NAME_AUTHENTICATION)
                 .withModule(AuthConstants.MODULE_ADMIN)
-                .withTransaction(ApiTransactionCodes.AUTH_RESOURCE_SUB_TYPE_DELETE)
+                .withTransaction(ApiTransactionCodes.AUTH_RESOURCE_DELETE)
                 .withMessageMode(ApiHeaderNames.MESSAGE_MODE_REQUEST)
                 .withDeliveryDate(new Date())
                 .withRouting(ApiTransactionCodes.ROUTE_AUTHENTICATION)
@@ -174,12 +173,13 @@ public class ResourceSoapRequests {
                 .build();
 
         AuthProfileGroupType apgt = fact.createAuthProfileGroupType();
-        ResourcesubtypeType rt = ResourceSubtypeTypeBuilder.Builder.create()
-                .withSubTypeId(data.getRsrcSubtypeId())
+
+        ResourceType rt = ResourceTypeBuilder.Builder.create()
+                .withResourceId(data.getRsrcId())
                 .build();
 
         ResourcesInfoType rit = ResourcesInfoTypeBuilder.Builder.create()
-                .addResourceSubType(rt)
+                .addResource(rt)
                 .build();
 
         apgt.setResourcesInfo(rit);

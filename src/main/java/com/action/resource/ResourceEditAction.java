@@ -1,7 +1,5 @@
 package com.action.resource;
 
-import java.util.List;
-
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.rmt2.jaxb.AuthenticationResponse;
@@ -22,8 +20,6 @@ import com.entity.ResourceSubTypeFactory;
 import com.entity.UserResource;
 import com.entity.UserResourceFactory;
 import com.entity.UserResourceSubtype;
-import com.entity.VwResource;
-import com.entity.VwResourceFactory;
 
 
 /**
@@ -104,7 +100,6 @@ public class ResourceEditAction extends ResourceAbstractAction implements IComma
             if (rst.getReturnCode().intValue() == GeneralConst.RC_FAILURE) {
                 throw new ActionCommandException(rst.getMessage());
             }
-            List<VwResource> results = VwResourceFactory.create(response.getProfile().getResourcesInfo());
         } catch (AuthenticationException e) {
             logger.log(Level.ERROR, e.getMessage());
             throw new ActionCommandException(e.getMessage());
@@ -113,7 +108,8 @@ public class ResourceEditAction extends ResourceAbstractAction implements IComma
         // Calls SOAP web service to get complete list of resource types
         this.typeData = this.lookupResourceTypes();
 
-        // Calls SOAP web service to get complete list of resource sub types
+        // Calls SOAP web service to get complete list of resource sub types and
+        // to highlight the selected option
         int selectResourceTypeId = ((UserResource) this.data).getRsrcTypeId();
         UserResourceSubtype criteria = ResourceSubTypeFactory.create();
         criteria.setRsrcTypeId(selectResourceTypeId);
@@ -127,29 +123,28 @@ public class ResourceEditAction extends ResourceAbstractAction implements IComma
      * @throws ActionCommandException
      */
     public void delete() throws ActionCommandException {
-        // DatabaseTransApi tx = DatabaseTransFactory.create();
-        // ResourceApi api = ResourceFactory.createApi((DatabaseConnectionBean)
-        // tx.getConnector(), this.request);
-        // int rc;
-        // UserResource res = (UserResource) this.data;
-        // try {
-        // // Update resource profile.
-        // rc = api.deleteResource(res.getRsrcId());
-        // // Commit Changes to the database
-        // tx.commitUOW();
-        // this.msg = rc + " resource configuration(s) deleted successfully";
-        // }
-        // catch (Exception e) {
-        // this.msg = e.getMessage();
-        // tx.rollbackUOW();
-        // throw new ActionCommandException(this.msg);
-        // }
-        // finally {
-        // api.close();
-        // tx.close();
-        // api = null;
-        // tx = null;
-        // }
+        // Calls SOAP web service to delete resource
+        try {
+            AuthenticationResponse response = ResourceSoapRequests.callDelete((UserResource) this.data);
+            ReplyStatusType rst = response.getReplyStatus();
+            this.msg = rst.getMessage();
+            if (rst.getReturnCode().intValue() == GeneralConst.RC_FAILURE) {
+                throw new ActionCommandException(rst.getMessage());
+            }
+        } catch (AuthenticationException e) {
+            logger.log(Level.ERROR, e.getMessage());
+            throw new ActionCommandException(e.getMessage());
+        }
+
+        // Calls SOAP web service to get complete list of resource types
+        this.typeData = this.lookupResourceTypes();
+
+        // Calls SOAP web service to get complete list of resource sub types and
+        // to highlight the selected option
+        int selectResourceTypeId = ((UserResource) this.data).getRsrcTypeId();
+        UserResourceSubtype criteria = ResourceSubTypeFactory.create();
+        criteria.setRsrcTypeId(selectResourceTypeId);
+        this.subTypeData = this.lookupResourceSubTypes(criteria);
     }
 
     /**
