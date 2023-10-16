@@ -104,7 +104,13 @@ public class ResourceSearchAction extends ResourceAbstractAction implements ICom
      * @throws ActionCommandException
      */
     public void add() throws ActionCommandException {
-        // this.data = ResourceFactory.createUserResource();
+        this.data = VwResourceFactory.create();
+
+        // Calls SOAP web service to get complete list of resource types
+        this.typeData = this.lookupResourceTypes();
+
+        // Calls SOAP web service to get complete list of resource sub types
+        this.subTypeData = this.lookupResourceSubTypes(null);
         return;
     }
 
