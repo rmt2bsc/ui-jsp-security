@@ -32,8 +32,6 @@ public class ResourceSearchAction extends ResourceAbstractAction implements ICom
 
     private static final String COMMAND_ADD = "Resource.Search.add";
 
-    private static final String COMMAND_FETCH_ACCESS = "Resource.Search.fetchresourceaccess";
-
     private Logger logger;
 
     /**
@@ -79,9 +77,6 @@ public class ResourceSearchAction extends ResourceAbstractAction implements ICom
         }
         if (command.equalsIgnoreCase(ResourceSearchAction.COMMAND_ADD)) {
             this.addData();
-        }
-        if (command.equalsIgnoreCase(ResourceSearchAction.COMMAND_FETCH_ACCESS)) {
-            this.fetchResourceAccess();
         }
     }
 
@@ -179,54 +174,6 @@ public class ResourceSearchAction extends ResourceAbstractAction implements ICom
 
     }
 
-    private void fetchResourceAccess() throws ActionCommandException {
-        // SoapClientWrapper client = new SoapClientWrapper();
-        // ObjectFactory f = new ObjectFactory();
-        // try {
-        // RMT2SessionBean userSession = (RMT2SessionBean)
-        // this.request.getSession().getAttribute(RMT2ServletConst.SESSION_BEAN);
-        // RQAuthenticationUserResourceAccess ws =
-        // f.createRQAuthenticationUserResourceAccess();
-        // HeaderType header =
-        // PayloadFactory.createHeader("RQ_authentication_user_resource_access",
-        // "SYNC", "REQUEST", userSession.getLoginId());
-        // ws.setHeader(header);
-        //
-        // String loginId = this.request.getParameter("UserRsrcLoginId");
-        // String temp = this.request.getParameter("ResourceTypeId");
-        // BigInteger rsrcTypeId = (temp == null ? BigInteger.valueOf(0) :
-        // BigInteger.valueOf(Integer.parseInt(temp)));
-        // temp = this.request.getParameter("ResourceSubtypeId");
-        // BigInteger rsrcSubTypeId = (temp == null ? BigInteger.valueOf(0) :
-        // BigInteger.valueOf(Integer.parseInt(temp)));
-        //
-        // ws.setLoginId(loginId);
-        // ws.setRsrcTypeId(rsrcTypeId);
-        // ws.setRsrcSubtypeId(rsrcSubTypeId);
-        // String msg =
-        // com.api.messaging.ResourceFactory.getJaxbMessageBinder().marshalMessage(ws);
-        // SOAPMessage resp = client.callSoap(msg);
-        // if (client.isSoapError(resp)) {
-        // String errMsg = client.getSoapErrorMessage(resp);
-        // logger.error(errMsg);
-        // return;
-        // }
-        // RSAuthenticationUserResourceAccess soapResp =
-        // (RSAuthenticationUserResourceAccess) client.getSoapResponsePayload();
-        // String xml =
-        // com.api.messaging.ResourceFactory.getJaxbMessageBinder().marshalMessage(soapResp,
-        // false);
-        //
-        // // Setup XML response on the user's request instance so that the
-        // controller can send back to the client
-        // this.request.setAttribute(RMT2ServletConst.RESPONSE_NONJSP_DATA,
-        // xml);
-        // logger.info(xml);
-        // }
-        // catch (MessageException e) {
-        // throw new ActionCommandException(e);
-        // }
-    }
 
     /**
      * No Action
