@@ -4,7 +4,9 @@
 <%@ page import="com.AuthConstants" %>
 <%@ page import="com.api.constants.RMT2ServletConst" %>
 
+
 <gen:InitAppRoot id="APP_ROOT"/>
+<gen:InitSoapHost id="SOAP_HOST"/>
 
 <html>
   <head>
@@ -17,34 +19,52 @@
     <script Language="JavaScript" src="<%=APP_ROOT%>/js/RMT2Menu.js"></script>
     <script Language="JavaScript" src="<%=APP_ROOT%>/js/AjaxApi.js"></script>
     <script Language="JavaScript" src="<%=APP_ROOT%>/js/AjaxRequestConfig.js"></script>
-    <script Language="JavaScript" src="<%=APP_ROOT%>/js/AjaxRenderer.js"></script>
+    <script Language="JavaScript" src="<%=APP_ROOT%>/js/AjaxXmlRenderer.js"></script>
     <script Language="JavaScript" src="<%=APP_ROOT%>/js/xpath.js"></script>
-	<script>
-        function changeSubTypes() {
-       		var config = new RequestConfig();
-       		config.method = "POST";
-       		config.resourceURL = "<%=APP_ROOT%>/dataStreamProcessor/ResourceSubtype.Search"; 
-       		config.customParmHandler = setupSubTypeParms;
-       		config.customResponseHandler = changeSubTypeCallback;
-       		config.renderHTML = false;
-       		config.asynchronous = true;
-       		
-       		// Make Ajax call.
-       		processAjaxRequest(config);
-       }    
-
-       function setupSubTypeParms() {
-          var args = "clientAction=fetchsubtypes";
-          args += "&RESOURCE_TYPE_ID=" + document.DataForm.RsrcTypeId.value;
-          return args;
-       }
-
-	   function changeSubTypeCallback(xmlData) {
-	   		var renderer = new AjaxRenderer(null, xmlData);
-	   		var obj = document.DataForm.RsrcSubtypeId;
-	   		renderer.buildSelectOptions(obj, "//RS_authentication_resource_subtype/items/rsrc_subtype_id", "//RS_authentication_resource_subtype/items/rsrc_subtype_name");
+    <script Language="JavaScript" src="<%=APP_ROOT%>/js/RMT2DateValidation.js"></script>
+    
+     <script>
+        function doSoapCall() {
+        	 var xmlhttp = new XMLHttpRequest();
+             xmlhttp.open('POST', '<%=SOAP_HOST%>', true);
+             
+        	 var resourceId = document.DataForm.RsrcTypeId.value;  
+        	 //  .options[document.DataForm.RsrcTypeId.selectedIndex].text;
+             var payload = '<SOAP-ENV:Envelope xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/"><SOAP-ENV:Header/>';
+               payload += '<SOAP-ENV:Body>';
+               payload += '<AuthenticationRequest><header><routing>JMS: rmt2.queue.authentication</routing><application>authentication</application><module>admin</module>';
+               payload += '<transaction>GET_RESOURCE_SUB_TYPE</transaction><delivery_mode/><message_mode>REQUEST</message_mode>'; 
+          	   payload += '<delivery_date>'  + getCurrentDateTime() + '</delivery_date></header>';
+          	   payload += '<criteria>';
+          	   payload += '<resource_criteria>';
+       		   payload += '<rsrc_type_id>' + resourceId + '</rsrc_type_id>';
+       		   payload += '</resource_criteria>';
+       		   payload += '</criteria>';
+       		   payload += '</AuthenticationRequest></SOAP-ENV:Body></SOAP-ENV:Envelope>';
+         		   
+       		   xmlhttp.onreadystatechange = function () {
+                if (xmlhttp.readyState == 4) {
+                    if (xmlhttp.status == 200) {
+                        doSoapCallback(xmlhttp.responseText);
+                    }
+                }
+            }
+            // Send the POST request
+            xmlhttp.setRequestHeader('Content-Type', 'text/xml');
+            xmlhttp.send(payload);
+        }
+        
+       
+	   function doSoapCallback(xmlData) {
+	        // Get XML based on entire document
+	        var renderer = new AjaxXmlRenderer(null, xmlData);
+	   		renderer.buildSelectOptions(document.DataForm.RsrcSubtypeId, 
+	   				"/SOAP-ENV:Envelope/SOAP-ENV:Body/AuthenticationResponse/profile/resources_info/resourcesubtype/uid", 
+	   				"/SOAP-ENV:Envelope/SOAP-ENV:Body/AuthenticationResponse/profile/resources_info/resourcesubtype/code");
 	   } 
-    </script>    
+	   
+    </script>   
+
   </head>
   
    <%
@@ -87,7 +107,7 @@
 												  codeProperty="RsrcTypeId"
 												  displayProperty="Description"
 												  selectedValue="#record.RsrcTypeId"
-												  onChange="javascript:changeSubTypes();"/>
+												  onChange="doSoapCall()"/>
 					 </td>
 				</tr>								
 				<tr> 
