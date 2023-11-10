@@ -92,7 +92,10 @@ public class TypeEditAction extends AbstractActionHandler implements ICommand {
     public void save() throws ActionCommandException {
         // Call SOAP web service to update a resource type
         try {
-            AuthenticationResponse response = ResourceTypeSoapRequests.callUpdate((UserResourceType) this.data);
+            // UI-37: added login id and session id parameters to the callSave
+            // method invocation
+            AuthenticationResponse response = ResourceTypeSoapRequests.callUpdate((UserResourceType) this.data, this.loginId,
+                    this.session.getId());
             ReplyStatusType rst = response.getReplyStatus();
             this.msg = rst.getMessage();
             if (rst.getReturnCode().intValue() == GeneralConst.RC_FAILURE) {

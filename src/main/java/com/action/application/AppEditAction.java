@@ -94,7 +94,11 @@ public class AppEditAction extends AbstractActionHandler implements ICommand {
         // Call SOAP web service to persist changes made to the Application
         // object.
         try {
-            AuthenticationResponse appResponse = ApplicationSoapRequests.callUpdateApplication((Application) this.data);
+         // UI-37: added login id and session id parameters to the callSave
+            // method invocation
+            AuthenticationResponse appResponse = ApplicationSoapRequests.callUpdateApplication((Application) this.data,
+                    this.loginId,
+                    this.session.getId());
             ReplyStatusType rst = appResponse.getReplyStatus();
             this.msg = rst.getMessage();
             if (rst.getReturnCode().intValue() == GeneralConst.RC_FAILURE) {

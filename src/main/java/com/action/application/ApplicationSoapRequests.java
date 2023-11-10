@@ -72,10 +72,15 @@ public class ApplicationSoapRequests {
      * 
      * @param data
      *            {@link Application}
+     * @param loginId
+     *            the id of logged in user
+     * @param sessionId
+     *            the web session id of the logged in user.
      * @return {@link AuthenticationResponse}
      * @throws AuthenticationException
      */
-    public static final AuthenticationResponse callUpdateApplication(Application data) throws AuthenticationException {
+    public static final AuthenticationResponse callUpdateApplication(Application data, String loginId, String sessionId)
+            throws AuthenticationException {
         // Retrieve all user group records from the database
         ObjectFactory fact = new ObjectFactory();
         AuthenticationRequest req = fact.createAuthenticationRequest();
@@ -88,6 +93,9 @@ public class ApplicationSoapRequests {
                 .withDeliveryDate(new Date())
                 .withRouting(ApiTransactionCodes.ROUTE_AUTHENTICATION)
                 .withDeliveryMode(ApiHeaderNames.DELIVERY_MODE_SYNC)
+                // UI-37: Added login id and session id to the request
+                .withUserId(loginId)
+                .withSessionId(sessionId)
                 .build();
 
         AuthProfileGroupType apgt = fact.createAuthProfileGroupType();

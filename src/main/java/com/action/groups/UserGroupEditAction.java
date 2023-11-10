@@ -96,7 +96,10 @@ public class UserGroupEditAction extends AbstractActionHandler implements IComma
             UserGroup grp = (UserGroup) this.data;
 
             // Update user group record
-            AuthenticationResponse response = UserGroupSoapRequests.callUpdateUserGroup(grp);
+            // UI-37: added login id and session id parameters to the callSave
+            // method invocation
+            AuthenticationResponse response = UserGroupSoapRequests.callUpdateUserGroup(grp, this.loginId,
+                    this.session.getId());
             // Get message text from reply status
             ReplyStatusType rst = response.getReplyStatus();
             this.msg = rst.getMessage();

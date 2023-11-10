@@ -93,7 +93,10 @@ public class RolesEditAction extends AbstractActionHandler implements ICommand {
         // Call SOAP web service to persist changes made to the Roles
         // object.
         try {
-            AuthenticationResponse appResponse = RoleSoapRequests.callUpdateRole((Roles) this.data);
+            // UI-37: added login id and session id parameters to the callSave
+            // method invocation
+            AuthenticationResponse appResponse = RoleSoapRequests.callUpdateRole((Roles) this.data, this.loginId,
+                    this.session.getId());
             ReplyStatusType rst = appResponse.getReplyStatus();
             this.msg = rst.getMessage();
             if (rst.getReturnCode().intValue() == GeneralConst.RC_FAILURE) {

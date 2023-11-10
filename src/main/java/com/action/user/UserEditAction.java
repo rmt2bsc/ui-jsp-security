@@ -23,10 +23,10 @@ import com.api.web.Response;
 import com.api.web.util.RMT2WebUtility;
 import com.entity.Application;
 import com.entity.ApplicationFactory;
-import com.entity.UserResourceFactory;
 import com.entity.UserAppRoleFactory;
 import com.entity.UserLogin;
 import com.entity.UserLoginFactory;
+import com.entity.UserResourceFactory;
 
 /**
  * This class provides action handlers to respond to User maintenance related
@@ -121,7 +121,8 @@ public class UserEditAction extends AbstractActionHandler implements ICommand {
      */
     public void save() throws ActionCommandException {
         // Apply user updates
-        AuthenticationResponse response = UserSoapRequests.callUpdateUser(this.user);
+        AuthenticationResponse response = UserSoapRequests.callUpdateUser(this.user, this.loginId,
+                this.session.getId());
 
         // Check the results of the update operation, and, if okay, fetch
         // updated results and refresh display. Otherwise, show error message

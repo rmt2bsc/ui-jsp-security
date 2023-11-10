@@ -1,5 +1,7 @@
 package com.action.resource;
 
+import java.util.List;
+
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.rmt2.jaxb.AuthenticationResponse;
@@ -94,12 +96,17 @@ public class ResourceEditAction extends ResourceAbstractAction implements IComma
     public void save() throws ActionCommandException {
         // Calls SOAP web service to persist changes
         try {
-            AuthenticationResponse response = ResourceSoapRequests.callUpdate((UserResource) this.data);
+            // UI-37: added login id and session id parameters to the callSave
+            // method invocation
+            AuthenticationResponse response = ResourceSoapRequests.callUpdate((UserResource) this.data, this.loginId,
+                    this.session.getId());
             ReplyStatusType rst = response.getReplyStatus();
             this.msg = rst.getMessage();
             if (rst.getReturnCode().intValue() == GeneralConst.RC_FAILURE) {
                 throw new ActionCommandException(rst.getMessage());
             }
+            List<UserResource> results = UserResourceFactory.createUserResource(response.getProfile().getResourcesInfo());
+            this.data = results.get(0);
         } catch (AuthenticationException e) {
             logger.log(Level.ERROR, e.getMessage());
             throw new ActionCommandException(e.getMessage());

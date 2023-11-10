@@ -115,7 +115,10 @@ public class AppRoleEditAction extends AbstractActionHandler implements ICommand
         // object.
         AppRole obj = AppRoleFactory.create((VwAppRoles) this.data);
         try {
-            AuthenticationResponse appResponse = ApplicationRoleSoapRequests.callUpdateApplicationRole(obj);
+            // UI-37: added login id and session id parameters to the callSave
+            // method invocation
+            AuthenticationResponse appResponse = ApplicationRoleSoapRequests.callUpdateApplicationRole(obj, this.loginId,
+                    this.session.getId());
             ReplyStatusType rst = appResponse.getReplyStatus();
             this.msg = rst.getMessage();
             if (rst.getReturnCode().intValue() == GeneralConst.RC_FAILURE) {

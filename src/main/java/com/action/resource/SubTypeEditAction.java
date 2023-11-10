@@ -102,7 +102,11 @@ public class SubTypeEditAction extends AbstractActionHandler implements ICommand
         // Call SOAP web service to persist resource sub type changes to the
         // database
         try {
-            AuthenticationResponse response = ResourceSubTypeSoapRequests.callUpdate((UserResourceSubtype) this.data);
+            // UI-37: added login id and session id parameters to the callSave
+            // method invocation
+            AuthenticationResponse response = ResourceSubTypeSoapRequests.callUpdate((UserResourceSubtype) this.data,
+                    this.loginId,
+                    this.session.getId());
             ReplyStatusType rst = response.getReplyStatus();
             this.msg = rst.getMessage();
             if (rst.getReturnCode().intValue() == GeneralConst.RC_FAILURE) {
