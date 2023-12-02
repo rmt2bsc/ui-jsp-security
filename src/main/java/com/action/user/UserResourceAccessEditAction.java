@@ -31,10 +31,6 @@ public class UserResourceAccessEditAction extends AbstractActionHandler implemen
 
     private Logger logger;
 
-//    private UserApi userApi;
-//
-//    private ResourceApi api;
-
     private UserLogin user;
 
     private int typeId;

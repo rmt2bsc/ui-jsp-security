@@ -138,7 +138,6 @@ public class AppRoleSearchAction extends AbstractActionHandler implements IComma
      * = -1.
      */
     protected String doInitialCriteria(RMT2TagQueryBean _query) throws ActionCommandException {
-        // return "app_role_id = -1";
         return null;
     }
 
@@ -207,8 +206,7 @@ public class AppRoleSearchAction extends AbstractActionHandler implements IComma
             ReplyStatusType rst = appResponse.getReplyStatus();
             this.msg = rst.getMessage();
             if (rst.getReturnCode().intValue() == GeneralConst.RC_FAILURE) {
-                this.msg = rst.getMessage();
-                return;
+                this.throwActionError(rst.getMessage(), rst.getExtMessage());
             }
 
             List<VwAppRoles> obj = new ArrayList<>();
@@ -237,8 +235,7 @@ public class AppRoleSearchAction extends AbstractActionHandler implements IComma
             ReplyStatusType rst = appResponse.getReplyStatus();
             this.msg = rst.getMessage();
             if (rst.getReturnCode().intValue() == GeneralConst.RC_FAILURE) {
-                this.msg = rst.getMessage();
-                return;
+                this.throwActionError(rst.getMessage(), rst.getExtMessage());
             }
             List<Application> applications = ApplicationFactory.create(appResponse.getProfile().getApplicationInfo());
             this.appList = applications;

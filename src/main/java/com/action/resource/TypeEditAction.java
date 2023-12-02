@@ -99,8 +99,7 @@ public class TypeEditAction extends AbstractActionHandler implements ICommand {
             ReplyStatusType rst = response.getReplyStatus();
             this.msg = rst.getMessage();
             if (rst.getReturnCode().intValue() == GeneralConst.RC_FAILURE) {
-                this.msg = rst.getMessage();
-                return;
+                this.throwActionError(rst.getMessage(), rst.getExtMessage());
             }
             List<UserResourceType> results = ResourceTypeFactory.create(response.getProfile().getResourcesInfo());
             this.data = results.get(0);
@@ -124,8 +123,7 @@ public class TypeEditAction extends AbstractActionHandler implements ICommand {
             ReplyStatusType rst = response.getReplyStatus();
             this.msg = rst.getMessage();
             if (rst.getReturnCode().intValue() == GeneralConst.RC_FAILURE) {
-                this.msg = rst.getMessage();
-                return;
+                this.throwActionError(rst.getMessage(), rst.getExtMessage());
             }
             this.sendClientData();
         } catch (Exception e) {
@@ -146,8 +144,7 @@ public class TypeEditAction extends AbstractActionHandler implements ICommand {
             ReplyStatusType rst = response.getReplyStatus();
             this.msg = rst.getMessage();
             if (rst.getReturnCode().intValue() == GeneralConst.RC_FAILURE) {
-                this.msg = rst.getMessage();
-                return;
+                this.throwActionError(rst.getMessage(), rst.getExtMessage());
             }
             List<UserResourceType> results = ResourceTypeFactory.create(response.getProfile().getResourcesInfo());
             this.data = results;

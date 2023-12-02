@@ -81,7 +81,7 @@ public abstract class ResourceAbstractAction extends AbstractActionHandler imple
             ReplyStatusType rst = response.getReplyStatus();
             this.msg = rst.getMessage();
             if (rst.getReturnCode().intValue() == GeneralConst.RC_FAILURE) {
-                throw new ActionCommandException(rst.getMessage());
+                this.throwActionError(rst.getMessage(), rst.getExtMessage());
             }
             List<VwResource> results = VwResourceFactory.create(response.getProfile().getResourcesInfo());
             return results;
@@ -104,7 +104,7 @@ public abstract class ResourceAbstractAction extends AbstractActionHandler imple
             AuthenticationResponse response = ResourceTypeSoapRequests.callGet();
             ReplyStatusType rst = response.getReplyStatus();
             if (rst.getReturnCode().intValue() == GeneralConst.RC_FAILURE) {
-                throw new ActionCommandException(rst.getMessage());
+                this.throwActionError(rst.getMessage(), rst.getExtMessage());
             }
             List<UserResourceType> results = ResourceTypeFactory.create(response.getProfile().getResourcesInfo());
             return results;
@@ -127,7 +127,7 @@ public abstract class ResourceAbstractAction extends AbstractActionHandler imple
             AuthenticationResponse response = ResourceSubTypeSoapRequests.callGet(criteria);
             ReplyStatusType rst = response.getReplyStatus();
             if (rst.getReturnCode().intValue() == GeneralConst.RC_FAILURE) {
-                throw new ActionCommandException(rst.getMessage());
+                this.throwActionError(rst.getMessage(), rst.getExtMessage());
             }
             List<VwResourceType> results = VwResourceTypeFactory.create(response.getProfile().getResourcesInfo());
             return results;

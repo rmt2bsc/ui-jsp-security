@@ -37,8 +37,6 @@ public class AppSearchAction extends AbstractActionHandler implements ICommand {
 
     private Logger logger;
 
-    // private ApplicationApi api;
-
     private Object data;
 
     private int selectedAppId;
@@ -103,8 +101,7 @@ public class AppSearchAction extends AbstractActionHandler implements ICommand {
             ReplyStatusType rst = appResponse.getReplyStatus();
             this.msg = rst.getMessage();
             if (rst.getReturnCode().intValue() == GeneralConst.RC_FAILURE) {
-                this.msg = rst.getMessage();
-                return;
+                this.throwActionError(rst.getMessage(), rst.getExtMessage());
             }
             List<Application> applications = ApplicationFactory.create(appResponse.getProfile().getApplicationInfo());
             this.data = applications;

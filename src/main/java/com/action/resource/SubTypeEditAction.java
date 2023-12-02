@@ -110,8 +110,7 @@ public class SubTypeEditAction extends AbstractActionHandler implements ICommand
             ReplyStatusType rst = response.getReplyStatus();
             this.msg = rst.getMessage();
             if (rst.getReturnCode().intValue() == GeneralConst.RC_FAILURE) {
-                this.msg = rst.getMessage();
-                return;
+                this.throwActionError(rst.getMessage(), rst.getExtMessage());
             }
             List<UserResourceSubtype> results = ResourceSubTypeFactory.create(response.getProfile().getResourcesInfo());
             this.data = results.get(0);
@@ -139,8 +138,7 @@ public class SubTypeEditAction extends AbstractActionHandler implements ICommand
             ReplyStatusType rst = response.getReplyStatus();
             this.msg = rst.getMessage();
             if (rst.getReturnCode().intValue() == GeneralConst.RC_FAILURE) {
-                this.msg = rst.getMessage();
-                return;
+                this.throwActionError(rst.getMessage(), rst.getExtMessage());
             }
         } catch (Exception e) {
             logger.log(Level.ERROR, e.getMessage());
@@ -163,8 +161,7 @@ public class SubTypeEditAction extends AbstractActionHandler implements ICommand
             ReplyStatusType rst = response.getReplyStatus();
             this.msg = rst.getMessage();
             if (rst.getReturnCode().intValue() == GeneralConst.RC_FAILURE) {
-                this.msg = rst.getMessage();
-                return;
+                this.throwActionError(rst.getMessage(), rst.getExtMessage());
             }
             List<VwResourceType> results = VwResourceTypeFactory.create(response.getProfile().getResourcesInfo());
             this.data = results;
@@ -181,8 +178,7 @@ public class SubTypeEditAction extends AbstractActionHandler implements ICommand
             AuthenticationResponse response = ResourceTypeSoapRequests.callGet();
             ReplyStatusType rst = response.getReplyStatus();
             if (rst.getReturnCode().intValue() == GeneralConst.RC_FAILURE) {
-                this.msg = rst.getMessage();
-                return null;
+                this.throwActionError(rst.getMessage(), rst.getExtMessage());
             }
             List<UserResourceType> results = ResourceTypeFactory.create(response.getProfile().getResourcesInfo());
             return results;

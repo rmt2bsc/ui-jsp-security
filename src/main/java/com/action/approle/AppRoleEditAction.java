@@ -48,8 +48,6 @@ public class AppRoleEditAction extends AbstractActionHandler implements ICommand
 
     private Logger logger;
 
-    // private ApplicationApi api;
-
     private Object data;
 
     private List appList;
@@ -122,8 +120,7 @@ public class AppRoleEditAction extends AbstractActionHandler implements ICommand
             ReplyStatusType rst = appResponse.getReplyStatus();
             this.msg = rst.getMessage();
             if (rst.getReturnCode().intValue() == GeneralConst.RC_FAILURE) {
-                this.msg = rst.getMessage();
-                return;
+                this.throwActionError(rst.getMessage(), rst.getExtMessage());
             }
 
             // This is used for the "Add" functionality to update the
@@ -156,8 +153,7 @@ public class AppRoleEditAction extends AbstractActionHandler implements ICommand
             ReplyStatusType rst = appResponse.getReplyStatus();
             this.msg = rst.getMessage();
             if (rst.getReturnCode().intValue() == GeneralConst.RC_FAILURE) {
-                this.msg = rst.getMessage();
-                return;
+                this.throwActionError(rst.getMessage(), rst.getExtMessage());
             }
 
             // This is used for the "Add" functionality to update the
@@ -190,8 +186,7 @@ public class AppRoleEditAction extends AbstractActionHandler implements ICommand
             ReplyStatusType rst = appResponse.getReplyStatus();
             this.msg = rst.getMessage();
             if (rst.getReturnCode().intValue() == GeneralConst.RC_FAILURE) {
-                this.msg = rst.getMessage();
-                return;
+                this.throwActionError(rst.getMessage(), rst.getExtMessage());
             }
 
             List<VwAppRoles> obj = new ArrayList<>();
@@ -220,8 +215,7 @@ public class AppRoleEditAction extends AbstractActionHandler implements ICommand
             ReplyStatusType rst = appResponse.getReplyStatus();
             this.msg = rst.getMessage();
             if (rst.getReturnCode().intValue() == GeneralConst.RC_FAILURE) {
-                this.msg = rst.getMessage();
-                return;
+                this.throwActionError(rst.getMessage(), rst.getExtMessage());
             }
             List<Application> applications = ApplicationFactory.create(appResponse.getProfile().getApplicationInfo());
             this.appList = applications;
@@ -236,8 +230,7 @@ public class AppRoleEditAction extends AbstractActionHandler implements ICommand
             ReplyStatusType rst = appResponse.getReplyStatus();
             this.msg = rst.getMessage();
             if (rst.getReturnCode().intValue() == GeneralConst.RC_FAILURE) {
-                this.msg = rst.getMessage();
-                return;
+                this.throwActionError(rst.getMessage(), rst.getExtMessage());
             }
             List<Roles> obj = RoleFactory.create(appResponse.getProfile().getRoleInfo());
             this.roleList = obj;

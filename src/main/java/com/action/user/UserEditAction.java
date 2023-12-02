@@ -210,14 +210,13 @@ public class UserEditAction extends AbstractActionHandler implements ICommand {
         return;
     }
 
-    private void getAppRoleData() {
+    private void getAppRoleData() throws ActionCommandException {
         // Call SOAP web service to get complete list of applications
         AuthenticationResponse appResponse = ApplicationSoapRequests.callGetApplications();
         ReplyStatusType rst = appResponse.getReplyStatus();
         this.msg = rst.getMessage();
         if (rst.getReturnCode().intValue() == GeneralConst.RC_FAILURE) {
-            this.msg = rst.getMessage();
-            return;
+            this.throwActionError(rst.getMessage(), rst.getExtMessage());
         }
         List<Application> applications = ApplicationFactory.create(appResponse.getProfile().getApplicationInfo());
         this.apps = applications;
@@ -257,14 +256,13 @@ public class UserEditAction extends AbstractActionHandler implements ICommand {
         return;
     }
 
-    private void getResourcesData() {
+    private void getResourcesData() throws ActionCommandException {
         // Call SOAP web service to get complete list of applications
         AuthenticationResponse appResponse = ApplicationSoapRequests.callGetApplications();
         ReplyStatusType rst = appResponse.getReplyStatus();
         this.msg = rst.getMessage();
         if (rst.getReturnCode().intValue() == GeneralConst.RC_FAILURE) {
-            this.msg = rst.getMessage();
-            return;
+            this.throwActionError(rst.getMessage(), rst.getExtMessage());
         }
         List<Application> applications = ApplicationFactory.create(appResponse.getProfile().getApplicationInfo());
         this.apps = applications;
@@ -277,8 +275,7 @@ public class UserEditAction extends AbstractActionHandler implements ICommand {
         rst = response.getReplyStatus();
         this.msg = rst.getMessage();
         if (rst.getReturnCode().intValue() == GeneralConst.RC_FAILURE) {
-            this.msg = rst.getMessage();
-            return;
+            this.throwActionError(rst.getMessage(), rst.getExtMessage());
         }
 
         // Sync UserLogin Object

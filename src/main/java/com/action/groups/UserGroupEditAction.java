@@ -35,8 +35,6 @@ public class UserGroupEditAction extends AbstractActionHandler implements IComma
 
     private Logger logger;
 
-    // private UserApi api;
-
     private Object data;
 
     /**

@@ -103,7 +103,7 @@ public class ResourceEditAction extends ResourceAbstractAction implements IComma
             ReplyStatusType rst = response.getReplyStatus();
             this.msg = rst.getMessage();
             if (rst.getReturnCode().intValue() == GeneralConst.RC_FAILURE) {
-                throw new ActionCommandException(rst.getMessage());
+                this.throwActionError(rst.getMessage(), rst.getExtMessage());
             }
             List<UserResource> results = UserResourceFactory.createUserResource(response.getProfile().getResourcesInfo());
             this.data = results.get(0);
@@ -136,7 +136,7 @@ public class ResourceEditAction extends ResourceAbstractAction implements IComma
             ReplyStatusType rst = response.getReplyStatus();
             this.msg = rst.getMessage();
             if (rst.getReturnCode().intValue() == GeneralConst.RC_FAILURE) {
-                throw new ActionCommandException(rst.getMessage());
+                this.throwActionError(rst.getMessage(), rst.getExtMessage());
             }
         } catch (AuthenticationException e) {
             logger.log(Level.ERROR, e.getMessage());

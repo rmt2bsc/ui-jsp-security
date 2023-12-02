@@ -21,16 +21,16 @@ import com.entity.Application;
 import com.entity.ApplicationFactory;
 
 /**
- * Action handler provides functionality to respond to requests pertaining 
- * to the application edit page.  The following request types are 
- * serviced: save application, delete an application, and back.
+ * Action handler provides functionality to respond to requests pertaining to
+ * the application edit page. The following request types are serviced: save
+ * application, delete an application, and back.
  * 
  * @author Roy Terrell
  * 
  */
 public class AppEditAction extends AbstractActionHandler implements ICommand {
     private static final String COMMAND_SAVE = "App.Edit.save";
-    
+
     private static final String COMMAND_DELETE = "App.Edit.delete";
 
     private static final String COMMAND_BACK = "App.Edit.back";
@@ -45,8 +45,8 @@ public class AppEditAction extends AbstractActionHandler implements ICommand {
      * @throws SystemException
      */
     public AppEditAction() throws SystemException {
-	super();
-	logger = Logger.getLogger("UserEditAction");
+        super();
+        logger = Logger.getLogger("UserEditAction");
     }
 
     /**
@@ -55,7 +55,7 @@ public class AppEditAction extends AbstractActionHandler implements ICommand {
      * @throws SystemException
      */
     protected void init(Context _context, Request _request) throws SystemException {
-	super.init(_context, _request);
+        super.init(_context, _request);
     }
 
     /**
@@ -72,16 +72,16 @@ public class AppEditAction extends AbstractActionHandler implements ICommand {
      * @Throws SystemException when an error needs to be reported.
      */
     public void processRequest(Request request, Response response, String command) throws ActionCommandException {
-	super.processRequest(request, response, command);
-	if (command.equalsIgnoreCase(AppEditAction.COMMAND_SAVE)) {
-	    this.saveData();
-	}
-	if (command.equalsIgnoreCase(AppEditAction.COMMAND_DELETE)) {
- 	    this.deleteData();
-	}
-	if (command.equalsIgnoreCase(AppEditAction.COMMAND_BACK)) {
-	    this.doBack();
-	}
+        super.processRequest(request, response, command);
+        if (command.equalsIgnoreCase(AppEditAction.COMMAND_SAVE)) {
+            this.saveData();
+        }
+        if (command.equalsIgnoreCase(AppEditAction.COMMAND_DELETE)) {
+            this.deleteData();
+        }
+        if (command.equalsIgnoreCase(AppEditAction.COMMAND_BACK)) {
+            this.doBack();
+        }
     }
 
     /**
@@ -94,7 +94,7 @@ public class AppEditAction extends AbstractActionHandler implements ICommand {
         // Call SOAP web service to persist changes made to the Application
         // object.
         try {
-         // UI-37: added login id and session id parameters to the callSave
+            // UI-37: added login id and session id parameters to the callSave
             // method invocation
             AuthenticationResponse appResponse = ApplicationSoapRequests.callUpdateApplication((Application) this.data,
                     this.loginId,
@@ -102,8 +102,7 @@ public class AppEditAction extends AbstractActionHandler implements ICommand {
             ReplyStatusType rst = appResponse.getReplyStatus();
             this.msg = rst.getMessage();
             if (rst.getReturnCode().intValue() == GeneralConst.RC_FAILURE) {
-                this.msg = rst.getMessage();
-                return;
+                this.throwActionError(rst.getMessage(), rst.getExtMessage());
             }
             List<Application> applications = ApplicationFactory.create(appResponse.getProfile().getApplicationInfo());
             this.data = applications.get(0);
@@ -128,8 +127,7 @@ public class AppEditAction extends AbstractActionHandler implements ICommand {
             ReplyStatusType rst = appResponse.getReplyStatus();
             this.msg = rst.getMessage();
             if (rst.getReturnCode().intValue() == GeneralConst.RC_FAILURE) {
-                this.msg = rst.getMessage();
-                return;
+                this.throwActionError(rst.getMessage(), rst.getExtMessage());
             }
             this.sendClientData();
         } catch (Exception e) {
@@ -150,8 +148,7 @@ public class AppEditAction extends AbstractActionHandler implements ICommand {
             ReplyStatusType rst = appResponse.getReplyStatus();
             this.msg = rst.getMessage();
             if (rst.getReturnCode().intValue() == GeneralConst.RC_FAILURE) {
-                this.msg = rst.getMessage();
-                return;
+                this.throwActionError(rst.getMessage(), rst.getExtMessage());
             }
             List<Application> applications = ApplicationFactory.create(appResponse.getProfile().getApplicationInfo());
             this.data = applications;
@@ -179,7 +176,7 @@ public class AppEditAction extends AbstractActionHandler implements ICommand {
             throw new ActionCommandException(e.getMessage());
         }
     }
-    
+
     /**
      * Sends an {@link com.bean.Application Application} data object and any
      * server messages to the user via the request object.
@@ -187,24 +184,22 @@ public class AppEditAction extends AbstractActionHandler implements ICommand {
      * @throws ActionCommandException
      */
     protected void sendClientData() throws ActionCommandException {
-	this.request.setAttribute(GeneralConst.CLIENT_DATA_RECORD, this.data);
-	this.request.setAttribute(RMT2ServletConst.REQUEST_MSG_INFO, this.msg);
+        this.request.setAttribute(GeneralConst.CLIENT_DATA_RECORD, this.data);
+        this.request.setAttribute(RMT2ServletConst.REQUEST_MSG_INFO, this.msg);
     }
-
-
 
     /**
      * No Action
      */
     public void add() throws ActionCommandException {
-	return;
+        return;
     }
 
     /**
      * No Action
      */
     public void edit() throws ActionCommandException {
-	return;
+        return;
     }
 
 }

@@ -98,8 +98,7 @@ public class TypeSearchAction extends AbstractActionHandler implements ICommand 
             ReplyStatusType rst = response.getReplyStatus();
             this.msg = rst.getMessage();
             if (rst.getReturnCode().intValue() == GeneralConst.RC_FAILURE) {
-                this.msg = rst.getMessage();
-                return;
+                this.throwActionError(rst.getMessage(), rst.getExtMessage());
             }
             List<UserResourceType> results = ResourceTypeFactory.create(response.getProfile().getResourcesInfo());
             this.data = results;
@@ -130,7 +129,6 @@ public class TypeSearchAction extends AbstractActionHandler implements ICommand 
      * @throws ActionCommandException
      */
     public void edit() throws ActionCommandException {
-
         return;
     }
 
